@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         // counter didn't reset back to zero; the application is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: new Login(),
+      home: new MyHomePage(title: 'Flutter'),
       routes: <String, WidgetBuilder> {
         '/a': (BuildContext context) => new MyHomePage(title: 'page A'),
         '/b': (BuildContext context) => new MyHomePage(title: 'page B'),
@@ -75,6 +75,11 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: new Text(widget.title),
       ),
+      drawer: new Container(
+        color: new Color(0xFFFF00FF),
+        width: 200.0,
+        child: new DrawLeftPage(),
+      ),
       body: new Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
@@ -115,6 +120,60 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: new Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class DrawLeftPage extends StatelessWidget{
+
+
+  @override
+  Widget build(BuildContext context) {
+    return new ListView(
+      children: <Widget>[
+        new ImageTitle(1, 2, 3, "4")
+      ],
+
+    );
+  }
+}
+
+
+class ImageTitle extends StatefulWidget{
+
+  int picNum;
+  int followerNum;
+  int followedNum;
+  String name;
+
+
+  ImageTitle(this.picNum, this.followerNum, this.followedNum, this.name);
+
+  @override
+  State createState() {
+    return new ImageTitleState();
+  }
+}
+
+
+class ImageTitleState extends State<ImageTitle>{
+
+  @override
+  Widget build(BuildContext context) {
+    widget.name;
+    return new Container(
+      color: new Color(0xFF0000FF),
+      height: 100.0,
+      child: new Column(
+        children: <Widget>[
+          Image.asset(
+            'images/shutter.png',
+            width: 40.0,
+            height: 40.0,
+            fit: BoxFit.cover,
+          ),
+        ],
+      ),
     );
   }
 }
