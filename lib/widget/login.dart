@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/main.dart';
+import 'package:flutter_app/model/account_model.dart';
 class LoginPage extends StatefulWidget{
 
   @override
@@ -87,23 +88,25 @@ class _LoginState extends State<LoginPage>{
       print('phone: $_password');
 
       try {
-      var uri = new Uri.http(
-          '192.168.45.47:3000', '/app/loggin', {'email': '$_email', 'password': '$_password'});
-      var request = await httpClient.postUrl(uri);
-      var response = await request.close();
-      if (response.statusCode == HttpStatus.OK) {
-        var json = await response.transform(UTF8.decoder).join();
-        var data = JSON.decode(json);
-        print(data);
-        result = data['origin'];
-      } else {
-        result =
-        'Error getting IP address:\nHttp status ${response.statusCode}';
+        var uri = new Uri.http(
+            '192.168.45.47:3000', '/app/loggin',
+            {'email': '$_email', 'password': '$_password'});
+        var request = await httpClient.postUrl(uri);
+        var response = await request.close();
+        if (response.statusCode == HttpStatus.OK) {
+          var json = await response.transform(UTF8.decoder).join();
+          print(json);
+          Account aiModels = jsonDecode(json)['data'];
+          print(aiModels);
+        } else {
+          result =
+          'Error getting IP address:\nHttp status ${response.statusCode}';
+        }
+      } catch (exception) {
+        result = 'Failed getting IP address';
       }
-    } catch (exception) {
-      result = 'Failed getting IP address';
     }
-    }
+
   }
 
 
