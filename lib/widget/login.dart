@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/main.dart';
 import 'package:flutter_app/model/account_model.dart';
+import 'package:flutter_app/sp_local.dart';
 class LoginPage extends StatefulWidget{
 
   @override
@@ -77,7 +78,7 @@ class _LoginState extends State<LoginPage>{
 
   void onPressed() async{
     var form = formKey.currentState;
-    var url = 'http://www.zshot.xyz/app/loggin';
+    var url = 'http://0.0.0./app/loggin';
     var httpClient = new HttpClient();
     String result;
     if (form.validate()) {
@@ -89,15 +90,20 @@ class _LoginState extends State<LoginPage>{
 
       try {
         var uri = new Uri.http(
-            '192.168.45.47:3000', '/app/loggin',
+            '192.168.45.58:3000', '/app/loggin',
             {'email': '$_email', 'password': '$_password'});
         var request = await httpClient.postUrl(uri);
         var response = await request.close();
         if (response.statusCode == HttpStatus.OK) {
           var json = await response.transform(UTF8.decoder).join();
           print(json);
-          Account aiModels = jsonDecode(json)['data'];
-          print(aiModels);
+          Map jsonMap = JSON.decode(json);
+          print(jsonMap['data']);
+          Map userMap = JSON.decode(jsonMap['data']);
+          Account user = new Account.fromJson(userMap);
+          CommonSP.saveAccount(JSON.encode(user));
+          print(user.email);
+          Navigator.of(context).pushNamed('/b');
         } else {
           result =
           'Error getting IP address:\nHttp status ${response.statusCode}';

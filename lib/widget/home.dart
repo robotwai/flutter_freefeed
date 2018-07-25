@@ -137,7 +137,7 @@ class ImageTitleState extends State<ImageTitle>{
       child: new Column(
         children: <Widget>[
           Image.asset(
-            'images/shutter.png',
+            'images/shutter.jpg',
             width: 40.0,
             height: 40.0,
             fit: BoxFit.cover,

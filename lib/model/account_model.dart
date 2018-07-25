@@ -17,4 +17,13 @@ class Account{
         id = json['id']
   ;
 
+  Map<String, dynamic> toJson() =>
+      {
+        'name': name,
+        'email': email,
+        'token': token,
+        'icon': icon,
+        'id': id,
+      };
+
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/widget/login.dart';
 import 'package:flutter_app/widget/home.dart';
+import 'package:flutter_app/widget/feed.dart';
 void main() => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
       home: new MyHomePage(title: 'Flutter'),
       routes: <String, WidgetBuilder> {
         '/a': (BuildContext context) => new MyHomePage(title: 'page A'),
-        '/b': (BuildContext context) => new MyHomePage(title: 'page B'),
+        '/b': (BuildContext context) => new FeedPage(title: 'page B'),
         '/c': (BuildContext context) => new LoginPage(),
       },
     );
