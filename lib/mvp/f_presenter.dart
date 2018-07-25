@@ -2,7 +2,7 @@ import 'package:flutter_app/mvp/presenter.dart';
 import 'package:flutter_app/model/feed_model.dart';
 
 abstract class FeedIPresenter implements IPresenter{
-  loadAIData(String type,int pageNum,int pageSize);
+  loadAIData(String token,int pageNum,int pageSize);
 }
 
 

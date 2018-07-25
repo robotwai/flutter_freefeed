@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/sp_local.dart';
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
@@ -78,7 +79,14 @@ class _MyHomePageState extends State<MyHomePage> {
               style: Theme.of(context).textTheme.display1,
             ),
           onTap: (){
-            Navigator.of(context).pushNamed('/c');
+            CommonSP.getAccount().then((onValue){
+              if(onValue.token!=null){
+                Navigator.of(context).pushNamed('/b');
+              }else{
+                Navigator.of(context).pushNamed('/c');
+              }
+            }
+            );
           },
         ),
 
@@ -137,7 +145,7 @@ class ImageTitleState extends State<ImageTitle>{
       child: new Column(
         children: <Widget>[
           Image.asset(
-            'images/shutter.jpg',
+            'images/shutter.png',
             width: 40.0,
             height: 40.0,
             fit: BoxFit.cover,

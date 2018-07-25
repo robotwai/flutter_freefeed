@@ -78,9 +78,7 @@ class _LoginState extends State<LoginPage>{
 
   void onPressed() async{
     var form = formKey.currentState;
-    var url = 'http://0.0.0./app/loggin';
     var httpClient = new HttpClient();
-    String result;
     if (form.validate()) {
       form.save();
 
@@ -90,7 +88,7 @@ class _LoginState extends State<LoginPage>{
 
       try {
         var uri = new Uri.http(
-            '192.168.45.58:3000', '/app/loggin',
+            '127.0.0.1:3000', '/app/loggin',
             {'email': '$_email', 'password': '$_password'});
         var request = await httpClient.postUrl(uri);
         var response = await request.close();
@@ -105,11 +103,11 @@ class _LoginState extends State<LoginPage>{
           print(user.email);
           Navigator.of(context).pushNamed('/b');
         } else {
-          result =
-          'Error getting IP address:\nHttp status ${response.statusCode}';
+          print(response.statusCode);
         }
       } catch (exception) {
-        result = 'Failed getting IP address';
+
+        print(exception.toString());
       }
     }
 

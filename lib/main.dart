@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       home: new MyHomePage(title: 'Flutter'),
       routes: <String, WidgetBuilder> {
         '/a': (BuildContext context) => new MyHomePage(title: 'page A'),
-        '/b': (BuildContext context) => new FeedPage(title: 'page B'),
+        '/b': (BuildContext context) => new FeedPage(title: 'the Feed'),
         '/c': (BuildContext context) => new LoginPage(),
       },
     );

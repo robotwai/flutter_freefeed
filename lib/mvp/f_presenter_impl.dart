@@ -7,7 +7,9 @@ class FeedPresenterImpl extends FeedIPresenter{
   FeedIView feedIView;
   FeedRepository feedRepository;
 
-  FeedPresenterImpl(this.feedIView);
+  FeedPresenterImpl(this.feedIView){
+    feedIView.setPresenter(this);
+  }
 
   @override
   init() {
@@ -15,7 +17,11 @@ class FeedPresenterImpl extends FeedIPresenter{
     this.feedRepository = new FeedRepositoryImpl();
   }
   @override
-  loadAIData(String type, int pageNum, int pageSize) {
-
+  loadAIData(String token, int pageNum, int pageSize) {
+    feedRepository.fetch(token, pageNum).then((onValue){
+      feedIView.onloadFLSuc(onValue);
+    }).catchError((onError){
+      feedIView.onloadFLFail();
+    });
   }
 }

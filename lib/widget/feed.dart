@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/model/account_model.dart';
 import 'package:flutter_app/model/feed_model.dart';
+import 'package:flutter_app/mvp/f_presenter.dart';
+import 'package:flutter_app/mvp/f_presenter_impl.dart';
 import 'package:flutter_app/sp_local.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -20,19 +22,26 @@ class FeedPage extends StatefulWidget {
   final String title;
 
   @override
-  MyFeedPageState createState() => new MyFeedPageState();
+  MyFeedPageState createState(){
+    MyFeedPageState myFeedPageState = new MyFeedPageState();
+    FeedIPresenter presenter = new FeedPresenterImpl(myFeedPageState);
+    presenter.init();
+    return myFeedPageState;
+  }
 }
 
-class MyFeedPageState extends State<FeedPage>{
+class MyFeedPageState extends State<FeedPage> implements FeedIView{
   List<Micropost> datas = [];
 
   final TextStyle _biggerFont = new TextStyle(fontSize: 18.0);
 
+  FeedIPresenter _presenter;
+  String token;
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Startup Name Generator'),
+        title: new Text('the Feed'),
       ),
       body: _buildSuggestions(),
     );
@@ -41,8 +50,10 @@ class MyFeedPageState extends State<FeedPage>{
   @override
   void initState() {
     super.initState();
-
-    getaccount();
+    CommonSP.getAccount().then((onValue){
+      token = onValue.token;
+      _refreshData();
+    });
   }
 
   Widget _buildSuggestions() {
@@ -71,77 +82,28 @@ class MyFeedPageState extends State<FeedPage>{
 
     final Completer<Null> completer = new Completer<Null>();
 
-
-
+    datas.clear();
+    _presenter.loadAIData(token, 1, 1);
     setState(() {});
 
     completer.complete(null);
 
     return completer.future;
   }
+  void onloadFLSuc(List<Micropost> list){
+    setState(() {
+      datas.addAll(list);
+    });
+  }
+  void onloadFLFail(){
 
-  void getaccount() async{
-    CommonSP.getAccount().then((onValue){
-      print(onValue.token);
-      getlist(onValue.token);
-      }
-    );
   }
 
-  void getlist(String token) async{
-    var uri = new Uri.http(
-        '192.168.45.58:3000', '/app/feed',
-        {'token': token, 'page': '1'});
-    print(uri.toString());
-
-    var httpClient = new HttpClient();
-    print('1');
-    List flModels;
-    try {
-      var request = await httpClient.getUrl(uri);
-      print('1');
-      var response = await request.close();
-      print('1');
-      if (response.statusCode == HttpStatus.OK) {
-        var json = await response.transform(UTF8.decoder).join();
-        print(json);
-        flModels = jsonDecode(json)['data'];
-        print(flModels);
-        List<Micropost> list;
-        List<Micropost> list1=[];
-
-//        flModels.map((model) {
-//          print(model);
-////          list.add(new Micropost.fromJson(model)) ;
-//        });
-        list =flModels.map((model) {
-          print(model);
-          Micropost s= new Micropost.fromJson(model);
-          list1.add(s);
-          return new Micropost.fromJson(model);
-        }).toList();
-        print(list);
-        print(list1);
-        setState(() {
-          datas.addAll(list);
-        });
-
-//        list.then((onValue){
-//          setState(() {
-//            datas.addAll(onValue);
-//            print(datas);
-//          });
-//        });
-
-      } else {
-        //todo
-        print('1');
-      }
-    } catch (exception) {
-      //todo
-      print(exception.toString());
-    }
+  @override
+  setPresenter(FeedIPresenter presenter){
+    _presenter = presenter;
   }
+
   Widget _buildRow(BuildContext context, int index) {
     final Micropost item = datas[index];
     print(item);
