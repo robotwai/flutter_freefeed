@@ -7,6 +7,7 @@ import 'package:flutter_app/sp_local.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_app/db_helper.dart';
 class FeedPage extends StatefulWidget {
   FeedPage({Key key, this.title}) : super(key: key);
 
@@ -91,11 +92,20 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView{
     return completer.future;
   }
   void onloadFLSuc(List<Micropost> list){
-    setState(() {
-      datas.addAll(list);
-    });
+    MicropostProvider.origin.insertAll(list).then((on){
+      setState(() {
+        datas.addAll(list);
+      });
+    }
+    );
+
   }
   void onloadFLFail(){
+    MicropostProvider.origin.getMicroposts().then((list){
+      setState(() {
+        datas.addAll(list);
+      });
+    });
 
   }
 

@@ -2,7 +2,8 @@
 class Micropost{
   String content;
   int id;
-
+  final String columnId = "_id";
+  final String columnContent = "content";
   Micropost(this.content, this.id);
 
   Micropost.fromJson(Map<String, dynamic> json)
@@ -17,5 +18,19 @@ class Micropost{
         'content': content,
         'id': id,
       };
+
+  Map toMap() {
+    Map map = {columnContent: content};
+    if (id != null) {
+      map[columnId] = id;
+    }
+    return map;
+  }
+
+
+  Micropost.fromMap(Map map) {
+    id = map[columnId];
+    content = map[columnContent];
+  }
 
 }

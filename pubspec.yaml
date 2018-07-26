@@ -11,6 +11,8 @@ dependencies:
   http: ^0.11.3+16
   dio: ^0.0.14
   shared_preferences: "^0.4.2"
+  sqflite: any
+  path_provider: ^0.4.1
 
 dev_dependencies:
   flutter_test:

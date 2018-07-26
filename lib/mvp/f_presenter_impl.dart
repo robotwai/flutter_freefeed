@@ -2,6 +2,7 @@ import 'package:flutter_app/mvp/f_presenter.dart';
 import 'package:flutter_app/model/feed_model.dart';
 import 'f_repository_impl.dart';
 import 'f_repository.dart';
+import 'package:flutter_app/network/common_http_client.dart';
 
 class FeedPresenterImpl extends FeedIPresenter{
   FeedIView feedIView;
