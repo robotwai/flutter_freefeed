@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           onTap: (){
             CommonSP.getAccount().then((onValue){
-              if(onValue.token!=null){
+              if(onValue!=null &&onValue.token!=null){
                 Navigator.of(context).pushNamed('/b');
               }else{
                 Navigator.of(context).pushNamed('/c');

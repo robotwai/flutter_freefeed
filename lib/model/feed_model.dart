@@ -2,7 +2,7 @@
 class Micropost{
   String content;
   int id;
-  final String columnId = "_id";
+  final String columnId = "id";
   final String columnContent = "content";
   Micropost(this.content, this.id);
 

@@ -8,6 +8,7 @@ class Account{
 
   Account(this.token, this.email, this.name, this.icon, this.id);
 
+
   Account.fromJson(Map<String, dynamic> json)
       :
         token=json['token'],

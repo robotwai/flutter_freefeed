@@ -1,6 +1,6 @@
 class Constant {
 
-  static const  String baseUrl='192.168.45.47:3000';
+  static const  String baseUrl='127.0.0.1:3000';
 
 
 }

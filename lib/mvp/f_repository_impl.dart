@@ -15,7 +15,7 @@ class FeedRepositoryImpl implements FeedRepository{
     Map<String,String> op = new Map();
     op['token'] = token;
     op['page'] = '$pageNum';
-    return FFHttpUtils.origin.getFeed(op);
+    FFHttpUtils.origin.getFeed(op);
 
   }
 
