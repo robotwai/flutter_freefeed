@@ -51,7 +51,7 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView{
   @override
   void initState() {
     super.initState();
-    MicropostProvider.origin.init();
+
     CommonSP.getAccount().then((onValue){
       token = onValue.token;
       _refreshData();
@@ -93,22 +93,19 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView{
     return completer.future;
   }
   void onloadFLSuc(List<Micropost> list){
-    MicropostProvider.origin.insertAll(list);
       setState(() {
+        print('onloadFLSuc');
         datas.addAll(list);
       });
 
   }
+
   void onloadFLFail(){
-    MicropostProvider.origin.getList().then((list){
-      setState(() {
+    setState(() {
 
-        print(list);
-        datas.addAll(list);
-      });
+      print('onloadFLFail');
+
     });
-
-
 
   }
 
@@ -119,7 +116,6 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView{
 
   Widget _buildRow(BuildContext context, int index) {
     final Micropost item = datas[index];
-    print(item);
     return new ListTile(
       title: new Text(
         item.content,

@@ -15,12 +15,13 @@ class FFHttpUtils {
         options);
     List flModels;
     try {
+      print(uri.toString());
       var request = await httpClient.getUrl(uri);
       var response = await request.close();
       if (response.statusCode == HttpStatus.OK) {
         var json = await response.transform(UTF8.decoder).join();
         flModels = jsonDecode(json)['data'];
-        print(flModels);
+        print(flModels.length);
       } else {
         //todo
 

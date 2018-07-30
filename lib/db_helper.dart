@@ -16,9 +16,10 @@ class MicropostProvider {
   Database db;
   String dbPath;
   String dbName = 'micropost.db';
-
+  static String tab_name = 'micropost_table';
   MicropostProvider() {
-//    init();
+    print('init provider');
+    init();
   }
 
   Future init() async {
@@ -57,21 +58,11 @@ class MicropostProvider {
 
     await db.execute(sql_createTable);
     await db.close();
-    print('创建user.db成功，创建user_table成功');
+    print('创建micropost.db成功，创建micropost_table成功');
   }
 
   String sql_createTable =
-      'CREATE TABLE micropost_table (id INTEGER PRIMARY KEY, content TEXT)';
-  Future open(String path) async {
-    db = await openDatabase(path, version: 1,
-        onCreate: (Database db, int version) async {
-      await db.execute('''
-create table $tableTodo ( 
-  $columnId integer primary key , 
-  $columnContent text not null
-''');
-    });
-  }
+      "CREATE TABLE '$tab_name' (id INTEGER PRIMARY KEY, content TEXT)";
 
   insertAll(List<Micropost> todo) async {
     CommonSP.getDBPath().then((path) {
@@ -87,28 +78,30 @@ create table $tableTodo (
       var _id = mic.id;
       var _content = mic.content;
       String sql =
-          "REPLACE INTO micropost_table(id,content) VALUES('$_id','$_content')";
+          "REPLACE INTO '$tab_name'(id,content) VALUES('$_id','$_content')";
       await db.transaction((txn) async {
         await txn.rawInsert(sql);
-        print('success');
       });
     }
     await db.close();
   }
 
 
-  Future<List<Micropost>> getList() async {
+  Future<List<Micropost>> getList(int page) async {
     var _path;
     return CommonSP.getDBPath().then((path) {
       print(path);
       _path = path;
-      return realgetList(_path);
+      return realgetList(page,_path);
     });
   }
 
-  String sql_query = 'SELECT * FROM micropost_table';
-  Future<List<Micropost>> realgetList(String d_path) async {
+  Future<List<Micropost>> realgetList(int page,String d_path) async {
     Database db = await openDatabase(d_path);
+    int end = page*30;
+    int start = (end-30)>0?(end-30):0;
+    String sql_query = "SELECT * FROM '$tab_name' ORDER BY id DESC LIMIT '$start','$end'";
+    print(sql_query);
     List<Map> list = await db.rawQuery(sql_query);
     print(list);
     await db.close();
@@ -117,7 +110,7 @@ create table $tableTodo (
     }).toList();
   }
 
-  Future<Micropost> getTodo(int id) async {
+  Future<Micropost> getMicropost(int id) async {
     List<Map> maps = await db.query(tableTodo,
         columns: [columnId, columnContent],
         where: "$columnId = ?",

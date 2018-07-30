@@ -4,7 +4,7 @@ import 'f_repository_impl.dart';
 import 'f_repository.dart';
 import 'package:flutter_app/network/common_http_client.dart';
 
-class FeedPresenterImpl extends FeedIPresenter{
+class FeedPresenterImpl extends FeedIPresenter implements NetworkBoundResource<List<Micropost>>{
   FeedIView feedIView;
   FeedRepository feedRepository;
 
@@ -15,14 +15,27 @@ class FeedPresenterImpl extends FeedIPresenter{
   @override
   init() {
     // TODO: implement init
-    this.feedRepository = new FeedRepositoryImpl();
+    this.feedRepository = new FeedRepositoryImpl(this);
   }
   @override
   loadAIData(String token, int pageNum, int pageSize) {
-    feedRepository.fetch(token, pageNum).then((onValue){
-      feedIView.onloadFLSuc(onValue);
-    }).catchError((onError){
-      feedIView.onloadFLFail();
-    });
+    feedRepository.start(token, pageNum);
   }
+
+  @override
+  void loadForEmpty() {
+    feedIView.onloadFLFail();
+  }
+
+  @override
+  void loadForNet(List<Micropost> t) {
+    feedIView.onloadFLSuc(t);
+  }
+
+  @override
+  void loadForDB(List<Micropost> t) {
+    feedIView.onloadFLSuc(t);
+  }
+
+
 }
