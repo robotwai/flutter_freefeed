@@ -62,7 +62,8 @@ class MicropostProvider {
   }
 
   String sql_createTable =
-      "CREATE TABLE '$tab_name' (id INTEGER PRIMARY KEY, content TEXT)";
+      "CREATE TABLE '$tab_name' (id INTEGER PRIMARY KEY, content TEXT,user_id INTEGER,picture TEXT,"
+      "icon TEXT,user_name TEXT,created_at TEXT,dotId TEXT,dots_num INTEGER,comment_num INTEGER)";
 
   insertAll(List<Micropost> todo) async {
     CommonSP.getDBPath().then((path) {
@@ -74,15 +75,27 @@ class MicropostProvider {
   realInsert(List<Micropost> list, String d_path) async {
     print('dbPath' + d_path);
     Database db = await openDatabase(d_path);
-    for (var mic in list) {
-      var _id = mic.id;
-      var _content = mic.content;
-      String sql =
-          "REPLACE INTO '$tab_name'(id,content) VALUES('$_id','$_content')";
+
       await db.transaction((txn) async {
-        await txn.rawInsert(sql);
+        for (var mic in list) {
+          var _id = mic.id;
+          var _content = mic.content;
+          var user_id = mic.user_id;
+          var picture = mic.picture;
+          var icon = mic.icon;
+          var user_name = mic.user_name;
+          var created_at = mic.created_at;
+          var dotId = mic.dotId;
+          var dots_num = mic.dots_num;
+          var comment_num = mic.comment_num;
+          String sql =
+              " REPLACE INTO '$tab_name'"
+              "(id,content,user_id,picture,icon,user_name,created_at,dotId,dots_num,comment_num)"
+              " VALUES('$_id','$_content','$user_id','$picture','$icon','$user_name','$created_at','$dotId','$dots_num','$comment_num')";
+          await txn.rawInsert(sql);
+        }
       });
-    }
+
     await db.close();
   }
 
@@ -110,16 +123,6 @@ class MicropostProvider {
     }).toList();
   }
 
-  Future<Micropost> getMicropost(int id) async {
-    List<Map> maps = await db.query(tableTodo,
-        columns: [columnId, columnContent],
-        where: "$columnId = ?",
-        whereArgs: [id]);
-    if (maps.length > 0) {
-      return new Micropost.fromMap(maps.first);
-    }
-    return null;
-  }
 
   Future<int> delete(int id) async {
     return await db.delete(tableTodo, where: "$columnId = ?", whereArgs: [id]);

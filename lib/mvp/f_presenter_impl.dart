@@ -24,16 +24,19 @@ class FeedPresenterImpl extends FeedIPresenter implements NetworkBoundResource<L
 
   @override
   void loadForEmpty() {
+    print('FeedPresenterImpl loadFLFail');
     feedIView.onloadFLFail();
   }
 
   @override
   void loadForNet(List<Micropost> t) {
+    print('FeedPresenterImpl loadForNet');
     feedIView.onloadFLSuc(t);
   }
 
   @override
   void loadForDB(List<Micropost> t) {
+    print('FeedPresenterImpl loadForDB');
     feedIView.onloadFLSuc(t);
   }
 

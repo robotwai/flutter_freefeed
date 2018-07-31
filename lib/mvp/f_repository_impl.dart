@@ -17,15 +17,21 @@ class FeedRepositoryImpl implements FeedRepository{
 
   @override
   void start(String token, int pageNum) {
+    loadDB(pageNum);
+    loadForNetWork(token,pageNum).then((onValue){
+//      n.loadForNet(onValue);
+      print('loadForNetWork success');
+      new Future(() => MicropostProvider.origin.insertAll(onValue))
+        .then((v) => loadDB(pageNum));
+    });
+  }
+
+  void loadDB(int pageNum){
     loadForDB(pageNum).then((onValue){
+      print('loadForDB success');
       n.loadForDB(onValue);
     }).catchError((onError){
-      n.loadForEmpty();
-    });
-    loadForNetWork(token,pageNum).then((onValue){
-      n.loadForNet(onValue);
-      MicropostProvider.origin.insertAll(onValue);
-    }).catchError((onError){
+      print('loadForDB loadForEmpty');
       n.loadForEmpty();
     });
   }

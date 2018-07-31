@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_app/db_helper.dart';
+
 class FeedPage extends StatefulWidget {
   FeedPage({Key key, this.title}) : super(key: key);
 
@@ -23,7 +24,7 @@ class FeedPage extends StatefulWidget {
   final String title;
 
   @override
-  MyFeedPageState createState(){
+  MyFeedPageState createState() {
     MyFeedPageState myFeedPageState = new MyFeedPageState();
     FeedIPresenter presenter = new FeedPresenterImpl(myFeedPageState);
     presenter.init();
@@ -31,13 +32,18 @@ class FeedPage extends StatefulWidget {
   }
 }
 
-class MyFeedPageState extends State<FeedPage> implements FeedIView{
+class MyFeedPageState extends State<FeedPage> implements FeedIView {
   List<Micropost> datas = [];
 
   final TextStyle _biggerFont = new TextStyle(fontSize: 18.0);
 
   FeedIPresenter _presenter;
   String token;
+
+  ScrollController _scrollController;
+
+  int curPageNum = 1;
+  bool isFullLoad = false;
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -48,14 +54,31 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView{
     );
   }
 
+  void _scrollListener() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      if (!isFullLoad) {
+        _loadData();
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
 
-    CommonSP.getAccount().then((onValue){
+    CommonSP.getAccount().then((onValue) {
       token = onValue.token;
       _refreshData();
     });
+
+    _scrollController = new ScrollController()..addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.removeListener(_scrollListener);
   }
 
   Widget _buildSuggestions() {
@@ -67,12 +90,12 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView{
       content = new ListView.builder(
         physics: AlwaysScrollableScrollPhysics(),
         itemCount: datas.length,
+        controller: _scrollController,
         itemBuilder: _buildRow,
       );
     }
 
     var _refreshIndicator = new RefreshIndicator(
-
       onRefresh: _refreshData,
       child: content,
     );
@@ -81,46 +104,106 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView{
   }
 
   Future<Null> _refreshData() {
-
     final Completer<Null> completer = new Completer<Null>();
 
-    datas.clear();
-    _presenter.loadAIData(token, 1, 1);
+    curPageNum = 1;
+    _presenter.loadAIData(token, curPageNum, 1);
     setState(() {});
 
     completer.complete(null);
 
     return completer.future;
   }
-  void onloadFLSuc(List<Micropost> list){
-      setState(() {
-        print('onloadFLSuc');
-        datas.addAll(list);
-      });
 
+  Future<Null> _loadData() {
+    final Completer<Null> completer = new Completer<Null>();
+
+    curPageNum = curPageNum + 1;
+
+    _presenter.loadAIData(token, curPageNum, 1);
+
+    setState(() {});
+
+    completer.complete(null);
+
+    return completer.future;
   }
 
-  void onloadFLFail(){
+  void onloadFLSuc(List<Micropost> list) {
+    if (list.length < 30) {
+      isFullLoad = true;
+    } else {
+      isFullLoad = false;
+    }
     setState(() {
-
-      print('onloadFLFail');
-
+      print('onloadFLSuc');
+      addAndRemoveDuplicate(list);
+//        List<Micropost> list1 =pastLeep1(datas);
+//        datas.clear();
+//        datas.addAll(list1);
     });
+  }
 
+  void addAndRemoveDuplicate(List<Micropost> list) {
+    for (Micropost micropost in list) {
+      for (Micropost mic in datas) {
+        if (mic.id == micropost.id) {
+          datas.remove(mic);
+          break;
+        }
+      }
+    }
+    datas.addAll(list);
+    datas.sort((a, b) => b.id.compareTo(a.id));
+  }
+
+  void onloadFLFail() {
+    setState(() {
+      print('onloadFLFail');
+    });
   }
 
   @override
-  setPresenter(FeedIPresenter presenter){
+  setPresenter(FeedIPresenter presenter) {
     _presenter = presenter;
   }
 
   Widget _buildRow(BuildContext context, int index) {
     final Micropost item = datas[index];
     return new ListTile(
-      title: new Text(
-        item.content,
-        style: _biggerFont,
+        title: new Container(
+      padding: const EdgeInsets.all(32.0),
+      child: new Row(
+        children: [
+          new Expanded(
+            child: new Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                new Container(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: new Text(
+                    item.user_name,
+                    style: new TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                new Text(
+                  item.content,
+                  style: new TextStyle(
+                    color: Colors.grey[500],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          new Icon(
+            Icons.star,
+            color: Colors.red[500],
+          ),
+          new Text('1'),
+        ],
       ),
-    );
+    ));
   }
 }
