@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/sp_local.dart';
+import 'package:flutter_app/db_helper.dart';
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
@@ -30,6 +31,13 @@ class _MyHomePageState extends State<MyHomePage> {
       // called again, and so nothing would appear to happen.
       _counter++;
     });
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    MicropostProvider.origin;
   }
 
   @override
