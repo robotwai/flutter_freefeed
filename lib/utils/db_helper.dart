@@ -5,7 +5,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_app/model/feed_model.dart';
-import 'package:flutter_app/sp_local.dart';
+import 'package:flutter_app/utils/sp_local.dart';
 
 final String tableTodo = "micropost_table";
 final String columnId = "id";

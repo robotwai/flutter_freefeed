@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/sp_local.dart';
-import 'package:flutter_app/db_helper.dart';
+import 'package:flutter_app/utils/sp_local.dart';
+import 'package:flutter_app/utils/db_helper.dart';
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 

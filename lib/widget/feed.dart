@@ -3,11 +3,13 @@ import 'package:flutter_app/model/account_model.dart';
 import 'package:flutter_app/model/feed_model.dart';
 import 'package:flutter_app/mvp/f_presenter.dart';
 import 'package:flutter_app/mvp/f_presenter_impl.dart';
-import 'package:flutter_app/sp_local.dart';
+import 'package:flutter_app/utils/sp_local.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter_app/db_helper.dart';
+import 'package:flutter_app/utils/db_helper.dart';
+import 'package:flutter_app/utils/constant.dart';
+import 'package:flutter_app/utils/time_utils.dart';
 
 class FeedPage extends StatefulWidget {
   FeedPage({Key key, this.title}) : super(key: key);
@@ -170,40 +172,68 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
 
   Widget _buildRow(BuildContext context, int index) {
     final Micropost item = datas[index];
+    bool hasPic = !(item.picture == 'null');
+    if (hasPic) {
+      print(Constant.baseUrl + item.picture);
+    }
     return new ListTile(
         title: new Container(
-      padding: const EdgeInsets.all(32.0),
-      child: new Row(
+      padding: const EdgeInsets.all(12.0),
+      child: new Column(
         children: [
-          new Expanded(
-            child: new Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                new Container(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: new Text(
-                    item.user_name,
-                    style: new TextStyle(
-                      fontWeight: FontWeight.bold,
+          new Row(
+            children: <Widget>[
+              new ClipOval(
+                child: new FadeInImage.assetNetwork(
+                  placeholder: "images/shutter.png", //预览图
+                  fit: BoxFit.fitWidth,
+                  image: Constant.baseUrl + item.icon,
+                  width: 60.0,
+                  height: 60.0,
+                ),
+              ),
+              new Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  new Container(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: new Text(
+                      item.user_name,
+                      style: new TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF003472),
+                      ),
                     ),
                   ),
-                ),
-                new Text(
-                  item.content,
-                  style: new TextStyle(
-                    color: Colors.grey[500],
+                  new Text(
+                    TimeUtils.CalculateTime(item.created_at),
+                    style: new TextStyle(
+                      color: Color(0xFF50616D),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
+            ],
+          ),
+          new Text(
+            item.content,
+            style: new TextStyle(
+              color: Color(0xFF000000),
             ),
           ),
-          new Icon(
-            Icons.star,
-            color: Colors.red[500],
+          new Container(
+            child: _getImageChild(hasPic, item.picture),
           ),
-          new Text('1'),
         ],
       ),
     ));
+  }
+
+  _getImageChild(bool hasPic, String url) {
+    if (hasPic) {
+      return new Image.network(Constant.baseUrl + url);
+    } else {
+      return new Container();
+    }
   }
 }

@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
-import 'package:flutter_app/widget/constant.dart';
+import 'package:flutter_app/utils/constant.dart';
 import 'package:flutter_app/model/feed_model.dart';
-import 'package:flutter_app/sp_local.dart';
+import 'package:flutter_app/utils/sp_local.dart';
 class FFHttpUtils {
   static final FFHttpUtils origin =  FFHttpUtils(new HttpClient());
 
@@ -12,7 +12,7 @@ class FFHttpUtils {
 
   Future<List<Micropost>> getFeed(Map<String, String> options) async{
     var uri = new Uri.http(
-        Constant.baseUrl, '/app/feed',
+        Constant.baseUrlNoHttp, '/app/feed',
         options);
     List flModels=[];
     try {

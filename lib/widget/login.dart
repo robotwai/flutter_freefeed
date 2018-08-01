@@ -5,8 +5,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/main.dart';
 import 'package:flutter_app/model/account_model.dart';
-import 'package:flutter_app/sp_local.dart';
-import 'constant.dart';
+import 'package:flutter_app/utils/sp_local.dart';
+import 'package:flutter_app/utils/constant.dart';
 class LoginPage extends StatefulWidget{
 
   @override
@@ -89,7 +89,7 @@ class _LoginState extends State<LoginPage>{
 
       try {
         var uri = new Uri.http(
-            Constant.baseUrl, '/app/loggin',
+            Constant.baseUrlNoHttp, '/app/loggin',
             {'email': '$_email', 'password': '$_password'});
         var request = await httpClient.postUrl(uri);
         var response = await request.close();

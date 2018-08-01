@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter_app/model/feed_model.dart';
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter_app/sp_local.dart';
+import 'package:flutter_app/utils/sp_local.dart';
 import 'package:flutter_app/model/account_model.dart';
-import 'package:flutter_app/widget/constant.dart';
+import 'package:flutter_app/utils/constant.dart';
 import 'package:flutter_app/network/common_http_client.dart';
-import 'package:flutter_app/db_helper.dart';
+import 'package:flutter_app/utils/db_helper.dart';
 class FeedRepositoryImpl implements FeedRepository{
 
   NetworkBoundResource n;
