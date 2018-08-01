@@ -10,6 +10,7 @@ import 'dart:io';
 import 'package:flutter_app/utils/db_helper.dart';
 import 'package:flutter_app/utils/constant.dart';
 import 'package:flutter_app/utils/time_utils.dart';
+import 'package:flutter_app/widget/multi_touch_page.dart';
 
 class FeedPage extends StatefulWidget {
   FeedPage({Key key, this.title}) : super(key: key);
@@ -172,10 +173,6 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
 
   Widget _buildRow(BuildContext context, int index) {
     final Micropost item = datas[index];
-    bool hasPic = !(item.picture == 'null');
-    if (hasPic) {
-      print(Constant.baseUrl + item.picture);
-    }
     return new ListTile(
         title: new Container(
       padding: const EdgeInsets.all(12.0),
@@ -221,19 +218,85 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
               color: Color(0xFF000000),
             ),
           ),
-          new Container(
-            child: _getImageChild(hasPic, item.picture),
+          new GestureDetector(
+            onTap: (){
+              _goPhotoView(item.picture);
+            },
+            child: new Card(
+              child: _getImageChild(item.picture),
+            ),
+          ),
+          new Row(
+            children: <Widget>[
+              new Expanded(
+                    child: new ListTile(
+                    leading: Image.asset(
+                      'images/dianzan.png',
+                      width: 15.0,
+                      height: 15.0,
+                    ),
+                    title: new Text('5'),
+                  )),
+              new Expanded(
+                  child: new ListTile(
+                    leading: Image.asset(
+                      'images/pinglun.png',
+                      width: 15.0,
+                      height: 15.0,
+                    ),
+                    title: new Text('5'),
+                  )),new Expanded(
+                  child: new ListTile(
+                    leading: Image.asset(
+                      'images/zhuanfa.png',
+                      width: 15.0,
+                      height: 15.0,
+                    ),
+                    title: new Text('5'),
+                  )),
+            ],
           ),
         ],
       ),
     ));
   }
 
-  _getImageChild(bool hasPic, String url) {
-    if (hasPic) {
-      return new Image.network(Constant.baseUrl + url);
-    } else {
+  _getImageChild(String url) {
+    if((Constant.baseUrl + url).contains('null')){
       return new Container();
+    }{
+      return new Image.network(Constant.baseUrl + url);
     }
+
+  }
+
+  _getBottomView(Micropost item){
+    return new Row(
+      children: <Widget>[
+        new Text('点赞'),
+        new Text('评论'),
+        new Text('分享'),
+      ],
+    );
+  }
+
+  void _goPhotoView(String url) {
+    if((Constant.baseUrl + url).contains('null')){
+      return;
+    }
+    Navigator.of(context).push(new PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (BuildContext context, _, __) {
+          return new MultiTouchPage(Constant.baseUrl + url);
+        },
+        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+          return new FadeTransition(
+            opacity: animation,
+            child: new RotationTransition(
+              turns: new Tween<double>(begin: 0.5, end: 1.0).animate(animation),
+              child: child,
+            ),
+          );
+        }));
   }
 }

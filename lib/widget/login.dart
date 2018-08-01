@@ -23,6 +23,7 @@ class _LoginState extends State<LoginPage>{
   String _password;
   @override
   Widget build(BuildContext context) {
+    var node = new FocusNode();
     return new Scaffold(
       appBar: new AppBar(
         title: new Text("Login"),
@@ -36,36 +37,62 @@ class _LoginState extends State<LoginPage>{
           key: formKey,
           child: new Column(
             children: <Widget>[
-              TextFormField(
-                autocorrect: false,
+              new TextField(
+                onChanged: (str) {
+                  _email = str;
+                  print(_email);
+                },
                 decoration: new InputDecoration(
+                  labelText: '用户名',
                   hintText: '请输入邮箱',
                 ),
                 maxLines: 1,
-                //键盘展示为号码
-                keyboardType: TextInputType.emailAddress,
-                validator: (str) {
-                  return str.isEmpty?"邮箱不能为空":null;
-                },
-                onSaved: (str) {
-                  _email = str;
+                onSubmitted: (text) {
+                  FocusScope.of(context).reparentIfNeeded(node);
                 },
               ),
-              TextFormField(
-                autocorrect: false,
-                decoration: new InputDecoration(
-                  hintText: '请输入密码',
-                ),
+              new TextField(
+                onChanged: (text) {
+                  _password = text;
+                  print(_password);
+                },
+                obscureText: true,
                 maxLines: 1,
-                //键盘展示为号码
-                keyboardType: TextInputType.number,
-                validator: (str) {
-                  return str.isEmpty?"密码不能为空":null;
-                },
-                onSaved: (str) {
-                  _password = str;
-                },
+                decoration:
+                new InputDecoration(hintText: '请输入长度大于6的密码', labelText: '密码'),
+                keyboardType: TextInputType.text,
+                onSubmitted: (text) {},
               ),
+//              TextFormField(
+//                autocorrect: false,
+//                decoration: new InputDecoration(
+//                  hintText: '请输入邮箱',
+//                ),
+//                maxLines: 1,
+//                //键盘展示为号码
+//                keyboardType: TextInputType.emailAddress,
+//                validator: (str) {
+//                  return str.isEmpty?"邮箱不能为空":null;
+//                },
+//                onSaved: (str) {
+//                  _email = str;
+//                },
+//              ),
+//              TextFormField(
+//                autocorrect: false,
+//                decoration: new InputDecoration(
+//                  hintText: '请输入密码',
+//                ),
+//                maxLines: 1,
+//                //键盘展示为号码
+//                keyboardType: TextInputType.number,
+//                validator: (str) {
+//                  return str.isEmpty?"密码不能为空":null;
+//                },
+//                onSaved: (str) {
+//                  _password = str;
+//                },
+//              ),
               RaisedButton(
                 child: Text( "登陆"),
                 onPressed: onPressed,

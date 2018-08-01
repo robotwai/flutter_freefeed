@@ -67,13 +67,13 @@ class MicropostProvider {
 
   insertAll(List<Micropost> todo) async {
     CommonSP.getDBPath().then((path) {
-      print(path);
+//      print(path);
       realInsert(todo, path);
     });
   }
 
   realInsert(List<Micropost> list, String d_path) async {
-    print('dbPath' + d_path);
+//    print('dbPath' + d_path);
     Database db = await openDatabase(d_path);
 
       await db.transaction((txn) async {
@@ -103,7 +103,7 @@ class MicropostProvider {
   Future<List<Micropost>> getList(int page) async {
     var _path;
     return CommonSP.getDBPath().then((path) {
-      print(path);
+//      print(path);
       _path = path;
       return realgetList(page,_path);
     });
