@@ -7,7 +7,7 @@ class Micropost{
   String icon;
   String user_name;
   String created_at;
-  String dotId;
+  int dotId;
   int dots_num;
   int comment_num;
 
@@ -24,7 +24,7 @@ class Micropost{
         picture=json['picture'],
         user_name=json['user_name'],
         created_at=json['created_at'],
-        dotId='1',
+        dotId=json['dotId'],
         dots_num=json['dots_num'],
         comment_num=json['comment_num'],
         id = json['id']

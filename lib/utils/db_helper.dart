@@ -63,7 +63,7 @@ class MicropostProvider {
 
   String sql_createTable =
       "CREATE TABLE '$tab_name' (id INTEGER PRIMARY KEY, content TEXT,user_id INTEGER,picture TEXT,"
-      "icon TEXT,user_name TEXT,created_at TEXT,dotId TEXT,dots_num INTEGER,comment_num INTEGER)";
+      "icon TEXT,user_name TEXT,created_at TEXT,dotId INTEGER,dots_num INTEGER,comment_num INTEGER)";
 
   insertAll(List<Micropost> todo) async {
     CommonSP.getDBPath().then((path) {
@@ -76,44 +76,86 @@ class MicropostProvider {
 //    print('dbPath' + d_path);
     Database db = await openDatabase(d_path);
 
-      await db.transaction((txn) async {
-        for (var mic in list) {
-          var _id = mic.id;
-          var _content = mic.content;
-          var user_id = mic.user_id;
-          var picture = mic.picture;
-          var icon = mic.icon;
-          var user_name = mic.user_name;
-          var created_at = mic.created_at;
-          var dotId = mic.dotId;
-          var dots_num = mic.dots_num;
-          var comment_num = mic.comment_num;
-          String sql =
-              " REPLACE INTO '$tab_name'"
-              "(id,content,user_id,picture,icon,user_name,created_at,dotId,dots_num,comment_num)"
-              " VALUES('$_id','$_content','$user_id','$picture','$icon','$user_name','$created_at','$dotId','$dots_num','$comment_num')";
-          await txn.rawInsert(sql);
-        }
-      });
+    await db.transaction((txn) async {
+      for (var mic in list) {
+        var _id = mic.id;
+        var _content = mic.content;
+        var user_id = mic.user_id;
+        var picture = mic.picture;
+        var icon = mic.icon;
+        var user_name = mic.user_name;
+        var created_at = mic.created_at;
+        var dotId = mic.dotId;
+        var dots_num = mic.dots_num;
+        var comment_num = mic.comment_num;
+        String sql = " REPLACE INTO '$tab_name'"
+            "(id,content,user_id,picture,icon,user_name,created_at,dotId,dots_num,comment_num)"
+            " VALUES('$_id','$_content','$user_id','$picture','$icon','$user_name','$created_at','$dotId','$dots_num','$comment_num')";
+        await txn.rawInsert(sql);
+      }
+    });
 
     await db.close();
   }
 
+  Future<List<Micropost>> getListAndInsertAll(List<Micropost> todo, int page) {
+    return CommonSP.getDBPath().then((path) {
+//      print(path);
+      return getAndInsert(todo, path, page);
+    });
+  }
+
+  Future<List<Micropost>> getAndInsert(
+      List<Micropost> list, String path, int page) async {
+    Database db = await openDatabase(path);
+
+    await db.transaction((txn) async {
+      for (var mic in list) {
+        var _id = mic.id;
+        var _content = mic.content;
+        var user_id = mic.user_id;
+        var picture = mic.picture;
+        var icon = mic.icon;
+        var user_name = mic.user_name;
+        var created_at = mic.created_at;
+        var dotId = mic.dotId;
+        var dots_num = mic.dots_num;
+        var comment_num = mic.comment_num;
+        String sql = " REPLACE INTO '$tab_name'"
+            "(id,content,user_id,picture,icon,user_name,created_at,dotId,dots_num,comment_num)"
+            " VALUES('$_id','$_content','$user_id','$picture','$icon','$user_name','$created_at','$dotId','$dots_num','$comment_num')";
+        await txn.rawInsert(sql);
+      }
+    });
+
+    int end = page * 30;
+    int start = (end - 30) > 0 ? (end - 30) : 0;
+    String sql_query =
+        "SELECT * FROM '$tab_name' ORDER BY id DESC LIMIT '$start','$end'";
+    print(sql_query);
+    List<Map> result = await db.rawQuery(sql_query);
+    print(result);
+    await db.close();
+    return result.map((model) {
+      return new Micropost.fromJson(model);
+    }).toList();
+  }
 
   Future<List<Micropost>> getList(int page) async {
     var _path;
     return CommonSP.getDBPath().then((path) {
 //      print(path);
       _path = path;
-      return realgetList(page,_path);
+      return realgetList(page, _path);
     });
   }
 
-  Future<List<Micropost>> realgetList(int page,String d_path) async {
+  Future<List<Micropost>> realgetList(int page, String d_path) async {
     Database db = await openDatabase(d_path);
-    int end = page*30;
-    int start = (end-30)>0?(end-30):0;
-    String sql_query = "SELECT * FROM '$tab_name' ORDER BY id DESC LIMIT '$start','$end'";
+    int end = page * 30;
+    int start = (end - 30) > 0 ? (end - 30) : 0;
+    String sql_query =
+        "SELECT * FROM '$tab_name' ORDER BY id DESC LIMIT '$start','$end'";
     print(sql_query);
     List<Map> list = await db.rawQuery(sql_query);
     print(list);
@@ -122,7 +164,6 @@ class MicropostProvider {
       return new Micropost.fromJson(model);
     }).toList();
   }
-
 
   Future<int> delete(int id) async {
     return await db.delete(tableTodo, where: "$columnId = ?", whereArgs: [id]);

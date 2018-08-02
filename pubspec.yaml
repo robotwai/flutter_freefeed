@@ -36,6 +36,7 @@ flutter:
    -  images/pinglun.png
    -  images/yizan.png
    -  images/zhuanfa.png
+   -  images/lz_splash.png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #  - images/a_dot_burr.jpeg

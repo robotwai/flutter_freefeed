@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/utils/sp_local.dart';
 import 'package:flutter_app/utils/db_helper.dart';
+import 'package:flutter_app/widget/feed.dart';
+import 'package:flutter_app/model/account_model.dart';
+import 'package:flutter_app/utils/constant.dart';
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
@@ -21,7 +24,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-
+  Account account;
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -37,7 +40,11 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    MicropostProvider.origin;
+    CommonSP.getAccount().then((onValue){
+      setState(() {
+        account = onValue;
+      });
+    });
   }
 
   @override
@@ -55,52 +62,11 @@ class _MyHomePageState extends State<MyHomePage> {
         title: new Text(widget.title),
       ),
       drawer: new Container(
-        color: new Color(0xFFFF00FF),
-        width: 200.0,
-        child: new DrawLeftPage(),
+        color: Color(0xFFFFFFFF),
+        width: 250.0,
+        child: new DrawLeftPage(account),
       ),
-      body: new Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: new Column(
-          // Column is also layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug paint" (press "p" in the console where you ran
-          // "flutter run", or select "Toggle Debug Paint" from the Flutter tool
-          // window in IntelliJ) to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            new Text(
-              'You have pushed the button this many times:',
-            ),
-        new GestureDetector(
-          child:new Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          onTap: (){
-            CommonSP.getAccount().then((onValue){
-              if(onValue!=null &&onValue.token!=null){
-                Navigator.of(context).pushNamed('/b');
-              }else{
-                Navigator.of(context).pushNamed('/c');
-              }
-            }
-            );
-          },
-        ),
-
-          ],
-        ),
-      ),
+      body: new FeedPage(),
       floatingActionButton: new FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
@@ -112,16 +78,58 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class DrawLeftPage extends StatelessWidget{
 
-
+  Account account;
   @override
   Widget build(BuildContext context) {
-    return new ListView(
-      children: <Widget>[
-        new ImageTitle(1, 2, 3, "4")
-      ],
+    return new Container(
+      child: new Column(
+        children: <Widget>[
+          new Container(
+            child: new Center(
+              child: new ClipOval(
+                child: new FadeInImage.assetNetwork(
+                  placeholder: "images/shutter.png", //预览图
+                  fit: BoxFit.fitWidth,
+                  image: Constant.baseUrl + account.icon,
+                  width: 80.0,
+                  height: 80.0,
+                ),
+              ),
+            ),
+            width: 250.0,
+            margin: const EdgeInsets.only(top: 40.0),
+            padding: const EdgeInsets.only(top: 14.0,bottom: 6.0),
 
+          ),
+          new Container(
+            child: new Center(
+              child: Text(account.name,
+                style: new TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF003472),
+                ),),
+            ),
+            width: 250.0,
+            padding: const EdgeInsets.only(top: 8.0),
+          ),
+          new Container(
+            child: new Center(
+              child: Text(account.email,
+                style: new TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF003472),
+                ),),
+            ),
+            width: 250.0,
+            padding: const EdgeInsets.only(top: 14.0),
+          ),
+
+        ],
+      ),
     );
   }
+
+  DrawLeftPage(this.account);
 }
 
 

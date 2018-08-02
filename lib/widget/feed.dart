@@ -49,12 +49,8 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
   bool isFullLoad = false;
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('the Feed'),
-      ),
-      body: _buildSuggestions(),
-    );
+    return  _buildSuggestions();
+
   }
 
   void _scrollListener() {
@@ -173,21 +169,24 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
 
   Widget _buildRow(BuildContext context, int index) {
     final Micropost item = datas[index];
-    return new ListTile(
-        title: new Container(
-      padding: const EdgeInsets.all(12.0),
+    return new Card(
+      margin: const EdgeInsets.all(10.0),
       child: new Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           new Row(
             children: <Widget>[
-              new ClipOval(
-                child: new FadeInImage.assetNetwork(
-                  placeholder: "images/shutter.png", //预览图
-                  fit: BoxFit.fitWidth,
-                  image: Constant.baseUrl + item.icon,
-                  width: 60.0,
-                  height: 60.0,
+              new Container(
+                child: new ClipOval(
+                  child: new FadeInImage.assetNetwork(
+                    placeholder: "images/shutter.png", //预览图
+                    fit: BoxFit.fitWidth,
+                    image: Constant.baseUrl + item.icon,
+                    width: 60.0,
+                    height: 60.0,
+                  ),
                 ),
+                margin: const EdgeInsets.all(12.0),
               ),
               new Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -212,76 +211,114 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
               ),
             ],
           ),
-          new Text(
-            item.content,
-            style: new TextStyle(
-              color: Color(0xFF000000),
+          new Container(
+            child: new Text(
+              item.content,
+              style: new TextStyle(
+                color: Color(0xFF000000),
+                fontSize: 16.0,
+              ),
+            ),
+            margin: const EdgeInsets.all(12.0),
+          ),
+          new Center(
+            child: new GestureDetector(
+              onTap: () {
+                _goPhotoView(item.picture);
+              },
+              child: new Card(
+                child: _getImageChild(item.picture),
+              ),
             ),
           ),
-          new GestureDetector(
-            onTap: (){
-              _goPhotoView(item.picture);
-            },
-            child: new Card(
-              child: _getImageChild(item.picture),
+          new Container(
+            child: new Divider(
+              height: 1.0,
+              color: Color(0xFFe0e0e0),
             ),
+            margin: const EdgeInsets.only(top: 8.0),
+            padding: const EdgeInsets.only(left: 16.0,right: 16.0),
           ),
-          new Row(
-            children: <Widget>[
-              new Expanded(
-                    child: new ListTile(
-                    leading: Image.asset(
-                      'images/dianzan.png',
-                      width: 15.0,
-                      height: 15.0,
-                    ),
-                    title: new Text('5'),
-                  )),
-              new Expanded(
-                  child: new ListTile(
-                    leading: Image.asset(
-                      'images/pinglun.png',
-                      width: 15.0,
-                      height: 15.0,
-                    ),
-                    title: new Text('5'),
-                  )),new Expanded(
-                  child: new ListTile(
-                    leading: Image.asset(
-                      'images/zhuanfa.png',
-                      width: 15.0,
-                      height: 15.0,
-                    ),
-                    title: new Text('5'),
-                  )),
-            ],
-          ),
+
+          _getBottomView(item),
         ],
       ),
-    ));
+    );
   }
 
   _getImageChild(String url) {
-    if((Constant.baseUrl + url).contains('null')){
+    if ((Constant.baseUrl + url).contains('null')) {
       return new Container();
-    }{
+    }
+    {
       return new Image.network(Constant.baseUrl + url);
     }
-
   }
 
-  _getBottomView(Micropost item){
-    return new Row(
-      children: <Widget>[
-        new Text('点赞'),
-        new Text('评论'),
-        new Text('分享'),
-      ],
+  _getBottomView(Micropost item) {
+    bool yizan = item.dotId > 0;
+    int zanNum = item.dots_num;
+    int commitNum = item.comment_num;
+    int zhuanfaNum = 123;
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      child: new Row(
+        children: <Widget>[
+          new Expanded(
+            child: new Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Image.asset(
+                  yizan ? 'images/yizan.png' : 'images/dianzan.png',
+                  width: 15.0,
+                  height: 15.0,
+                ),
+                new Container(
+                  child: new Text('$zanNum'),
+                  margin: const EdgeInsets.only(left: 4.0),
+                )
+              ],
+            ),
+          ),
+          new Expanded(
+            child: new Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Image.asset(
+                  'images/pinglun.png',
+                  width: 15.0,
+                  height: 15.0,
+                ),
+                new Container(
+                  child: new Text('$commitNum'),
+                  margin: const EdgeInsets.only(left: 4.0),
+                )
+              ],
+            ),
+          ),
+          new Expanded(
+            child: new Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Image.asset(
+                  'images/zhuanfa.png',
+                  width: 15.0,
+                  height: 15.0,
+                ),
+                new Container(
+                  child: new Text('$zhuanfaNum'),
+                  margin: const EdgeInsets.only(left: 4.0),
+                )
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   void _goPhotoView(String url) {
-    if((Constant.baseUrl + url).contains('null')){
+    if ((Constant.baseUrl + url).contains('null')) {
       return;
     }
     Navigator.of(context).push(new PageRouteBuilder(

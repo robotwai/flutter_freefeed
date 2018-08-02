@@ -21,8 +21,11 @@ class FeedRepositoryImpl implements FeedRepository{
     loadForNetWork(token,pageNum).then((onValue){
 //      n.loadForNet(onValue);
       print('loadForNetWork success');
-      new Future(() => MicropostProvider.origin.insertAll(onValue))
-        .then((v) => loadDB(pageNum));
+//      new Future(() => MicropostProvider.origin.insertAll(onValue))
+//        .then((v) => loadDB(pageNum));
+      MicropostProvider.origin.getListAndInsertAll(onValue,  pageNum).then((onValue){
+        n.loadForDB(onValue);
+      });
     });
   }
 
@@ -31,6 +34,7 @@ class FeedRepositoryImpl implements FeedRepository{
       print('loadForDB success');
       n.loadForDB(onValue);
     }).catchError((onError){
+      print(onError.toString());
       print('loadForDB loadForEmpty');
       n.loadForEmpty();
     });
