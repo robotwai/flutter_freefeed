@@ -129,7 +129,7 @@ class _LoginState extends State<LoginPage>{
           Account user = new Account.fromJson(userMap);
           CommonSP.saveAccount(JSON.encode(user));
           print(user.email);
-          Navigator.of(context).pushNamed('/b');
+          Navigator.of(context).pop();
         } else {
           print(response.statusCode);
         }

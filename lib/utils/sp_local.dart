@@ -13,7 +13,7 @@ class CommonSP{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var json =prefs.getString('account');
     if(json==null||json.isEmpty){
-      return null;
+      return new Account('0', 'xxxx@xxx.com', '游客', '', null);
     }
     Map userMap = JSON.decode(json);
     Account user = new Account.fromJson(userMap);

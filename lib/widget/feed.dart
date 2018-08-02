@@ -11,6 +11,9 @@ import 'package:flutter_app/utils/db_helper.dart';
 import 'package:flutter_app/utils/constant.dart';
 import 'package:flutter_app/utils/time_utils.dart';
 import 'package:flutter_app/widget/multi_touch_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'dart:async';
 
 class FeedPage extends StatefulWidget {
   FeedPage({Key key, this.title}) : super(key: key);
@@ -66,12 +69,29 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
   void initState() {
     super.initState();
 
-    CommonSP.getAccount().then((onValue) {
-      token = onValue.token;
+//    CommonSP.getAccount().then((onValue) {
+//      token = onValue.token;
+//      MicropostProvider.origin;
+////      _refreshData();
+//    });
+//    new Future(() => MicropostProvider.origin.init())
+//        .then((v) => initToken());
+
+    MicropostProvider.origin.initAA().then((onValue){
       _refreshData();
     });
-
+//    new Future().then(onValue)
+//    MicropostProvider.origin.init().then((t){
+//      initToken();
+//    });
+//    new Future.then(MicropostProvider.origin.init()).then(initToken());
+//    new Future().then(MicropostProvider.origin.init()).then((_) {
+//      new Future(initToken())});
     _scrollController = new ScrollController()..addListener(_scrollListener);
+  }
+  void initToken() async{
+
+
   }
 
   @override

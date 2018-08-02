@@ -4,7 +4,8 @@ import 'package:flutter_app/widget/home.dart';
 import 'package:flutter_app/widget/feed.dart';
 import 'package:flutter_app/utils/db_helper.dart';
 import 'dart:async';
-void main() => runApp(new MyApp());
+void main() => runApp(
+    new MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
         // counter didn't reset back to zero; the application is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: new SplashPage(title: 'Flutter'),
+      home: new MyHomePage(title: 'Flutter'),
       routes: <String, WidgetBuilder> {
         '/a': (BuildContext context) => new MyHomePage(title: 'Free Feed'),
         '/b': (BuildContext context) => new FeedPage(title: 'the Feed'),
@@ -59,7 +60,12 @@ class _SplashPageState extends State<SplashPage>{
     MicropostProvider.origin;
     new Future.delayed(const Duration(seconds:2), () {
       //任务具体代码
-      Navigator.of(context).pushNamed('/a');
+//      Navigator.of(context).pushNamed('/a');
+//    setState(() {
+      Navigator.of(context).popAndPushNamed('/a');
+//    });
+//      Navigator.of(context).pop();
+
     });
   }
 

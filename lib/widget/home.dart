@@ -4,6 +4,7 @@ import 'package:flutter_app/utils/db_helper.dart';
 import 'package:flutter_app/widget/feed.dart';
 import 'package:flutter_app/model/account_model.dart';
 import 'package:flutter_app/utils/constant.dart';
+
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
@@ -24,7 +25,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  Account account;
+  Account account=new Account('0', 'xx', 'xx', 'xx.png', 0);
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -36,11 +37,10 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-
   @override
   void initState() {
     super.initState();
-    CommonSP.getAccount().then((onValue){
+    CommonSP.getAccount().then((onValue) {
       setState(() {
         account = onValue;
       });
@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
       drawer: new Container(
         color: Color(0xFFFFFFFF),
         width: 250.0,
-        child: new DrawLeftPage(account),
+        child: getLeftPage(account),
       ),
       body: new FeedPage(),
       floatingActionButton: new FloatingActionButton(
@@ -74,72 +74,75 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-}
-
-class DrawLeftPage extends StatelessWidget{
-
-  Account account;
-  @override
-  Widget build(BuildContext context) {
+  
+  
+  Widget getLeftPage(Account a){
     return new Container(
       child: new Column(
         children: <Widget>[
-          new Container(
-            child: new Center(
-              child: new ClipOval(
-                child: new FadeInImage.assetNetwork(
-                  placeholder: "images/shutter.png", //预览图
-                  fit: BoxFit.fitWidth,
-                  image: Constant.baseUrl + account.icon,
-                  width: 80.0,
-                  height: 80.0,
+          new GestureDetector(
+            onTap: _tap_icon,
+            child: new Container(
+              child: new Center(
+                child: new ClipOval(
+                  child: new FadeInImage.assetNetwork(
+                    placeholder: "images/shutter.png", //预览图
+                    fit: BoxFit.fitWidth,
+                    image: Constant.baseUrl + account.icon==null?"":account.icon,
+                    width: 80.0,
+                    height: 80.0,
+                  ),
                 ),
               ),
+              width: 250.0,
+              margin: const EdgeInsets.only(top: 40.0),
+              padding: const EdgeInsets.only(top: 14.0, bottom: 6.0),
             ),
-            width: 250.0,
-            margin: const EdgeInsets.only(top: 40.0),
-            padding: const EdgeInsets.only(top: 14.0,bottom: 6.0),
-
           ),
           new Container(
             child: new Center(
-              child: Text(account.name,
+              child: Text(
+                account.name,
                 style: new TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF003472),
-                ),),
+                ),
+              ),
             ),
             width: 250.0,
             padding: const EdgeInsets.only(top: 8.0),
           ),
           new Container(
             child: new Center(
-              child: Text(account.email,
+              child: Text(
+                account.email,
                 style: new TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF003472),
-                ),),
+                ),
+              ),
             ),
             width: 250.0,
             padding: const EdgeInsets.only(top: 14.0),
           ),
-
         ],
       ),
     );
   }
 
-  DrawLeftPage(this.account);
+  void _tap_icon() {
+    if(account.token=='0'){
+      Navigator.of(context).pushNamed('/c');
+    }
+  }
 }
 
 
-class ImageTitle extends StatefulWidget{
-
+class ImageTitle extends StatefulWidget {
   int picNum;
   int followerNum;
   int followedNum;
   String name;
-
 
   ImageTitle(this.picNum, this.followerNum, this.followedNum, this.name);
 
@@ -149,9 +152,7 @@ class ImageTitle extends StatefulWidget{
   }
 }
 
-
-class ImageTitleState extends State<ImageTitle>{
-
+class ImageTitleState extends State<ImageTitle> {
   @override
   Widget build(BuildContext context) {
     widget.name;

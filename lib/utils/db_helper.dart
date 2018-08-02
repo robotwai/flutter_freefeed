@@ -6,6 +6,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_app/model/feed_model.dart';
 import 'package:flutter_app/utils/sp_local.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final String tableTodo = "micropost_table";
 final String columnId = "id";
@@ -19,7 +20,6 @@ class MicropostProvider {
   static String tab_name = 'micropost_table';
   MicropostProvider() {
     print('init provider');
-    init();
   }
 
   Future init() async {
@@ -31,6 +31,21 @@ class MicropostProvider {
         print('has');
       }
     });
+  }
+  Future initAA() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var json =prefs.getString('micropost_db_path');
+    if(json==null){
+      dbPath = await _createNewDb(dbName);
+      CommonSP.saveDBPath(dbPath);
+      Database db = await openDatabase(dbPath);
+
+      await db.execute(sql_createTable);
+      await db.close();
+      print('创建micropost.db成功，创建micropost_table成功');
+    }else{
+      print('has');
+    }
   }
 
   Future<String> _createNewDb(String dbName) async {
