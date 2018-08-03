@@ -63,36 +63,6 @@ class _LoginState extends State<LoginPage>{
                 keyboardType: TextInputType.text,
                 onSubmitted: (text) {},
               ),
-//              TextFormField(
-//                autocorrect: false,
-//                decoration: new InputDecoration(
-//                  hintText: '请输入邮箱',
-//                ),
-//                maxLines: 1,
-//                //键盘展示为号码
-//                keyboardType: TextInputType.emailAddress,
-//                validator: (str) {
-//                  return str.isEmpty?"邮箱不能为空":null;
-//                },
-//                onSaved: (str) {
-//                  _email = str;
-//                },
-//              ),
-//              TextFormField(
-//                autocorrect: false,
-//                decoration: new InputDecoration(
-//                  hintText: '请输入密码',
-//                ),
-//                maxLines: 1,
-//                //键盘展示为号码
-//                keyboardType: TextInputType.number,
-//                validator: (str) {
-//                  return str.isEmpty?"密码不能为空":null;
-//                },
-//                onSaved: (str) {
-//                  _password = str;
-//                },
-//              ),
               RaisedButton(
                 child: Text( "登陆"),
                 onPressed: onPressed,
@@ -129,7 +99,7 @@ class _LoginState extends State<LoginPage>{
           Account user = new Account.fromJson(userMap);
           CommonSP.saveAccount(JSON.encode(user));
           print(user.email);
-          Navigator.of(context).pop();
+          Navigator.of(context).pop(1);
         } else {
           print(response.statusCode);
         }

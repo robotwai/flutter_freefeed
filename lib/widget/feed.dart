@@ -78,7 +78,7 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
 //        .then((v) => initToken());
 
     MicropostProvider.origin.initAA().then((onValue){
-      _refreshData();
+      initToken();
     });
 //    new Future().then(onValue)
 //    MicropostProvider.origin.init().then((t){
@@ -90,7 +90,10 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
     _scrollController = new ScrollController()..addListener(_scrollListener);
   }
   void initToken() async{
-
+    CommonSP.getAccount().then((onValue){
+      token = onValue.token;
+      _refreshData();
+    });
 
   }
 

@@ -24,8 +24,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  Account account=new Account('0', 'xx', 'xx', 'xx.png', 0);
+
+  Account account;
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -33,7 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      _counter++;
+      Navigator.of(context).pushNamed('/d');
     });
   }
 
@@ -130,10 +130,23 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _tap_icon() {
+  void _tap_icon() async{
     if(account.token=='0'){
-      Navigator.of(context).pushNamed('/c');
+
+      Navigator.of(context).pushNamed('/c').then((value) {
+        if(value==1){
+          print('login success');
+          CommonSP.getAccount().then((onValue) {
+            setState(() {
+              account = onValue;
+            });
+          });
+        }
+      });
+
+
     }
+
   }
 }
 

@@ -22,21 +22,12 @@ class MicropostProvider {
     print('init provider');
   }
 
-  Future init() async {
-    CommonSP.getDBPath().then((path) {
-      if (path == null) {
-        print('no');
-        _create();
-      } else {
-        print('has');
-      }
-    });
-  }
   Future initAA() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var json =prefs.getString('micropost_db_path');
     if(json==null){
-      dbPath = await _createNewDb(dbName);
+      var databasesPath = await getDatabasesPath();
+      dbPath = join(databasesPath, dbName);
       CommonSP.saveDBPath(dbPath);
       Database db = await openDatabase(dbPath);
 
@@ -48,33 +39,6 @@ class MicropostProvider {
     }
   }
 
-  Future<String> _createNewDb(String dbName) async {
-    Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    print(documentsDirectory);
-
-    String path = join(documentsDirectory.path, dbName);
-
-    if (await new Directory(dirname(path)).exists()) {
-//      await deleteDatabase(path);
-    } else {
-      try {
-        await new Directory(dirname(path)).create(recursive: true);
-      } catch (e) {
-        print(e);
-      }
-    }
-    return path;
-  }
-
-  _create() async {
-    dbPath = await _createNewDb(dbName);
-    CommonSP.saveDBPath(dbPath);
-    Database db = await openDatabase(dbPath);
-
-    await db.execute(sql_createTable);
-    await db.close();
-    print('创建micropost.db成功，创建micropost_table成功');
-  }
 
   String sql_createTable =
       "CREATE TABLE '$tab_name' (id INTEGER PRIMARY KEY, content TEXT,user_id INTEGER,picture TEXT,"
