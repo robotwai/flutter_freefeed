@@ -6,6 +6,8 @@ import 'package:flutter_app/widget/add_icon.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:async';
+import 'package:intl/intl.dart';
+import 'package:dio/dio.dart';
 
 class AddMicropostPage extends StatefulWidget {
   @override
@@ -17,6 +19,8 @@ class AddMicropostPage extends StatefulWidget {
 class _AddMicropostPageState extends State<AddMicropostPage> {
   Account account;
   int sendColor = 0xFF9c9c9c;
+  List<String> images = ['0'];
+  String content;
   @override
   void initState() {
     super.initState();
@@ -35,13 +39,7 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
         title: new Container(
           child: new Center(
             child: new ClipOval(
-              child: new FadeInImage.assetNetwork(
-                placeholder: "images/shutter.png", //预览图
-                fit: BoxFit.fitWidth,
-                image: Constant.baseUrl + account.icon,
-                width: 36.0,
-                height: 36.0,
-              ),
+              child: _getTopIcon(),
             ),
           ),
         ),
@@ -60,12 +58,12 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
             tooltip: 'Next choice',
             color: Color(sendColor),
             onPressed: () {
-              _nextPage(1);
+              _sendMicropost();
             },
           ),
         ],
       ),
-      body: new Container(
+      body: new SingleChildScrollView(
           child: new Column(
         children: <Widget>[
           _getEdit(),
@@ -83,6 +81,23 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
     );
   }
 
+  Widget _getTopIcon() {
+    if (account == null || account.icon == null) {
+      return new Image.asset("images/shutter.png",
+        width: 36.0,
+        height: 36.0,);
+    } else {
+      return new FadeInImage.assetNetwork(
+
+        placeholder: "images/shutter.png",
+        //预览图
+        fit: BoxFit.fitWidth,
+        image: Constant.baseUrl + account.icon,
+        width: 36.0,
+        height: 36.0,
+      );
+    }
+  }
   Widget _getEdit() {
     return new Container(
       height: 100.0,
@@ -101,9 +116,47 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
     );
   }
 
-  void _nextPage(int page) {}
 
-  List<String> images = ['0'];
+  void _sendMicropost() async {
+    print('send');
+    try {
+      var dio = new Dio();
+      dio.options.baseUrl = Constant.baseUrl;
+      dio.options.connectTimeout = 5000; //5s
+      dio.options.receiveTimeout = 5000;
+      dio.options.headers = {
+        'user-agent': 'dio',
+        'common-header': 'xx'
+      };
+      List pic = [];
+      for (var x in images) {
+        if (x == '0') {
+
+        } else {
+          pic.add(new UploadFileInfo(new File(x), DateTime
+              .now()
+              .millisecondsSinceEpoch
+              .toString() + ".png"));
+        }
+      }
+      FormData formData = new FormData.from({
+        "token": "0",
+        "content": content,
+        // 支持文件数组上传
+
+        "picture": [new UploadFileInfo(new File(images[0]), DateTime
+            .now()
+            .millisecondsSinceEpoch
+            .toString() + ".png")
+        ]
+      });
+      Response response = await dio.post('/app/seedmicropost', data: formData);
+      print(response.data.toString());
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   Widget _buildGrid() {
     return new GridView.builder(
       gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
@@ -158,6 +211,7 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
 
   void _onTextChange(String s) {
     if (s != null && s.length > 0) {
+      content = s;
       setState(() {
         sendColor = 0xff000000;
       });

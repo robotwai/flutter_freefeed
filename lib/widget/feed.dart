@@ -239,13 +239,11 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
             margin: const EdgeInsets.all(12.0),
           ),
           new Center(
-            child: new GestureDetector(
-              onTap: () {
-                _goPhotoView(item.picture);
-              },
-              child: new Card(
+
+
+            child: new Card(
                 child: _getImageChild(item.picture),
-              ),
+
             ),
           ),
           new Container(
@@ -263,13 +261,61 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
     );
   }
 
+  double calculateHeight(int num) {
+    double width = MediaQuery
+        .of(context)
+        .size
+        .width - 20.0;
+    double height;
+    if (num < 4) {
+      height = width / 3;
+    } else if (num > 3 && num < 7) {
+      height = width / 3 * 2;
+    } else {
+      height = width;
+    }
+
+    return height;
+  }
+
   _getImageChild(String url) {
-    if ((Constant.baseUrl + url).contains('null')) {
+    if (url.isEmpty) {
       return new Container();
+    } else {
+      List<String>list = url.split(',');
+      list.removeAt(list.length - 1);
+      if (list.length == 1) {
+        return new Image.network(Constant.baseUrl + list[0]);
+      } else {
+        return new Container(
+          child: GridView.builder(
+            gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 150.0),
+            itemBuilder: (context, i) {
+              return _buildImageRow(list[i]);
+            },
+            physics: new NeverScrollableScrollPhysics(),
+            itemCount: list.length,
+          ),
+          height: calculateHeight(list.length),
+          width: MediaQuery
+              .of(context)
+              .size
+              .width - 20.0,
+        );
+      }
     }
-    {
-      return new Image.network(Constant.baseUrl + url);
-    }
+  }
+
+  _buildImageRow(String url) {
+    return new GestureDetector(
+      onTap: () {
+        setState(() {
+          _goPhotoView(Constant.baseUrl + url);
+        });
+      },
+      child: Image.network(Constant.baseUrl + url),
+    );
   }
 
   Widget getIcon(String url){
@@ -356,13 +402,10 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
   }
 
   void _goPhotoView(String url) {
-    if ((Constant.baseUrl + url).contains('null')) {
-      return;
-    }
     Navigator.of(context).push(new PageRouteBuilder(
         opaque: false,
         pageBuilder: (BuildContext context, _, __) {
-          return new MultiTouchPage(Constant.baseUrl + url);
+          return new MultiTouchPage(url);
         },
         transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
           return new FadeTransition(
