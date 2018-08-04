@@ -85,13 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: new Container(
               child: new Center(
                 child: new ClipOval(
-                  child: new FadeInImage.assetNetwork(
-                    placeholder: "images/shutter.png", //预览图
-                    fit: BoxFit.fitWidth,
-                    image: Constant.baseUrl + account.icon==null?"":account.icon,
-                    width: 80.0,
-                    height: 80.0,
-                  ),
+                  child: getLeftIcon(Constant.baseUrl + account.icon),
                 ),
               ),
               width: 250.0,
@@ -128,6 +122,26 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
     );
+  }
+  Widget getLeftIcon(String url){
+    if(url.contains('null')||url==Constant.baseUrl){
+      return new Image.asset(
+          "images/shutter.png",
+
+          fit: BoxFit.fitWidth,
+
+          width: 80.0,
+          height:80.0,
+      );
+    }else{
+      return new FadeInImage.assetNetwork(
+        placeholder: "images/shutter.png", //预览图
+        fit: BoxFit.fitWidth,
+        image: url,
+        width: 80.0,
+        height: 80.0,
+      );
+    }
   }
 
   void _tap_icon() async{

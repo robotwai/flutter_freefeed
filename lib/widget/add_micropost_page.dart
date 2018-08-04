@@ -66,81 +66,93 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
         ],
       ),
       body: new Container(
-        child: new Column(
-          children: <Widget>[
-
-            _getEdit(),
-            new Container(
-              margin: const EdgeInsets.only(top: 30.0,left: 14.0,right: 14.0),
-              height: MediaQuery.of(context).size.width,
-              width: MediaQuery.of(context).size.width,
-              child: _buildGrid(),
-            ),
-            new Container(
-              child: new Text('this the bottom'),
-            )
-
-          ],
-        )
-      ),
+          child: new Column(
+        children: <Widget>[
+          _getEdit(),
+          new Container(
+            margin: const EdgeInsets.only(top: 30.0, left: 14.0, right: 14.0),
+            height: MediaQuery.of(context).size.width,
+            width: MediaQuery.of(context).size.width,
+            child: _buildGrid(),
+          ),
+          new Container(
+            child: new Text('this the bottom'),
+          )
+        ],
+      )),
     );
   }
 
-
-  Widget _getEdit(){
-    var node = new FocusNode();
+  Widget _getEdit() {
     return new Container(
       height: 100.0,
-      padding: const EdgeInsets.only(left: 14.0,right: 14.0,top: 20.0),
-      margin: const EdgeInsets.only(bottom:  20.0),
+      padding: const EdgeInsets.only(left: 14.0, right: 14.0, top: 20.0),
+      margin: const EdgeInsets.only(bottom: 20.0),
       child: new TextField(
         maxLength: 140,
-        onChanged: (text){
+        onChanged: (text) {
           _onTextChange(text);
         },
-        decoration:
-        new InputDecoration(hintText: '写点什么...'),
-        style: new TextStyle(color: Color(0xff000000),fontSize: 16.0),
+        decoration: new InputDecoration(hintText: '写点什么...'),
+        style: new TextStyle(color: Color(0xff000000), fontSize: 16.0),
         autofocus: true,
         maxLines: 8,
       ),
     );
   }
+
   void _nextPage(int page) {}
 
+  List<String> images = ['0'];
   Widget _buildGrid() {
-    return new GridView.extent(
-        maxCrossAxisExtent: 150.0,
-        padding: const EdgeInsets.all(4.0),
-        mainAxisSpacing: 4.0,
-        crossAxisSpacing: 4.0,
-        children: _buildGridTileList(9));
+    return new GridView.builder(
+      gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 150.0),
+      itemBuilder: _buildRow,
+      itemCount: images.length,
+    );
   }
 
-
-  List<Container> _buildGridTileList(int count) {
-    return new List.generate(
-        count,
-        (int index) => new Container(
-
-              child: new Image.asset("images/add_icon.png"),
-//              onTap: _addImage(index),
-            ));
+  Widget _buildRow(BuildContext context, int index) {
+    final String path = images[index];
+    if (path == '0') {
+      return new GestureDetector(
+        onTap: () {
+          setState(() {
+            _addImage(index);
+          });
+        },
+        child: Image.asset("images/add_icon.png"),
+      );
+    } else {
+      return new GestureDetector(
+        onTap: () {
+          setState(() {
+            _addImage(index);
+          });
+        },
+        child: Image.file(new File(path)),
+      );
+    }
   }
+
 
   _addImage(int index) {
-    print('addimage');
-    getImage();
+    print('addimage' + '$index');
+
+    getImage(index);
   }
 
-  File _image;
 
-  Future getImage() async {
+  Future getImage(int index) async {
     var image = await ImagePicker.pickImage(source: ImageSource.camera);
 
     setState(() {
-      _image = image;
-      print(_image.path);
+      print(image.path);
+      images[index]=(image.path);
+      if(images.length<9){
+        images.add('0');
+      }
     });
   }
 

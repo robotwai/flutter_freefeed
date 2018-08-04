@@ -201,13 +201,7 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
             children: <Widget>[
               new Container(
                 child: new ClipOval(
-                  child: new FadeInImage.assetNetwork(
-                    placeholder: "images/shutter.png", //预览图
-                    fit: BoxFit.fitWidth,
-                    image: Constant.baseUrl + item.icon,
-                    width: 60.0,
-                    height: 60.0,
-                  ),
+                  child: getIcon(Constant.baseUrl+item.icon),
                 ),
                 margin: const EdgeInsets.all(12.0),
               ),
@@ -275,6 +269,27 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
     }
     {
       return new Image.network(Constant.baseUrl + url);
+    }
+  }
+
+  Widget getIcon(String url){
+    if(url.contains('null')||url==Constant.baseUrl){
+      return new Image.asset(
+        "images/shutter.png",
+
+        fit: BoxFit.fitWidth,
+
+        width: 60.0,
+        height:80.0,
+      );
+    }else{
+      return new FadeInImage.assetNetwork(
+        placeholder: "images/shutter.png", //预览图
+        fit: BoxFit.fitWidth,
+        image: url,
+        width: 60.0,
+        height: 60.0,
+      );
     }
   }
 
