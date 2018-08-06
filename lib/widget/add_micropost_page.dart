@@ -8,6 +8,8 @@ import 'dart:io';
 import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 class AddMicropostPage extends StatefulWidget {
   @override
@@ -116,46 +118,44 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
     );
   }
 
+  Future<List<http.MultipartFile>> getFiles() async {
+    List<http.MultipartFile> l = [];
+    int i = 0;
+    for (var x in images) {
+      if (x != '0') {
+        print(x);
+        http.MultipartFile h = await http.MultipartFile.fromPath(
+            'picture' + '$i',
+            x,
+            contentType: MediaType.parse("multipart/form-data"));
+        l.add(h);
+        i++;
+      }
+    }
+    print(l);
+    return l;
+  }
 
   void _sendMicropost() async {
-    print('send');
     try {
-      var dio = new Dio();
-      dio.options.baseUrl = Constant.baseUrl;
-      dio.options.connectTimeout = 5000; //5s
-      dio.options.receiveTimeout = 5000;
-      dio.options.headers = {
-        'user-agent': 'dio',
-        'common-header': 'xx'
-      };
-      List pic = [];
-      for (var x in images) {
-        if (x == '0') {
+      var uri = Uri.parse(Constant.baseUrl + '/app/seedmicropost');
+      var request = new http.MultipartRequest("POST", uri);
+      request.fields['token'] = '0';
+      request.fields['content'] = content;
 
-        } else {
-          pic.add(new UploadFileInfo(new File(x), DateTime
-              .now()
-              .millisecondsSinceEpoch
-              .toString() + ".png"));
-        }
-      }
-      FormData formData = new FormData.from({
-        "token": "0",
-        "content": content,
-        // 支持文件数组上传
-
-        "picture": [new UploadFileInfo(new File(images[0]), DateTime
-            .now()
-            .millisecondsSinceEpoch
-            .toString() + ".png")
-        ]
+      List<http.MultipartFile> f = await getFiles();
+      int picNum = f.length;
+      request.fields['picNum'] = '$picNum';
+      request.files.addAll(f);
+      request.send().then((response) {
+        if (response.statusCode == 200) print("Uploaded!");
       });
-      Response response = await dio.post('/app/seedmicropost', data: formData);
-      print(response.data.toString());
-    } catch (e) {
-      print(e.toString());
+    } catch (exception) {
+      print(exception.toString());
     }
+    print('send');
   }
+
 
   Widget _buildGrid() {
     return new GridView.builder(
