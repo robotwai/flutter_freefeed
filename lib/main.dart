@@ -3,8 +3,9 @@ import 'package:flutter_app/widget/login.dart';
 import 'package:flutter_app/widget/home.dart';
 import 'package:flutter_app/widget/feed.dart';
 import 'package:flutter_app/widget/add_micropost_page.dart';
-import 'package:flutter_app/utils/db_helper.dart';
-import 'dart:async';
+import 'package:flutter_app/widget/register.dart';
+import 'package:flutter_app/widget/setting.dart';
+
 void main() => runApp(
     new MyApp());
 
@@ -31,6 +32,8 @@ class MyApp extends StatelessWidget {
         '/b': (BuildContext context) => new FeedPage(title: 'the Feed'),
         '/c': (BuildContext context) => new LoginPage(),
         '/d': (BuildContext context) => new AddMicropostPage(),
+        '/r': (BuildContext context) => new RegisterPage(),
+        '/s': (BuildContext context) => new SettingPage(),
       },
     );
   }

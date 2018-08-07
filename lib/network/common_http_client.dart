@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter_app/utils/constant.dart';
 import 'package:flutter_app/model/feed_model.dart';
 import 'package:flutter_app/utils/sp_local.dart';
+import 'package:http/http.dart' as http;
 class FFHttpUtils {
   static final FFHttpUtils origin =  FFHttpUtils(new HttpClient());
 

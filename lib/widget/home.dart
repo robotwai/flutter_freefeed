@@ -24,17 +24,42 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   Account account;
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      Navigator.of(context).pushNamed('/d');
-    });
+  String name;
+  String email;
+  String icon;
+  String sign_content;
+  int followed;
+  int follower;
+  FeedPage feedPage;
+
+  void _addMicropost() {
+    // This call to setState tells the Flutter framework that something has
+    // changed in this State, which causes it to rerun the build method below
+    // so that the display can reflect the updated values. If we changed
+    // _counter without calling setState(), then the build method would not be
+    // called again, and so nothing would appear to happen.
+    if (account.token != '0') {
+      Navigator.of(context).pushNamed('/d').then((onValue) {
+        if (onValue == 1) {
+          initState();
+//          setState(() {
+//            feedPage.myFeedPageState.initToken();
+//          });
+        }
+      });
+    } else {
+      Navigator.of(context).pushNamed('/c').then((value) {
+        if (value == 1) {
+          print('login success');
+          CommonSP.getAccount().then((onValue) {
+            setState(() {
+              account = onValue;
+            });
+          });
+        }
+      });
+    }
   }
 
   @override
@@ -42,7 +67,15 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     CommonSP.getAccount().then((onValue) {
       setState(() {
-        account = onValue;
+        if (onValue != null) {
+          account = onValue;
+          name = account.name;
+          email = account.email;
+          icon = account.icon;
+          sign_content = account.sign_content;
+          followed = account.followed;
+          follower = account.follower;
+        }
       });
     });
   }
@@ -55,6 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+    feedPage = new FeedPage();
     return new Scaffold(
       appBar: new AppBar(
         // Here we take the value from the MyHomePage object that was created by
@@ -64,19 +98,18 @@ class _MyHomePageState extends State<MyHomePage> {
       drawer: new Container(
         color: Color(0xFFFFFFFF),
         width: 250.0,
-        child: getLeftPage(account),
+        child: getLeftPage(),
       ),
-      body: new FeedPage(),
+      body: feedPage,
       floatingActionButton: new FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: _addMicropost,
         tooltip: 'Increment',
         child: new Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-  
-  
-  Widget getLeftPage(Account a){
+
+  Widget getLeftPage() {
     return new Container(
       child: new Column(
         children: <Widget>[
@@ -85,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: new Container(
               child: new Center(
                 child: new ClipOval(
-                  child: getLeftIcon(Constant.baseUrl + account.icon),
+                  child: getLeftIcon(),
                 ),
               ),
               width: 250.0,
@@ -96,10 +129,11 @@ class _MyHomePageState extends State<MyHomePage> {
           new Container(
             child: new Center(
               child: Text(
-                account.name,
+                name == null ? 'xxx' : name,
                 style: new TextStyle(
-                  fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                   color: Color(0xFF003472),
+                    fontSize: 17.0
                 ),
               ),
             ),
@@ -107,48 +141,93 @@ class _MyHomePageState extends State<MyHomePage> {
             padding: const EdgeInsets.only(top: 8.0),
           ),
           new Container(
-            child: new Center(
-              child: Text(
-                account.email,
-                style: new TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF003472),
+            child: new Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              textDirection: TextDirection.ltr,
+              children: <Widget>[
+                new Container(
+                  child: new Text(
+                    followed == null ? 'xxx' : "正在关注" + followed.toString(),
+                    style: new TextStyle(
+                        fontWeight: FontWeight.w300,
+                        color: Color(0xFF50616D),
+                        fontSize: 14.0
+                    ),
+                  ),
+                  margin: const EdgeInsets.only(right: 6.0),
                 ),
-              ),
+                new Container(
+                  child: new Text(
+                    follower == null ? 'xxx' : "关注者" + follower.toString(),
+                    style: new TextStyle(
+                        fontWeight: FontWeight.w300,
+                        color: Color(0xFF50616D),
+                        fontSize: 14.0
+                    ),
+                  ),
+                  margin: const EdgeInsets.only(left: 6.0),
+                ),
+              ],
             ),
             width: 250.0,
             padding: const EdgeInsets.only(top: 14.0),
           ),
+          new Container(
+            margin: const EdgeInsets.only(top: 14.0),
+            child: new Column(
+              children: <Widget>[
+                new ListTile(
+                  leading: new Icon(Icons.person),
+                  title: new Text("个人资料"),
+                ),
+                new ListTile(
+                  leading: new Icon(Icons.bookmark),
+                  title: new Text("收藏"),
+                ),
+                new ListTile(
+                  leading: new Icon(Icons.settings),
+                  title: new Text("设置"),
+                  onTap: jumpToSetting,
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );
   }
-  Widget getLeftIcon(String url){
-    if(url.contains('null')||url==Constant.baseUrl){
+
+  void jumpToSetting() {
+    Navigator.of(context).pushNamed('/s').then((onValue) {
+      if (onValue == 1) {
+        initState();
+      }
+    });
+  }
+
+  Widget getLeftIcon() {
+    if (icon == null) {
       return new Image.asset(
-          "images/shutter.png",
-
-          fit: BoxFit.fitWidth,
-
-          width: 80.0,
-          height:80.0,
+        "images/shutter.png",
+        fit: BoxFit.fitWidth,
+        width: 80.0,
+        height: 80.0,
       );
-    }else{
+    } else {
       return new FadeInImage.assetNetwork(
         placeholder: "images/shutter.png", //预览图
         fit: BoxFit.fitWidth,
-        image: url,
+        image: Constant.baseUrl + icon,
         width: 80.0,
         height: 80.0,
       );
     }
   }
 
-  void _tap_icon() async{
-    if(account.token=='0'){
-
+  void _tap_icon() async {
+    if (account == null || account.token == '0') {
       Navigator.of(context).pushNamed('/c').then((value) {
-        if(value==1){
+        if (value == 1) {
           print('login success');
           CommonSP.getAccount().then((onValue) {
             setState(() {
@@ -157,45 +236,6 @@ class _MyHomePageState extends State<MyHomePage> {
           });
         }
       });
-
-
     }
-
-  }
-}
-
-
-class ImageTitle extends StatefulWidget {
-  int picNum;
-  int followerNum;
-  int followedNum;
-  String name;
-
-  ImageTitle(this.picNum, this.followerNum, this.followedNum, this.name);
-
-  @override
-  State createState() {
-    return new ImageTitleState();
-  }
-}
-
-class ImageTitleState extends State<ImageTitle> {
-  @override
-  Widget build(BuildContext context) {
-    widget.name;
-    return new Container(
-      color: new Color(0xFF0000FF),
-      height: 100.0,
-      child: new Column(
-        children: <Widget>[
-          Image.asset(
-            'images/shutter.png',
-            width: 40.0,
-            height: 40.0,
-            fit: BoxFit.cover,
-          ),
-        ],
-      ),
-    );
   }
 }

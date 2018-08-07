@@ -5,9 +5,12 @@ class Account{
   String name;
   String icon;
   int id;
+  String sign_content;
+  int followed;
+  int follower;
 
-  Account(this.token, this.email, this.name, this.icon, this.id);
-
+  Account(this.token, this.email, this.name, this.icon, this.id,
+      this.sign_content, this.followed, this.follower);
 
   Account.fromJson(Map<String, dynamic> json)
       :
@@ -15,7 +18,10 @@ class Account{
         email=json['email'],
         name = json['name'],
         icon = json['icon'],
-        id = json['id']
+        id = json['id'],
+        sign_content = json['sign_content'],
+        followed = json['followed'],
+        follower = json['follower']
   ;
 
   Map<String, dynamic> toJson() =>
@@ -25,6 +31,9 @@ class Account{
         'token': token,
         'icon': icon,
         'id': id,
+        'isign_contentd': sign_content,
+        'followed': followed,
+        'follower': follower,
       };
 
 }

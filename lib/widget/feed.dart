@@ -15,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:async';
 
+@immutable
 class FeedPage extends StatefulWidget {
   FeedPage({Key key, this.title}) : super(key: key);
 
@@ -28,10 +29,10 @@ class FeedPage extends StatefulWidget {
   // always marked "final".
 
   final String title;
-
+  MyFeedPageState myFeedPageState;
   @override
   MyFeedPageState createState() {
-    MyFeedPageState myFeedPageState = new MyFeedPageState();
+    myFeedPageState = new MyFeedPageState();
     FeedIPresenter presenter = new FeedPresenterImpl(myFeedPageState);
     presenter.init();
     return myFeedPageState;
@@ -44,7 +45,7 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
   final TextStyle _biggerFont = new TextStyle(fontSize: 18.0);
 
   FeedIPresenter _presenter;
-  String token;
+  String token = '0';
 
   ScrollController _scrollController;
 
@@ -55,6 +56,7 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
     return  _buildSuggestions();
 
   }
+
 
   void _scrollListener() {
     if (_scrollController.position.pixels ==
@@ -91,7 +93,9 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
   }
   void initToken() async{
     CommonSP.getAccount().then((onValue){
-      token = onValue.token;
+      if (onValue != null) {
+        token = onValue.token;
+      }
       _refreshData();
     });
 

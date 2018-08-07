@@ -6,18 +6,22 @@ import 'dart:async';
 class CommonSP{
   static void saveAccount(String json) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    print("saveAccount" + json);
     prefs.setString('account', json);
   }
 
   static Future<Account> getAccount() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var json =prefs.getString('account');
+    print("getAccount" + json);
     if(json==null||json.isEmpty){
-      return new Account('0', 'xxxx@xxx.com', '游客', '', null);
+      return null;
     }
     Map userMap = JSON.decode(json);
     Account user = new Account.fromJson(userMap);
-
+    if (user.token == null || user.token.isEmpty) {
+      return null;
+    }
     return user;
   }
 

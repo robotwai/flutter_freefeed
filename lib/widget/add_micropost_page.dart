@@ -140,7 +140,7 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
     try {
       var uri = Uri.parse(Constant.baseUrl + '/app/seedmicropost');
       var request = new http.MultipartRequest("POST", uri);
-      request.fields['token'] = '0';
+      request.fields['token'] = account.token;
       request.fields['content'] = content;
 
       List<http.MultipartFile> f = await getFiles();
@@ -148,12 +148,11 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
       request.fields['picNum'] = '$picNum';
       request.files.addAll(f);
       request.send().then((response) {
-        if (response.statusCode == 200) print("Uploaded!");
+        if (response.statusCode == 200) Navigator.of(context).pop(1);
       });
     } catch (exception) {
       print(exception.toString());
     }
-    print('send');
   }
 
 
