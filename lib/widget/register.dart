@@ -36,7 +36,6 @@ class _RegisterState extends State<RegisterPage> {
           centerTitle: true,
         ),
         backgroundColor: Colors.white,
-
         body: new SingleChildScrollView(
           child: new Padding(
             padding: EdgeInsets.all(10.0),
@@ -50,9 +49,10 @@ class _RegisterState extends State<RegisterPage> {
                         print(_email);
                       },
                       decoration: new InputDecoration(
-                        labelText: '邮箱',
-                        hintText: '请输入邮箱',
-                      ),
+                          labelText: '邮箱',
+                          hintText: '请输入邮箱',
+                          labelStyle:
+                          new TextStyle(color: Color(CLS.TextLabel))),
                       maxLines: 1,
                       onSubmitted: (text) {
                         FocusScope.of(context).reparentIfNeeded(node);
@@ -66,7 +66,10 @@ class _RegisterState extends State<RegisterPage> {
                       obscureText: true,
                       maxLines: 1,
                       decoration: new InputDecoration(
-                          hintText: '请输入长度大于6的密码', labelText: '密码'),
+                          hintText: '请输入长度大于6的密码',
+                          labelText: '密码',
+                          labelStyle:
+                          new TextStyle(color: Color(CLS.TextLabel))),
                       keyboardType: TextInputType.text,
                       onSubmitted: (text) {},
                     ),
@@ -78,7 +81,10 @@ class _RegisterState extends State<RegisterPage> {
                       obscureText: true,
                       maxLines: 1,
                       decoration: new InputDecoration(
-                          hintText: '请输入长度大于6的密码', labelText: '请再次输入密码'),
+                          hintText: '请输入长度大于6的密码',
+                          labelText: '请再次输入密码',
+                          labelStyle:
+                          new TextStyle(color: Color(CLS.TextLabel))),
                       keyboardType: TextInputType.text,
                       onSubmitted: (text) {},
                     ),
@@ -99,9 +105,10 @@ class _RegisterState extends State<RegisterPage> {
                           print(_name);
                         },
                         decoration: new InputDecoration(
-                          labelText: '昵称',
-                          hintText: '请输入昵称',
-                        ),
+                            labelText: '昵称',
+                            hintText: '请输入昵称',
+                            labelStyle:
+                            new TextStyle(color: Color(CLS.TextLabel))),
                         maxLines: 1,
                         onSubmitted: (text) {
                           FocusScope.of(context).reparentIfNeeded(node);

@@ -53,7 +53,7 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
   bool isFullLoad = false;
   @override
   Widget build(BuildContext context) {
-    return  _buildSuggestions();
+    return _buildFeeds();
 
   }
 
@@ -107,7 +107,7 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
     _scrollController.removeListener(_scrollListener);
   }
 
-  Widget _buildSuggestions() {
+  Widget _buildFeeds() {
     var content;
 
     if (datas.isEmpty) {
@@ -130,6 +130,7 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
   }
 
   Future<Null> _refreshData() {
+    print('_refreshData');
     final Completer<Null> completer = new Completer<Null>();
 
     curPageNum = 1;
@@ -197,6 +198,7 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
   Widget _buildRow(BuildContext context, int index) {
     final Micropost item = datas[index];
     return new Card(
+      color: Color(CLS.BACKGROUND),
       margin: const EdgeInsets.all(10.0),
       child: new Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,15 +219,17 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
                     child: new Text(
                       item.user_name,
                       style: new TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF003472),
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF003472),
+                          fontSize: 14.0
                       ),
                     ),
                   ),
                   new Text(
                     TimeUtils.CalculateTime(item.created_at),
                     style: new TextStyle(
-                      color: Color(0xFF50616D),
+                        color: Color(0xFF50616D),
+                        fontSize: 12.0
                     ),
                   ),
                 ],
@@ -246,7 +250,7 @@ class MyFeedPageState extends State<FeedPage> implements FeedIView {
 
 
             child: new Card(
-                child: _getImageChild(item.picture),
+              child: _getImageChild(item.picture),
 
             ),
           ),

@@ -13,10 +13,10 @@ class CommonSP{
   static Future<Account> getAccount() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var json =prefs.getString('account');
-    print("getAccount" + json);
     if(json==null||json.isEmpty){
       return null;
     }
+    print("getAccount" + json);
     Map userMap = JSON.decode(json);
     Account user = new Account.fromJson(userMap);
     if (user.token == null || user.token.isEmpty) {
@@ -33,6 +33,17 @@ class CommonSP{
   static Future<String> getDBPath() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var json =prefs.getString('micropost_db_path');
+    return json;
+  }
+
+  static void saveEmail(String json) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('email', json);
+  }
+
+  static Future<String> getEmail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var json = prefs.getString('email');
     return json;
   }
 }

@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:flutter/cupertino.dart';
 
 class AddMicropostPage extends StatefulWidget {
   @override
@@ -23,6 +24,7 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
   int sendColor = 0xFF9c9c9c;
   List<String> images = ['0'];
   String content;
+  bool isLoading = false;
   @override
   void initState() {
     super.initState();
@@ -65,21 +67,37 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
           ),
         ],
       ),
-      body: new SingleChildScrollView(
-          child: new Column(
-        children: <Widget>[
-          _getEdit(),
-          new Container(
-            margin: const EdgeInsets.only(top: 30.0, left: 14.0, right: 14.0),
-            height: MediaQuery.of(context).size.width,
-            width: MediaQuery.of(context).size.width,
-            child: _buildGrid(),
-          ),
-          new Container(
-            child: new Text('this the bottom'),
-          )
-        ],
-      )),
+        body: new Stack(
+          children: <Widget>[
+            new SingleChildScrollView(
+                child: new Column(
+                  children: <Widget>[
+                    _getEdit(),
+                    new Container(
+                      margin: const EdgeInsets.only(
+                          top: 30.0, left: 14.0, right: 14.0),
+                      height: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
+                      child: _buildGrid(),
+                    ),
+                  ],
+                )),
+            new Offstage(
+              child: new Container(
+                color: Color(CLS.HALF_BACKGROUND),
+                child: new Center(
+                  child: new CupertinoActivityIndicator(radius: 20.0),),
+              ),
+              offstage: !isLoading,
+            )
+          ],
+        )
     );
   }
 
@@ -102,7 +120,7 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
   }
   Widget _getEdit() {
     return new Container(
-      height: 100.0,
+      height: 150.0,
       padding: const EdgeInsets.only(left: 14.0, right: 14.0, top: 20.0),
       margin: const EdgeInsets.only(bottom: 20.0),
       child: new TextField(
@@ -138,6 +156,9 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
 
   void _sendMicropost() async {
     try {
+      setState(() {
+        isLoading = true;
+      });
       var uri = Uri.parse(Constant.baseUrl + '/app/seedmicropost');
       var request = new http.MultipartRequest("POST", uri);
       request.fields['token'] = account.token;
@@ -148,7 +169,12 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
       request.fields['picNum'] = '$picNum';
       request.files.addAll(f);
       request.send().then((response) {
-        if (response.statusCode == 200) Navigator.of(context).pop(1);
+        if (response.statusCode == 200) {
+          Navigator.of(context).pop(1);
+        }
+        setState(() {
+          isLoading = false;
+        });
       });
     } catch (exception) {
       print(exception.toString());
@@ -160,8 +186,10 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
     return new GridView.builder(
       gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 150.0),
+
       itemBuilder: _buildRow,
       itemCount: images.length,
+
     );
   }
 
@@ -174,7 +202,9 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
             _addImage(index);
           });
         },
-        child: Image.asset("images/add_icon.png"),
+        child: new Center(
+          child: Image.asset("images/add_icon.png", width: 80.0, height: 80.0,),
+        ),
       );
     } else {
       return new GestureDetector(
@@ -202,7 +232,7 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
     setState(() {
       print(image.path);
       images[index]=(image.path);
-      if(images.length<9){
+      if (images.length < 9 && index == images.length - 1) {
         images.add('0');
       }
     });
