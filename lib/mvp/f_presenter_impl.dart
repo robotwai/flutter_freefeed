@@ -40,5 +40,13 @@ class FeedPresenterImpl extends FeedIPresenter implements NetworkBoundResource<L
     feedIView.onloadFLSuc(t);
   }
 
+  void dot(String token, Micropost item) {
+    feedRepository.dot(token, item).then((onValue) {
+      if (onValue != null) {
+        feedRepository.insertMicropost(onValue);
+        feedIView.updateSingleFeed(onValue);
+      }
+    });
+  }
 
 }

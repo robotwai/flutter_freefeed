@@ -9,6 +9,8 @@ import 'package:flutter_app/mvp/f_presenter_impl.dart';
 import 'package:flutter_app/utils/time_utils.dart';
 import 'package:flutter_app/widget/multi_touch_page.dart';
 import 'dart:async';
+import 'package:flutter_app/widget/micropost_detail_page.dart';
+import 'package:flutter_app/widget/micropost_common_page.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -33,7 +35,8 @@ class MyHomePage extends StatefulWidget {
   }
 }
 
-class _MyHomePageState extends State<MyHomePage> implements FeedIView {
+class _MyHomePageState extends State<MyHomePage>
+    implements FeedIView, PageCallBack {
   Account account;
   String name;
   String email;
@@ -267,198 +270,28 @@ class _MyHomePageState extends State<MyHomePage> implements FeedIView {
 
   Widget _buildRow(BuildContext context, int index) {
     final Micropost item = datas[index];
-    return new Card(
-      color: Color(CLS.BACKGROUND),
-      margin: const EdgeInsets.all(10.0),
-      child: new Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          new Row(
-            children: <Widget>[
-              new Container(
-                child: new ClipOval(
-                  child: getIcon(Constant.baseUrl + item.icon),
-                ),
-                margin: const EdgeInsets.all(12.0),
-              ),
-              new Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  new Container(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: new Text(
-                      item.user_name,
-                      style: new TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF003472),
-                          fontSize: 14.0),
-                    ),
-                  ),
-                  new Text(
-                    TimeUtils.CalculateTime(item.created_at),
-                    style:
-                    new TextStyle(color: Color(0xFF50616D), fontSize: 12.0),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          new Container(
-            child: new Text(
-              item.content,
-              style: new TextStyle(
-                color: Color(0xFF000000),
-                fontSize: 16.0,
-              ),
-            ),
-            margin: const EdgeInsets.all(12.0),
-          ),
-          new Center(
-            child: new Card(
-              child: _getImageChild(item.picture),
-            ),
-          ),
-          new Container(
-            child: new Divider(
-              height: 1.0,
-              color: Color(0xFFe0e0e0),
-            ),
-            margin: const EdgeInsets.only(top: 8.0),
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-          ),
-          _getBottomView(item),
-        ],
-      ),
-    );
-  }
-
-  _getImageChild(String url) {
-    if (url.isEmpty) {
-      return new Container();
-    } else {
-      List<String> list = url.split(',');
-      list.removeAt(list.length - 1);
-      if (list.length == 1) {
-        return new Image.network(Constant.baseUrl + list[0]);
-      } else {
-        return new Container(
-          child: GridView.builder(
-            gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 150.0),
-            itemBuilder: (context, i) {
-              return _buildImageRow(list[i]);
-            },
-            physics: new NeverScrollableScrollPhysics(),
-            itemCount: list.length,
-          ),
-          height: calculateHeight(list.length),
-          width: MediaQuery
-              .of(context)
-              .size
-              .width - 20.0,
-        );
-      }
-    }
-  }
-
-  _buildImageRow(String url) {
     return new GestureDetector(
+      child: new MicropostPage(item, this),
       onTap: () {
-        setState(() {
-          _goPhotoView(Constant.baseUrl + url);
-        });
+        jumpToDetail(item);
       },
-      child: Image.network(Constant.baseUrl + url),
     );
   }
 
-  Widget getIcon(String url) {
-    if (url.contains('null') || url == Constant.baseUrl) {
-      return new Image.asset(
-        "images/shutter.png",
-        fit: BoxFit.fitWidth,
-        width: 60.0,
-        height: 80.0,
-      );
-    } else {
-      return new FadeInImage.assetNetwork(
-        placeholder: "images/shutter.png",
-        //预览图
-        fit: BoxFit.fitWidth,
-        image: url,
-        width: 60.0,
-        height: 60.0,
-      );
-    }
+  void jumpToSetting() {
+    Navigator.of(context).pushNamed('/s').then((onValue) {
+      if (onValue == 1) {
+        print("getUserInfo");
+        getUserInfo();
+      }
+    });
   }
 
-  _getBottomView(Micropost item) {
-    bool yizan = item.dotId > 0;
-    int zanNum = item.dots_num;
-    int commitNum = item.comment_num;
-    int zhuanfaNum = 123;
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      child: new Row(
-        children: <Widget>[
-          new Expanded(
-            child: new Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Image.asset(
-                  yizan ? 'images/yizan.png' : 'images/dianzan.png',
-                  width: 15.0,
-                  height: 15.0,
-                ),
-                new Container(
-                  child: new Text('$zanNum'),
-                  margin: const EdgeInsets.only(left: 4.0),
-                )
-              ],
-            ),
-          ),
-          new Expanded(
-            child: new Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Image.asset(
-                  'images/pinglun.png',
-                  width: 15.0,
-                  height: 15.0,
-                ),
-                new Container(
-                  child: new Text('$commitNum'),
-                  margin: const EdgeInsets.only(left: 4.0),
-                )
-              ],
-            ),
-          ),
-          new Expanded(
-            child: new Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Image.asset(
-                  'images/zhuanfa.png',
-                  width: 15.0,
-                  height: 15.0,
-                ),
-                new Container(
-                  child: new Text('$zhuanfaNum'),
-                  margin: const EdgeInsets.only(left: 4.0),
-                )
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _goPhotoView(String url) {
+  void jumpToDetail(Micropost item) {
     Navigator.of(context).push(new PageRouteBuilder(
         opaque: false,
         pageBuilder: (BuildContext context, _, __) {
-          return new MultiTouchPage(url);
+          return new MicropostDetailPage(item);
         },
         transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
           return new FadeTransition(
@@ -469,15 +302,6 @@ class _MyHomePageState extends State<MyHomePage> implements FeedIView {
             ),
           );
         }));
-  }
-
-  void jumpToSetting() {
-    Navigator.of(context).pushNamed('/s').then((onValue) {
-      if (onValue == 1) {
-        print("getUserInfo");
-        getUserInfo();
-      }
-    });
   }
 
   Widget getLeftIcon() {
@@ -499,7 +323,25 @@ class _MyHomePageState extends State<MyHomePage> implements FeedIView {
     }
   }
 
-  void _tap_icon() async {
+  void goPhotoView(String url) {
+    Navigator.of(context).push(new PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (BuildContext context, _, __) {
+          return new MultiTouchPage(url);
+        },
+        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+          return new FadeTransition(
+            opacity: animation,
+            child: new RotationTransition(
+              turns: new Tween<double>(begin: 0.5, end: 1.0).animate(animation),
+              child: child,
+            ),
+          );
+        }));
+  }
+
+  @override
+  void _tap_icon() {
     if (account == null || account.token == '0') {
       Navigator.of(context).pushNamed('/c').then((value) {
         if (value == 1) {
@@ -509,6 +351,11 @@ class _MyHomePageState extends State<MyHomePage> implements FeedIView {
         }
       });
     }
+  }
+
+  @override
+  tap_dot(Micropost item) {
+    _presenter.dot(token, item);
   }
 
   Future<Null> _refreshData() {
@@ -547,10 +394,16 @@ class _MyHomePageState extends State<MyHomePage> implements FeedIView {
     setState(() {
       print('onloadFLSuc');
       addAndRemoveDuplicate(list);
-//        List<Micropost> list1 =pastLeep1(datas);
-//        datas.clear();
-//        datas.addAll(list1);
     });
+  }
+
+  @override
+  void updateSingleFeed(Micropost item) {
+    List<Micropost> l = [];
+    print(item.id.toString());
+    l.add(item);
+    setState(() {});
+    addAndRemoveDuplicate(l);
   }
 
   void addAndRemoveDuplicate(List<Micropost> list) {
@@ -577,20 +430,4 @@ class _MyHomePageState extends State<MyHomePage> implements FeedIView {
     _presenter = presenter;
   }
 
-  double calculateHeight(int num) {
-    double width = MediaQuery
-        .of(context)
-        .size
-        .width - 20.0;
-    double height;
-    if (num < 4) {
-      height = width / 3;
-    } else if (num > 3 && num < 7) {
-      height = width / 3 * 2;
-    } else {
-      height = width;
-    }
-
-    return height;
-  }
 }

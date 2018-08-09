@@ -144,10 +144,6 @@ class _LoginState extends State<LoginPage> {
 
         var uri = new Uri.http(Constant.baseUrlNoHttp, '/app/loggin',
             {'email': '$_email', 'password': '$_password'});
-        await new Future.delayed(const Duration(seconds: 4), () {
-          //任务具体代码
-          print('1');
-        });
         var request = await httpClient.postUrl(uri);
         var response = await request.close();
         if (response.statusCode == HttpStatus.OK) {

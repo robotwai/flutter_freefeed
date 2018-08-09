@@ -19,10 +19,7 @@ class FeedRepositoryImpl implements FeedRepository{
   void start(String token, int pageNum) {
     loadDB(pageNum);
     loadForNetWork(token,pageNum).then((onValue){
-//      n.loadForNet(onValue);
       print('loadForNetWork success');
-//      new Future(() => MicropostProvider.origin.insertAll(onValue))
-//        .then((v) => loadDB(pageNum));
       MicropostProvider.origin.getListAndInsertAll(onValue,  pageNum).then((onValue){
         n.loadForDB(onValue);
       });
@@ -31,11 +28,9 @@ class FeedRepositoryImpl implements FeedRepository{
 
   void loadDB(int pageNum){
     loadForDB(pageNum).then((onValue){
-      print('loadForDB success');
       n.loadForDB(onValue);
     }).catchError((onError){
       print(onError.toString());
-      print('loadForDB loadForEmpty');
       n.loadForEmpty();
     });
   }
@@ -51,5 +46,16 @@ class FeedRepositoryImpl implements FeedRepository{
     op['page'] = '$pageNum';
     return FFHttpUtils.origin.getFeed(op);
   }
+
+  @override
+  Future<Micropost> dot(String token, Micropost mic) {
+    return FFHttpUtils.origin.dot(token, mic);
+  }
+
+  @override
+  void insertMicropost(Micropost m) {
+    MicropostProvider.origin.insert(m);
+  }
+
 }
 

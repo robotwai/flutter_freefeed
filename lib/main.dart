@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/widget/login.dart';
 import 'package:flutter_app/widget/home.dart';
-import 'package:flutter_app/widget/feed.dart';
 import 'package:flutter_app/widget/add_micropost_page.dart';
 import 'package:flutter_app/widget/register.dart';
 import 'package:flutter_app/widget/setting.dart';
@@ -24,7 +23,6 @@ class MyApp extends StatelessWidget {
       home: new MyHomePage(title: 'Free Feed'),
       routes: <String, WidgetBuilder> {
         '/a': (BuildContext context) => new MyHomePage(title: 'Free Feed'),
-        '/b': (BuildContext context) => new FeedPage(title: 'the Feed'),
         '/c': (BuildContext context) => new LoginPage(),
         '/d': (BuildContext context) => new AddMicropostPage(),
         '/r': (BuildContext context) => new RegisterPage(),

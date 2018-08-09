@@ -77,6 +77,30 @@ class MicropostProvider {
     await db.close();
   }
 
+  insert(Micropost mic) async {
+    var path = await CommonSP.getDBPath();
+
+    Database db = await openDatabase(path);
+
+    await db.transaction((txn) async {
+      var _id = mic.id;
+      var _content = mic.content;
+      var user_id = mic.user_id;
+      var picture = mic.picture;
+      var icon = mic.icon;
+      var user_name = mic.user_name;
+      var created_at = mic.created_at;
+      var dotId = mic.dotId;
+      var dots_num = mic.dots_num;
+      var comment_num = mic.comment_num;
+      String sql = " REPLACE INTO '$tab_name'"
+          "(id,content,user_id,picture,icon,user_name,created_at,dotId,dots_num,comment_num)"
+          " VALUES('$_id','$_content','$user_id','$picture','$icon','$user_name','$created_at','$dotId','$dots_num','$comment_num')";
+      await txn.rawInsert(sql);
+    });
+    await db.close();
+  }
+
   Future<List<Micropost>> getListAndInsertAll(List<Micropost> todo, int page) {
     return CommonSP.getDBPath().then((path) {
 //      print(path);

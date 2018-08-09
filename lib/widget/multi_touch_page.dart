@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/utils/constant.dart';
 
 const double _kMinFlingVelocity = 800.0;
 
@@ -21,6 +22,8 @@ class _MultiTouchAppPage extends State<MultiTouchAppPage>
   double _scale = 1.0;
   Offset _normalizedOffset;
   double _previousScale;
+
+  double _start_v = 0.0;
 
   @override
   void initState() {
@@ -87,17 +90,25 @@ class _MultiTouchAppPage extends State<MultiTouchAppPage>
       onScaleStart: _handleOnScaleStart,
       onScaleUpdate: _handleOnScaleUpdate,
       onScaleEnd: _handleOnScaleEnd,
-      child: new ClipRect(
-        child: new Transform(
-          transform: new Matrix4.identity()
-            ..translate(_offset.dx, _offset.dy)
-            ..scale(_scale),
-          child: new Image.network(
-            widget.imgUrl,
-            fit: BoxFit.cover,
+      child: new Container(
+        color: const Color(0xf0000000),
+        child: new Center(
+          child: new ClipRect(
+            child: new Transform(
+              transform: new Matrix4.identity()
+                ..translate(_offset.dx, _offset.dy)
+                ..scale(_scale),
+              child: new Image.network(
+                widget.imgUrl,
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
         ),
       ),
+      onTap: () {
+        Navigator.of(context).pop();
+      },
     );
   }
 }
@@ -109,12 +120,6 @@ class MultiTouchPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('多点触控'),
-        centerTitle: true,
-      ),
-      body: new MultiTouchAppPage(imgUrl),
-    );
+    return new MultiTouchAppPage(imgUrl);
   }
 }
