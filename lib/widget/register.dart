@@ -10,6 +10,7 @@ import 'package:flutter_app/model/account_model.dart';
 import 'package:flutter_app/utils/sp_local.dart';
 import 'package:flutter_app/utils/constant.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_app/network/common_http_client.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -173,32 +174,24 @@ class _RegisterState extends State<RegisterPage> {
   String icon;
 
   void onPressed() async {
-    try {
-      var uri = Uri.parse(Constant.baseUrl + '/app/register');
-      var request = new http.MultipartRequest("POST", uri);
-      request.fields['email'] = _email;
-      request.fields['name'] = _name;
-      request.fields['password'] = _password;
-      request.fields['password_confirmation'] = _passwordConfirm;
-      if (_password != _passwordConfirm) {
-        showToast("请检查密码是否正确");
-        return;
-      }
-      http.MultipartFile
-          .fromPath('icon', icon,
-          contentType: MediaType.parse("multipart/form-data"))
-          .then((onValue) {
-        request.files.add(onValue);
-        request.send().then((response) {
-          if (response.statusCode == 200) {
-            showToast("注册成功，请到注册邮箱激活账号");
-            Navigator.of(context).pop(_email);
-          }
-        });
-      });
-    } catch (exception) {
-      print(exception.toString());
+    if (_password != _passwordConfirm) {
+      showToast("请检查密码是否正确");
+      return;
     }
+    FFHttpUtils.origin.register(_name, _email, _password, icon)
+        .then((onValue) {
+      if (onValue != null) {
+        if (onValue == '0') {
+          showToast("注册成功，请到注册邮箱激活账号");
+          Navigator.of(context).pop(_email);
+        } else {
+          showToast(onValue);
+        }
+      } else {
+        showToast('请检查网络');
+      }
+    });
+
   }
 
   void showToast(String text) {

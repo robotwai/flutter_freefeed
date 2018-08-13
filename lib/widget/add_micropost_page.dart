@@ -11,6 +11,7 @@ import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_app/network/common_http_client.dart';
 
 class AddMicropostPage extends StatefulWidget {
   @override
@@ -159,18 +160,14 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
       setState(() {
         isLoading = true;
       });
-      var uri = Uri.parse(Constant.baseUrl + '/app/seedmicropost');
-      var request = new http.MultipartRequest("POST", uri);
-      request.fields['token'] = account.token;
-      request.fields['content'] = content;
-
       List<http.MultipartFile> f = await getFiles();
       int picNum = f.length;
-      request.fields['picNum'] = '$picNum';
-      request.files.addAll(f);
-      request.send().then((response) {
-        if (response.statusCode == 200) {
-          Navigator.of(context).pop(1);
+      FFHttpUtils.origin.sendMicropost(content, '$picNum', f)
+          .then((onValue) {
+        if (onValue != null) {
+          if (onValue == '0') {
+            Navigator.of(context).pop(1);
+          }
         }
         setState(() {
           isLoading = false;

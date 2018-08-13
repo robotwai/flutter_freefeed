@@ -18,10 +18,7 @@ class MicropostPage extends StatelessWidget {
         .size
         .width;
 
-    return new Card(
-      color: Color(CLS.BACKGROUND),
-      margin: const EdgeInsets.all(10.0),
-      child: new Column(
+    return new Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           new Row(
@@ -84,7 +81,6 @@ class MicropostPage extends StatelessWidget {
           ),
           _getBottomView(item),
         ],
-      ),
     );
   }
 

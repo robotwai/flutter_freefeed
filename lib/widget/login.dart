@@ -8,6 +8,7 @@ import 'package:flutter_app/model/account_model.dart';
 import 'package:flutter_app/utils/sp_local.dart';
 import 'package:flutter_app/utils/constant.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_app/network/common_http_client.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -130,7 +131,6 @@ class _LoginState extends State<LoginPage> {
 
   void onPressed() async {
     var form = formKey.currentState;
-    var httpClient = new HttpClient();
     if (form.validate()) {
       form.save();
 
@@ -141,36 +141,27 @@ class _LoginState extends State<LoginPage> {
         setState(() {
           isLoading = true;
         });
-
-        var uri = new Uri.http(Constant.baseUrlNoHttp, '/app/loggin',
-            {'email': '$_email', 'password': '$_password'});
-        var request = await httpClient.postUrl(uri);
-        var response = await request.close();
-        if (response.statusCode == HttpStatus.OK) {
-          var json = await response.transform(UTF8.decoder).join();
-          print(json);
-          Map jsonMap = JSON.decode(json);
-          print(jsonMap['data']);
-          if (int.parse(jsonMap['status']) != Constant.HTTP_OK) {
-            setState(() {
-              showToast();
-              isLoading = false;
-            });
+        FFHttpUtils.origin.login(_email, _password).then((onValue) {
+          if (onValue != null) {
+            if (onValue == '0') {
+              setState(() {
+                isLoading = false;
+              });
+              Navigator.of(context).pop(1);
+            } else {
+              setState(() {
+                showToast(onValue);
+                isLoading = false;
+              });
+            }
           } else {
-            Map userMap = JSON.decode(jsonMap['data']);
-            Account user = new Account.fromJson(userMap);
-            await CommonSP.saveAccount(JSON.encode(user));
-
-            print(user.email);
-            CommonSP.saveEmail(user.email);
             setState(() {
+              showToast('请检查网络');
               isLoading = false;
             });
-            Navigator.of(context).pop(1);
           }
-        } else {
-          print(response.statusCode);
-        }
+        });
+
       } catch (exception) {
         print(exception.toString());
       }
@@ -187,8 +178,8 @@ class _LoginState extends State<LoginPage> {
     });
   }
 
-  void showToast() {
-    final snackBar = new SnackBar(content: new Text('账号/密码错误'));
+  void showToast(String message) {
+    final snackBar = new SnackBar(content: new Text(message));
 
     _scaffoldkey.currentState.showSnackBar(snackBar);
   }

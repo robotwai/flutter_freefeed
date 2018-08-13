@@ -271,7 +271,11 @@ class _MyHomePageState extends State<MyHomePage>
   Widget _buildRow(BuildContext context, int index) {
     final Micropost item = datas[index];
     return new GestureDetector(
-      child: new MicropostPage(item, this),
+      child: new Card(
+        color: Color(CLS.BACKGROUND),
+        margin: const EdgeInsets.all(10.0),
+        child: new MicropostPage(item, this),
+      ),
       onTap: () {
         jumpToDetail(item);
       },
@@ -293,15 +297,7 @@ class _MyHomePageState extends State<MyHomePage>
         pageBuilder: (BuildContext context, _, __) {
           return new MicropostDetailPage(item);
         },
-        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-          return new FadeTransition(
-            opacity: animation,
-            child: new RotationTransition(
-              turns: new Tween<double>(begin: 0.5, end: 1.0).animate(animation),
-              child: child,
-            ),
-          );
-        }));
+    ));
   }
 
   Widget getLeftIcon() {
