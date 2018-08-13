@@ -10,6 +10,7 @@ class TimeUtils {
       var formatter = new DateFormat('yyyy-MM-dd HH:mm:ss');
       realtime = formatter.parse(time);
     } catch (e) {
+      print('');
       print(e.toString());
     }
     //时间显示少了八小时所以这里需要再加上

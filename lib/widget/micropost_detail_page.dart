@@ -7,6 +7,7 @@ import 'package:flutter_app/utils/time_utils.dart';
 import 'package:flutter_app/widget/micropost_common_page.dart';
 import 'package:flutter_app/mvp/m_presenter.dart';
 import 'package:flutter_app/model/commit_model.dart';
+import 'dart:async';
 
 class MicropostDetailPage extends StatefulWidget {
   Micropost micropost;
@@ -26,6 +27,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
   Micropost micropost;
   MicropostIPresenter _presenter;
   ScrollController _scrollController;
+  List<Commit> datas = [];
   _MicropostDetailState(this.micropost);
 
   bool isShowTitle = false;
@@ -80,17 +82,45 @@ class _MicropostDetailState extends State<MicropostDetailPage>
             ),
             new Row(
               children: <Widget>[
-                new Container(
-                  child: new Text("点赞"),
+                new GestureDetector(
+                  child: new Container(
+                    child: new Center(
+                      child: new Text("点赞"),
+                    ),
+                    width: (MediaQuery
+                        .of(context)
+                        .size
+                        .width - 20) / 4,
+                  ),
+                  onTap: sw(1),
                 ),
-                new Container(
-                  child: new Text("点赞"),
+                new GestureDetector(
+                  child: new Container(
+                    child: new Center(
+                      child: new Text("评论"),
+                    ),
+                    width: (MediaQuery
+                        .of(context)
+                        .size
+                        .width - 20) / 4,
+                  ),
+                  onTap: sw(2),
                 ),
-                new Container(
-                  child: new Text("点赞"),
+                new GestureDetector(
+                  child: new Container(
+                    child: new Center(
+                      child: new Text("转发"),
+                    ),
+                    width: (MediaQuery
+                        .of(context)
+                        .size
+                        .width - 20) / 2,
+                  ),
+                  onTap: sw(3),
                 ),
               ],
             ),
+            getList(1)
           ]),
         ),
         controller: _scrollController,
@@ -139,6 +169,49 @@ class _MicropostDetailState extends State<MicropostDetailPage>
     }
   }
 
+  sw(int index) {
+
+  }
+
+  Widget getList(int type) {
+    var content;
+
+    if (datas.isEmpty) {
+      content = new Center(child: new CircularProgressIndicator());
+    } else {
+      content = new ListView.builder(
+        physics: AlwaysScrollableScrollPhysics(),
+        itemCount: datas.length,
+        controller: _scrollController,
+        itemBuilder: (context, i) {
+          return _buildRow(context, i, type);
+        },
+      );
+    }
+
+    var _refreshIndicator = new RefreshIndicator(
+      onRefresh: _refreshData,
+      child: content,
+    );
+
+    return _refreshIndicator;
+  }
+
+  Widget _buildRow(BuildContext context, int index, int type) {
+    return new Text('');
+  }
+
+  Future<Null> _refreshData() {
+    final Completer<Null> completer = new Completer<Null>();
+
+//    curPageNum = 1;
+//    _presenter.loadAIData(token, curPageNum, 1);
+    setState(() {});
+
+    completer.complete(null);
+
+    return completer.future;
+  }
   @override
   jumpToDetail(Micropost item) {}
 

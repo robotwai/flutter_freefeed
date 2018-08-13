@@ -26,7 +26,7 @@ class MicropostPage extends StatelessWidget {
               new GestureDetector(
                 child: new Container(
                   child: new ClipOval(
-                    child: getIcon(Constant.baseUrl + item.icon),
+                    child: getIcon(item.icon == null ? "null" : item.icon),
                   ),
                   margin: const EdgeInsets.all(12.0),
                 ),
@@ -153,7 +153,7 @@ class MicropostPage extends StatelessWidget {
         placeholder: "images/shutter.png",
         //预览图
         fit: BoxFit.fitWidth,
-        image: url,
+        image: Constant.baseUrl + url,
         width: 60.0,
         height: 60.0,
       );
