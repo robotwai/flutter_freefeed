@@ -146,7 +146,7 @@ class MicropostPage extends StatelessWidget {
         "images/shutter.png",
         fit: BoxFit.fitWidth,
         width: 60.0,
-        height: 80.0,
+        height: 60.0,
       );
     } else {
       return new FadeInImage.assetNetwork(
