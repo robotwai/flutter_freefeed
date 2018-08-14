@@ -39,43 +39,48 @@ class _MicropostDetailState extends State<MicropostDetailPage>
   int curPageNum = 1;
   _MicropostDetailState(this.micropost);
 
+  final TextEditingController _commentController = new TextEditingController();
+
   bool isShowTitle = false;
   @override
   void initState() {
     CommonSP.getAccount().then((onValue) {
       account = onValue;
     });
+    dots_num = micropost.dots_num;
+    comment_num = micropost.comment_num;
+    zf_num = 123;
     _scrollController = new ScrollController()
       ..addListener(_scrollListener);
     _refreshData();
+
+    new Future.delayed(const Duration(microseconds: 300), () {
+      //任务具体代码
+      _persistentBottomSheet();
+    });
   }
+
 
   int Indicator_index = 1;
+  final _scaffoldKey = new GlobalKey<ScaffoldState>();
+  BuildContext mContext;
   @override
   Widget build(BuildContext context) {
-    var node = new FocusNode();
-    return new Scaffold(
-        appBar: getAppBar(),
-        body: getList(),
-        bottomNavigationBar: new Container(
-          height: 60.0,
-          child: new TextField(
-            onChanged: (str) {
+    mContext = context;
+    return new WillPopScope(child: new Scaffold(
+      key: _scaffoldKey,
+      appBar: getAppBar(),
+      body: getList(),
 
-            },
-            decoration: new InputDecoration(
-                labelText: '邮箱',
-                hintText: '请输入邮箱',
-                labelStyle:
-                new TextStyle(color: Color(CLS.TextLabel))),
-            maxLines: 1,
-            onSubmitted: (text) {
-              FocusScope.of(context).reparentIfNeeded(node);
-            },
-          ),
-        )
-    );
+    ), onWillPop: _singleExit);
   }
+
+  Future<bool> _singleExit() {
+    Navigator.of(mContext).pop();
+    return new Future.value(true);
+  }
+
+
 
   void _scrollListener() {
     //超过该高度则显示头部icon
@@ -113,6 +118,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
         color: Color(0xFF000000),
         onPressed: () {
           Navigator.of(context).pop();
+          Navigator.of(context).pop();
         },
       ),
       actions: <Widget>[
@@ -127,6 +133,9 @@ class _MicropostDetailState extends State<MicropostDetailPage>
     );
   }
 
+  int dots_num;
+  int comment_num;
+  int zf_num;
   Widget getTabs() {
     int a = micropost.dots_num;
     int b = micropost.comment_num;
@@ -136,7 +145,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
         new GestureDetector(
           child: new Container(
             child: new Center(
-              child: new Text("赞  " + '$a',
+              child: new Text("赞  " + '$dots_num',
                 style: TextStyle(
                     color: Indicator_index == 1 ? Color(CLS.INDICATOR) : Color(
                         CLS.TextLabel)),),
@@ -154,7 +163,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
         new GestureDetector(
           child: new Container(
             child: new Center(
-              child: new Text("评论 " + '$b',
+              child: new Text("评论 " + '$comment_num',
                   style: TextStyle(color: Indicator_index == 2
                       ? Color(CLS.INDICATOR)
                       : Color(CLS.TextLabel))),
@@ -172,7 +181,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
         new GestureDetector(
           child: new Container(
             child: new Center(
-              child: new Text("转发 " + '$c',
+              child: new Text("转发 " + '$zf_num',
                   style: TextStyle(color: Indicator_index == 3
                       ? Color(CLS.INDICATOR)
                       : Color(CLS.TextLabel))),
@@ -212,6 +221,30 @@ class _MicropostDetailState extends State<MicropostDetailPage>
     }
   }
 
+  void _persistentBottomSheet() {
+    _scaffoldKey.currentState.showBottomSheet((context) {
+      return new Container(
+        color: Color(CLS.HALF_BACKGROUND),
+        height: 40.0,
+        child: new Center(
+          child: new TextField(
+            controller: _commentController,
+            autofocus: false,
+            maxLines: 1,
+            decoration: new InputDecoration(
+                hintText: '写评论...',
+
+                hintStyle:
+                new TextStyle(color: Color(CLS.TextLabel))),
+            onSubmitted: (text) {
+              _presenter.sendCommit(micropost.id, text);
+            },
+          ),
+        ),
+      );
+    });
+  }
+
   sw(int index) {
     print(index.toString());
     setState(() {
@@ -236,7 +269,11 @@ class _MicropostDetailState extends State<MicropostDetailPage>
         if (i == 0) {
           return new Column(
             children: <Widget>[
-              new MicropostPage(micropost, this),
+              new Container(
+                child: new MicropostPage(micropost, this, 2),
+                margin: const EdgeInsets.all(10.0),
+              ),
+
               new Container(
                 color: Color(CLS.DIVIDER),
                 height: 14.0,
@@ -445,6 +482,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
     }
     setState(() {
       commitDatas.addAll(list);
+      comment_num = commitDatas.length;
     });
   }
 
@@ -456,6 +494,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
     }
     setState(() {
       dotDatas.addAll(list);
+      dots_num = dotDatas.length;
     });
   }
 
@@ -463,4 +502,16 @@ class _MicropostDetailState extends State<MicropostDetailPage>
   setPresenter(MicropostIPresenter presenter) {
     _presenter = presenter;
   }
+
+  @override
+  void onCommitFail(String f) {
+
+  }
+
+  @override
+  void onCommitSuc() {
+    sw(2);
+    _commentController.text = '';
+  }
+
 }

@@ -252,5 +252,24 @@ class FFHttpUtils {
       return new Dot.fromJson(model);
     }).toList();
   }
+
+  //发送评论
+  Future<String> sendCommit(int micropostId, String content) async {
+    String res = '';
+    var uri = Uri.parse(Constant.baseUrl + '/app/seedcommit');
+    var request = new http.MultipartRequest("POST", uri);
+    Account account = await CommonSP.getAccount();
+    request.fields['token'] = account.token;
+    request.fields['comment'] = content;
+    request.fields['micropost_id'] = '$micropostId';
+
+    http.BaseResponse response = await request.send();
+    if (response.statusCode == 200) {
+      res = '0';
+    } else {
+      res = '请检查网络';
+    }
+    return res;
+  }
 }
 

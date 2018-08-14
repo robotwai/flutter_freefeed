@@ -41,8 +41,16 @@ class MicropostPresenterImpl extends MicropostIPresenter {
   }
 
   @override
-  void sendCommit(String body) {
-
+  void sendCommit(int id, String body) {
+    print(body);
+    FFHttpUtils.origin.sendCommit(id, body)
+        .then((onValue) {
+      if (onValue == '0') {
+        micropostIView.onCommitSuc();
+      } else {
+        micropostIView.onCommitFail(onValue);
+      }
+    });
   }
 
   @override

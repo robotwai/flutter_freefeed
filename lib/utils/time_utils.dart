@@ -17,6 +17,7 @@ class TimeUtils {
     var reset =
         realtime.millisecondsSinceEpoch + 8 * 60 * 60 * 1000; //获取指定时间的毫秒数
     int dateDiff = nowTime - reset;
+    msg = "刚刚";
     if (dateDiff < 0) {
       msg = "刚刚";
     } else {

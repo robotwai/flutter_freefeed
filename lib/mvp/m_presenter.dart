@@ -9,7 +9,7 @@ abstract class MicropostIPresenter implements IPresenter {
   loadDots(int pageNum, int id);
   void dot(Micropost item);
 
-  void sendCommit(String body);
+  void sendCommit(int id, String body);
 }
 
 
@@ -20,4 +20,8 @@ abstract class MicropostIView implements IView<MicropostIPresenter> {
   void onloadFLFail();
 
   void updateSingleFeed(Micropost m);
+
+  void onCommitSuc();
+
+  void onCommitFail(String f);
 }

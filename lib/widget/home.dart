@@ -274,7 +274,7 @@ class _MyHomePageState extends State<MyHomePage>
       child: new Card(
         color: Color(CLS.BACKGROUND),
         margin: const EdgeInsets.all(10.0),
-        child: new MicropostPage(item, this),
+        child: new MicropostPage(item, this, 1),
       ),
       onTap: () {
         jumpToDetail(item);

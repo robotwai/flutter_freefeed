@@ -8,8 +8,10 @@ class MicropostPage extends StatelessWidget {
   Micropost item;
   PageCallBack callBack;
   double system_width;
+  int type;
 
-  MicropostPage(this.item, this.callBack);
+
+  MicropostPage(this.item, this.callBack, this.type);
 
   @override
   Widget build(BuildContext context) {
@@ -85,20 +87,26 @@ class MicropostPage extends StatelessWidget {
   }
 
   _getImageChild(String url) {
+    if (url != null && url.length > 0) {
+      url = url.substring(0, url.length - 1);
+    }
+    print(url);
     if (url.isEmpty) {
       return new Container();
     } else {
       List<String> list = url.split(',');
-      list.removeAt(list.length - 1);
+      print(list.length.toString());
       if (list.length == 1) {
+        print(item.id);
         return new GestureDetector(
           onTap: () {
             callBack.goPhotoView(Constant.baseUrl + list[0]);
           },
-          child: new Image.network(Constant.baseUrl + list[0]),
+          child: new Image.network(Constant.baseUrl + list[0],
+              height: system_width - 20),
         );
       } else {
-        new Container(
+        return new Container(
           child: GridView.builder(
             gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 150.0),
@@ -161,10 +169,16 @@ class MicropostPage extends StatelessWidget {
   }
 
   _getBottomView(Micropost item) {
+    double size = 20.0;
     bool yizan = item.dotId > 0;
-    int zanNum = item.dots_num;
-    int commitNum = item.comment_num;
-    int zhuanfaNum = 123;
+    String zanNum = item.dots_num.toString();
+    String commitNum = item.comment_num.toString();
+    String zhuanfaNum = 123.toString();
+    if (type == 2) {
+      zanNum = '';
+      commitNum = '';
+      zhuanfaNum = '';
+    }
     return Container(
       padding: const EdgeInsets.all(8.0),
       child: new Row(
@@ -176,16 +190,16 @@ class MicropostPage extends StatelessWidget {
                 children: <Widget>[
                   Image.asset(
                     yizan ? 'images/yizan.png' : 'images/dianzan.png',
-                    width: 15.0,
-                    height: 15.0,
+                    width: size,
+                    height: size,
                   ),
                   new Container(
-                    child: new Text('$zanNum'),
+                    child: new Text(zanNum),
                     margin: const EdgeInsets.only(left: 4.0),
                   )
                 ],
               ),
-              height: 15.0,
+              height: size,
               width: (system_width - 36.0) / 3,
             ),
             onTap: () {
@@ -199,11 +213,11 @@ class MicropostPage extends StatelessWidget {
                 children: <Widget>[
                   Image.asset(
                     'images/pinglun.png',
-                    width: 15.0,
-                    height: 15.0,
+                    width: size,
+                    height: size,
                   ),
                   new Container(
-                    child: new Text('$commitNum'),
+                    child: new Text(commitNum),
                     margin: const EdgeInsets.only(left: 4.0),
                   )
                 ],
@@ -212,7 +226,7 @@ class MicropostPage extends StatelessWidget {
                 callBack.jumpToDetail(item);
               },
             ),
-            height: 15.0,
+            height: size,
             width: (system_width - 36.0) / 3,
           ),
           new Container(
@@ -222,11 +236,11 @@ class MicropostPage extends StatelessWidget {
                 children: <Widget>[
                   Image.asset(
                     'images/zhuanfa.png',
-                    width: 15.0,
-                    height: 15.0,
+                    width: size,
+                    height: size,
                   ),
                   new Container(
-                    child: new Text('$zhuanfaNum'),
+                    child: new Text(zhuanfaNum),
                     margin: const EdgeInsets.only(left: 4.0),
                   )
                 ],
@@ -235,7 +249,7 @@ class MicropostPage extends StatelessWidget {
                 callBack.tap_dot(item);
               },
             ),
-            height: 15.0,
+            height: size,
             width: (system_width - 36.0) / 3,
           ),
         ],
