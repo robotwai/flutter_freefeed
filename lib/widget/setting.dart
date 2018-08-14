@@ -48,27 +48,6 @@ class _SettingState extends State<SettingPage> {
                 ],
               ),
             ),
-//            new Offstage(
-//              child: new AlertDialog(
-//                title: new Text('确定要退出登录么？'),
-//
-//                actions: <Widget>[
-//                  new FlatButton(
-//                    child: new Text('确认退出'),
-//                    onPressed: () {
-//
-//                    },
-//                  ),
-//                  new FlatButton(
-//                    child: new Text('取消'),
-//                    onPressed: () {
-//                      Navigator.of(context).pop();
-//                    },
-//                  ),
-//                ],
-//              ),
-//              offstage: showDialog,
-//            )
           ],
         ),
         bottomNavigationBar: getBottom()
