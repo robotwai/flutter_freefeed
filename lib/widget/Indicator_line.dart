@@ -25,8 +25,6 @@ class IndicatorLine extends CustomPainter {
 
     var left = (indicator - 1) * length / sum;
     var right = (indicator) * length / sum;
-    print('left' + left.toString() + ":right" + right.toString());
-
     canvas.drawLine(Offset(left, 0.0), Offset(right, 0.0), paint2);
   }
 

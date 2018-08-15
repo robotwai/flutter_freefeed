@@ -33,7 +33,6 @@ class MicropostPage extends StatelessWidget {
                   margin: const EdgeInsets.all(12.0),
                 ),
                 onTap: () {
-                  print("tap");
                   callBack.jumpToUser(item);
                 },
               ),
@@ -91,14 +90,11 @@ class MicropostPage extends StatelessWidget {
     if (url != null && url.length > 0) {
       url = url.substring(0, url.length - 1);
     }
-    print(url);
     if (url.isEmpty) {
       return new Container();
     } else {
       List<String> list = url.split(',');
-      print(list.length.toString());
       if (list.length == 1) {
-        print(item.id);
         return new GestureDetector(
           onTap: () {
             callBack.goPhotoView(Constant.baseUrl + list[0]);
