@@ -11,6 +11,7 @@ import 'package:flutter_app/mvp/m_presenter.impl.dart';
 import 'dart:async';
 import 'package:flutter_app/widget/Indicator_line.dart';
 import 'package:flutter_app/model/dot_model.dart';
+import 'package:flutter_app/widget/user_detail_page.dart';
 
 class MicropostDetailPage extends StatefulWidget {
   Micropost micropost;
@@ -491,6 +492,18 @@ class _MicropostDetailState extends State<MicropostDetailPage>
   @override
   tap_dot(Micropost item) {
     _presenter.dot(item);
+  }
+
+  @override
+  jumpToUser(Micropost item) {
+    Navigator
+        .of(context)
+        .push(new PageRouteBuilder(
+      opaque: false,
+      pageBuilder: (BuildContext context, _, __) {
+        return new UserDetailPage(item.id);
+      },
+    ));
   }
 
   @override

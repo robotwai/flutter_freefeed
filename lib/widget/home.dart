@@ -11,6 +11,7 @@ import 'package:flutter_app/widget/multi_touch_page.dart';
 import 'dart:async';
 import 'package:flutter_app/widget/micropost_detail_page.dart';
 import 'package:flutter_app/widget/micropost_common_page.dart';
+import 'package:flutter_app/widget/user_detail_page.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -295,7 +296,7 @@ class _MyHomePageState extends State<MyHomePage>
     });
   }
 
-  void jumpToDetail(Micropost item) async {
+  void jumpToDetail(Micropost item) {
     Navigator
         .of(context)
         .push(new PageRouteBuilder(
@@ -307,6 +308,19 @@ class _MyHomePageState extends State<MyHomePage>
         .then((onValue) {
       forDetailUpdate(item);
     });
+  }
+
+
+  @override
+  jumpToUser(Micropost item) {
+    Navigator
+        .of(context)
+        .push(new PageRouteBuilder(
+      opaque: false,
+      pageBuilder: (BuildContext context, _, __) {
+        return new UserDetailPage(item.id);
+      },
+    ));
   }
 
   void forDetailUpdate(Micropost item) async {
