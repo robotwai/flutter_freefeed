@@ -54,8 +54,10 @@ class FFHttpUtils {
   }
 
   //点赞功能
-  Future<Micropost> dot(String token, Micropost item) async {
+  Future<Micropost> dot(Micropost item) async {
     Micropost data;
+    Account account = await CommonSP.getAccount();
+    String token = account.token;
     String url = item.dotId != 0 ? '/app/dotDestroy' : '/app/dot';
     var uri = new Uri.http(Constant.baseUrlNoHttp, url,
         {

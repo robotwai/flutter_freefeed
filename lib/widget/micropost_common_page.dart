@@ -102,8 +102,11 @@ class MicropostPage extends StatelessWidget {
           onTap: () {
             callBack.goPhotoView(Constant.baseUrl + list[0]);
           },
-          child: new Image.network(Constant.baseUrl + list[0],
-              height: system_width - 20),
+            child:
+            new ConstrainedBox(
+              child: new Image.network(Constant.baseUrl + list[0]),
+              constraints: new BoxConstraints(maxHeight: system_width - 20),
+            )
         );
       } else {
         return new Container(

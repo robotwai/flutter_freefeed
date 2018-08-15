@@ -81,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage>
   void initState() {
     super.initState();
     getUserInfo();
+    _lastClickTime = 0;
     _scrollController = new ScrollController()
       ..addListener(_scrollListener);
   }
@@ -136,28 +137,31 @@ class _MyHomePageState extends State<MyHomePage>
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return new Scaffold(
-      appBar: new AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: new Text(
-          widget.title,
-          style: new TextStyle(
-            fontWeight: FontWeight.w400,
+    return new WillPopScope(
+      child: new Scaffold(
+        appBar: new AppBar(
+          // Here we take the value from the MyHomePage object that was created by
+          // the App.build method, and use it to set our appbar title.
+          title: new Text(
+            widget.title,
+            style: new TextStyle(
+              fontWeight: FontWeight.w400,
+            ),
           ),
         ),
+        drawer: new Container(
+          color: Color(CLS.BACKGROUND),
+          width: 250.0,
+          child: getLeftPage(),
+        ),
+        body: _buildFeeds(),
+        floatingActionButton: new FloatingActionButton(
+          onPressed: _addMicropost,
+          tooltip: 'Increment',
+          child: new Icon(Icons.add),
+        ), // This trailing comma makes auto-formatting nicer for build methods.
       ),
-      drawer: new Container(
-        color: Color(CLS.BACKGROUND),
-        width: 250.0,
-        child: getLeftPage(),
-      ),
-      body: _buildFeeds(),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: _addMicropost,
-        tooltip: 'Increment',
-        child: new Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      onWillPop: _doubleExit,
     );
   }
 
@@ -291,13 +295,24 @@ class _MyHomePageState extends State<MyHomePage>
     });
   }
 
-  void jumpToDetail(Micropost item) {
-    Navigator.of(context).push(new PageRouteBuilder(
-        opaque: false,
-        pageBuilder: (BuildContext context, _, __) {
-          return new MicropostDetailPage(item);
-        },
-    ));
+  void jumpToDetail(Micropost item) async {
+    Navigator
+        .of(context)
+        .push(new PageRouteBuilder(
+      opaque: false,
+      pageBuilder: (BuildContext context, _, __) {
+        return new MicropostDetailPage(item);
+      },
+    ))
+        .then((onValue) {
+      forDetailUpdate(item);
+    });
+  }
+
+  void forDetailUpdate(Micropost item) async {
+    Micropost m = await MicropostProvider.origin.getItem(item.id);
+    print(m);
+    updateSingleFeed(m);
   }
 
   Widget getLeftIcon() {
@@ -426,4 +441,20 @@ class _MyHomePageState extends State<MyHomePage>
     _presenter = presenter;
   }
 
+  int _lastClickTime;
+
+  Future<bool> _doubleExit() {
+    int nowTime = new DateTime.now().microsecondsSinceEpoch;
+
+    if (_lastClickTime != 0 && nowTime - _lastClickTime > 1500) {
+      return new Future.value(true);
+    } else {
+      _lastClickTime = new DateTime.now().microsecondsSinceEpoch;
+      new Future.delayed(const Duration(milliseconds: 1500), () {
+        _lastClickTime = 0;
+      });
+
+      return new Future.value(false);
+    }
+  }
 }

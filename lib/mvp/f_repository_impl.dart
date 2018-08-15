@@ -49,7 +49,7 @@ class FeedRepositoryImpl implements FeedRepository{
 
   @override
   Future<Micropost> dot(String token, Micropost mic) {
-    return FFHttpUtils.origin.dot(token, mic);
+    return FFHttpUtils.origin.dot(mic);
   }
 
   @override

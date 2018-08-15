@@ -9,9 +9,8 @@ abstract class MicropostIPresenter implements IPresenter {
   loadDots(int pageNum, int id);
   void dot(Micropost item);
 
-  void sendCommit(int id, String body);
+  void sendCommit(Micropost item, String body);
 }
-
 
 abstract class MicropostIView implements IView<MicropostIPresenter> {
   void onloadFLSuc(List<Commit> list);

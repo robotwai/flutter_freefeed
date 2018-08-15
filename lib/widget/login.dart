@@ -25,6 +25,7 @@ class _LoginState extends State<LoginPage> {
   String _password;
   String default_email = '';
   bool isLoading = false;
+  TextEditingController _controller = new TextEditingController();
   @override
   Widget build(BuildContext context) {
     var node = new FocusNode();
@@ -50,6 +51,7 @@ class _LoginState extends State<LoginPage> {
                             _email = str;
                             print(_email);
                           },
+                          controller: _controller,
                           decoration: new InputDecoration(
                               labelText: '邮箱',
                               hintText: '请输入邮箱',
@@ -123,7 +125,7 @@ class _LoginState extends State<LoginPage> {
     Navigator.of(context).pushNamed('/r').then((onValue) {
       if (onValue != null) {
         setState(() {
-          default_email = onValue;
+          _controller.text = onValue;
         });
       }
     });

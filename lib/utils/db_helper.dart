@@ -22,10 +22,10 @@ class MicropostProvider {
     print('init provider');
   }
 
-  Future initAA() async{
+  Future initAA() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var json =prefs.getString('micropost_db_path');
-    if(json==null){
+    var json = prefs.getString('micropost_db_path');
+    if (json == null) {
       var databasesPath = await getDatabasesPath();
       dbPath = join(databasesPath, dbName);
       CommonSP.saveDBPath(dbPath);
@@ -34,11 +34,10 @@ class MicropostProvider {
       await db.execute(sql_createTable);
       await db.close();
       print('创建micropost.db成功，创建micropost_table成功');
-    }else{
+    } else {
       print('has');
     }
   }
-
 
   String sql_createTable =
       "CREATE TABLE '$tab_name' (id INTEGER PRIMARY KEY, content TEXT,user_id INTEGER,picture TEXT,"
@@ -151,6 +150,16 @@ class MicropostProvider {
       _path = path;
       return realgetList(page, _path);
     });
+  }
+
+  Future<Micropost> getItem(int id) async {
+    String path = await CommonSP.getDBPath();
+    Database db = await openDatabase(path);
+    String sql_query = "SELECT * FROM '$tab_name' WHERE ID= '$id'";
+    List<Map> list = await db.rawQuery(sql_query);
+    print(list);
+    await db.close();
+    return new Micropost.fromMap(list[0]);
   }
 
   Future<List<Micropost>> realgetList(int page, String d_path) async {

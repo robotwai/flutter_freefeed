@@ -18,8 +18,8 @@ class MicropostDetailPage extends StatefulWidget {
   @override
   _MicropostDetailState createState() {
     myMicropostDetailState = new _MicropostDetailState(micropost);
-    MicropostIPresenter presenter = new MicropostPresenterImpl(
-        myMicropostDetailState);
+    MicropostIPresenter presenter =
+    new MicropostPresenterImpl(myMicropostDetailState);
     presenter.init();
     return myMicropostDetailState;
   }
@@ -47,9 +47,6 @@ class _MicropostDetailState extends State<MicropostDetailPage>
     CommonSP.getAccount().then((onValue) {
       account = onValue;
     });
-    dots_num = micropost.dots_num;
-    comment_num = micropost.comment_num;
-    zf_num = 123;
     _scrollController = new ScrollController()
       ..addListener(_scrollListener);
     _refreshData();
@@ -60,27 +57,20 @@ class _MicropostDetailState extends State<MicropostDetailPage>
     });
   }
 
-
   int Indicator_index = 1;
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
   BuildContext mContext;
   @override
   Widget build(BuildContext context) {
     mContext = context;
-    return new WillPopScope(child: new Scaffold(
-      key: _scaffoldKey,
-      appBar: getAppBar(),
-      body: getList(),
-
-    ), onWillPop: _singleExit);
+    return new WillPopScope(
+        child: new Scaffold(
+          key: _scaffoldKey,
+          appBar: getAppBar(),
+          body: getList(),
+        ),
+        onWillPop: _singleExit);
   }
-
-  Future<bool> _singleExit() {
-    Navigator.of(mContext).pop();
-    return new Future.value(true);
-  }
-
-
 
   void _scrollListener() {
     //超过该高度则显示头部icon
@@ -117,8 +107,8 @@ class _MicropostDetailState extends State<MicropostDetailPage>
         icon: const Icon(Icons.arrow_back),
         color: Color(0xFF000000),
         onPressed: () {
-          Navigator.of(context).pop();
-          Navigator.of(context).pop();
+          Navigator.of(context).pop(micropost);
+          Navigator.of(context).pop(micropost);
         },
       ),
       actions: <Widget>[
@@ -133,22 +123,19 @@ class _MicropostDetailState extends State<MicropostDetailPage>
     );
   }
 
-  int dots_num;
-  int comment_num;
-  int zf_num;
   Widget getTabs() {
-    int a = micropost.dots_num;
-    int b = micropost.comment_num;
-    int c = 123;
     return new Row(
       children: <Widget>[
         new GestureDetector(
           child: new Container(
             child: new Center(
-              child: new Text("赞  " + '$dots_num',
+              child: new Text(
+                "赞  " + micropost.dots_num.toString(),
                 style: TextStyle(
-                    color: Indicator_index == 1 ? Color(CLS.INDICATOR) : Color(
-                        CLS.TextLabel)),),
+                    color: Indicator_index == 1
+                        ? Color(CLS.INDICATOR)
+                        : Color(CLS.TextLabel)),
+              ),
             ),
             width: (MediaQuery
                 .of(context)
@@ -163,10 +150,11 @@ class _MicropostDetailState extends State<MicropostDetailPage>
         new GestureDetector(
           child: new Container(
             child: new Center(
-              child: new Text("评论 " + '$comment_num',
-                  style: TextStyle(color: Indicator_index == 2
-                      ? Color(CLS.INDICATOR)
-                      : Color(CLS.TextLabel))),
+              child: new Text("评论 " + micropost.comment_num.toString(),
+                  style: TextStyle(
+                      color: Indicator_index == 2
+                          ? Color(CLS.INDICATOR)
+                          : Color(CLS.TextLabel))),
             ),
             width: (MediaQuery
                 .of(context)
@@ -181,10 +169,11 @@ class _MicropostDetailState extends State<MicropostDetailPage>
         new GestureDetector(
           child: new Container(
             child: new Center(
-              child: new Text("转发 " + '$zf_num',
-                  style: TextStyle(color: Indicator_index == 3
-                      ? Color(CLS.INDICATOR)
-                      : Color(CLS.TextLabel))),
+              child: new Text("转发 " + '123',
+                  style: TextStyle(
+                      color: Indicator_index == 3
+                          ? Color(CLS.INDICATOR)
+                          : Color(CLS.TextLabel))),
             ),
             width: (MediaQuery
                 .of(context)
@@ -199,6 +188,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
       ],
     );
   }
+
   Widget _getTopIcon() {
     print(micropost.icon);
     if (micropost == null ||
@@ -221,32 +211,62 @@ class _MicropostDetailState extends State<MicropostDetailPage>
     }
   }
 
+  int sendColor = 0xFF9c9c9c;
+  FocusNode node;
   void _persistentBottomSheet() {
+    node = new FocusNode();
     _scaffoldKey.currentState.showBottomSheet((context) {
       return new Container(
-        color: Color(CLS.HALF_BACKGROUND),
-        height: 40.0,
-        child: new Center(
-          child: new TextField(
-            controller: _commentController,
-            autofocus: false,
-            maxLines: 1,
-            decoration: new InputDecoration(
-                hintText: '写评论...',
-
-                hintStyle:
-                new TextStyle(color: Color(CLS.TextLabel))),
-            onSubmitted: (text) {
-              _presenter.sendCommit(micropost.id, text);
-            },
-          ),
-        ),
-      );
+          color: Color(0xffffff),
+          height: 41.0,
+          width: MediaQuery
+              .of(context)
+              .size
+              .width,
+          child: new Column(
+            children: <Widget>[
+              new Divider(
+                height: 1.0,
+              ),
+              new Container(
+                  height: 40.0,
+                  padding: const EdgeInsets.only(left: 14.0),
+                  child: new Row(
+                    children: <Widget>[
+                      new Flexible(
+                        child: new TextField(
+                          controller: _commentController,
+                          autofocus: false,
+                          focusNode: node,
+                          maxLines: 1,
+                          decoration: new InputDecoration(
+                              hintText: '写评论...',
+                              hintStyle:
+                              new TextStyle(color: Color(CLS.TextLabel))),
+                        ),
+                      ),
+                      new Container(
+                        margin: new EdgeInsets.symmetric(horizontal: 4.0),
+                        child: new IconButton(
+                            icon: new Icon(Icons.send),
+                            onPressed: () {
+                              node.unfocus();
+                              _presenter.sendCommit(
+                                  micropost,
+                                  _commentController
+                                      .text); //modified  当没有为onPressed绑定处理函数时，IconButton默认为禁用状态
+                            }),
+                      ),
+                    ],
+                  ))
+            ],
+          ));
     });
   }
 
   sw(int index) {
     print(index.toString());
+    node.unfocus();
     setState(() {
       Indicator_index = index;
       _refreshData();
@@ -273,7 +293,6 @@ class _MicropostDetailState extends State<MicropostDetailPage>
                 child: new MicropostPage(micropost, this, 2),
                 margin: const EdgeInsets.all(10.0),
               ),
-
               new Container(
                 color: Color(CLS.DIVIDER),
                 height: 14.0,
@@ -281,18 +300,19 @@ class _MicropostDetailState extends State<MicropostDetailPage>
               getTabs(),
               new Container(
                 child: new CustomPaint(
-                  painter: new IndicatorLine(Indicator_index, 3, MediaQuery
+                  painter: new IndicatorLine(
+                      Indicator_index, 3, MediaQuery
                       .of(context)
                       .size
                       .width),
-                  isComplex: true,),
+                  isComplex: true,
+                ),
                 width: MediaQuery
                     .of(context)
                     .size
                     .width,
                 height: 6.0,
               ),
-
             ],
           );
         } else {
@@ -307,12 +327,17 @@ class _MicropostDetailState extends State<MicropostDetailPage>
       controller: _scrollController,
     );
 
-
     var _refreshIndicator = new RefreshIndicator(
-      onRefresh: _refreshData,
-        child: content
-
-    );
+        onRefresh: _refreshData,
+        child: new Container(
+          child: new GestureDetector(
+            child: content,
+            onTap: () {
+              node.unfocus();
+            },
+          ),
+          margin: const EdgeInsets.only(bottom: 40.0),
+        ));
 
     return _refreshIndicator;
   }
@@ -364,7 +389,6 @@ class _MicropostDetailState extends State<MicropostDetailPage>
       ],
     );
   }
-
 
   Widget _buildRow2(BuildContext context, int index) {
     Commit commit = datas[index];
@@ -460,17 +484,24 @@ class _MicropostDetailState extends State<MicropostDetailPage>
 
     return completer.future;
   }
+
   @override
   jumpToDetail(Micropost item) {}
 
   @override
-  tap_dot(Micropost item) {}
+  tap_dot(Micropost item) {
+    _presenter.dot(item);
+  }
 
   @override
   goPhotoView(String url) {}
 
   @override
-  void updateSingleFeed(Micropost m) {}
+  void updateSingleFeed(Micropost m) {
+    setState(() {
+      micropost = m;
+    });
+  }
 
   @override
   void onloadFLFail() {}
@@ -481,11 +512,10 @@ class _MicropostDetailState extends State<MicropostDetailPage>
       commitDatas.clear();
     }
     setState(() {
-      commitDatas.addAll(list);
-      comment_num = commitDatas.length;
+      commitDatas.addAll(list.reversed);
+      micropost.comment_num = commitDatas.length;
     });
   }
-
 
   @override
   void onloadDotSuc(List<Dot> list) {
@@ -493,8 +523,8 @@ class _MicropostDetailState extends State<MicropostDetailPage>
       dotDatas.clear();
     }
     setState(() {
-      dotDatas.addAll(list);
-      dots_num = dotDatas.length;
+      dotDatas.addAll(list.reversed);
+      micropost.dots_num = dotDatas.length;
     });
   }
 
@@ -504,14 +534,17 @@ class _MicropostDetailState extends State<MicropostDetailPage>
   }
 
   @override
-  void onCommitFail(String f) {
-
-  }
+  void onCommitFail(String f) {}
 
   @override
   void onCommitSuc() {
     sw(2);
-    _commentController.text = '';
+    _commentController.clear();
   }
 
+  Future<bool> _singleExit() {
+//    Navigator.of(mContext).pop(micropost);
+    Navigator.of(mContext).pop(micropost);
+    return new Future.value(true);
+  }
 }
