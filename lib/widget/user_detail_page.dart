@@ -8,6 +8,9 @@ import 'package:flutter_app/model/user_model.dart';
 import 'package:flutter_app/mvp/u_presenter.dart';
 import 'package:flutter_app/mvp/u_presenter_impl.dart';
 import 'package:flutter_app/widget/micropost_common_page.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_app/utils/sp_local.dart';
+import 'package:flutter_app/model/account_model.dart';
 
 class UserDetailPage extends StatefulWidget {
   int id;
@@ -35,6 +38,7 @@ class _UserDetailPageState extends State<UserDetailPage>
   List<Micropost> datas = [];
   int currentPage = 1;
   bool isFullLoad = false;
+  int my_id;
   @override
   void initState() {
     super.initState();
@@ -53,7 +57,11 @@ class _UserDetailPageState extends State<UserDetailPage>
           break;
       }
     });
-
+    CommonSP.getAccount().then((onValue) {
+      setState(() {
+        my_id = onValue.id;
+      });
+    });
     _presenter.loadUser(widget.id);
     _presenter.loadMicroposts(widget.id, currentPage);
     _scrollController = new ScrollController()
@@ -72,9 +80,10 @@ class _UserDetailPageState extends State<UserDetailPage>
       });
     }
     //头像透明度变化
-    if (_scrollController.position.pixels < 140.0) {
+    if (_scrollController.position.pixels < 140.0 &&
+        _scrollController.position.pixels > 0.0) {
       setState(() {
-        icon_alpha = (140 - _scrollController.position.pixels) / 140.0;
+        icon_alpha = (140.0 - _scrollController.position.pixels) / 140.0;
       });
     }
 
@@ -125,7 +134,6 @@ class _UserDetailPageState extends State<UserDetailPage>
     );
   }
 
-
   getList() {
     var content;
 
@@ -144,9 +152,7 @@ class _UserDetailPageState extends State<UserDetailPage>
               margin: const EdgeInsets.all(10.0),
               child: new MicropostPage(item, this, 1),
             ),
-            onTap: () {
-
-            },
+            onTap: () {},
           );
         }
       },
@@ -177,21 +183,23 @@ class _UserDetailPageState extends State<UserDetailPage>
               height: 100.0,
             ),
             new Container(
-              padding: const EdgeInsets.only(top: 60.0, bottom: 12.0),
+              padding: const EdgeInsets.only(top: 20.0, bottom: 12.0),
               color: Color(CLS.BACKGROUND),
-              height: 204.0,
+              height: 220.0,
               child: new Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   new Padding(
-                    padding: const EdgeInsets.only(bottom: 14.0, left: 14.0),
+                    padding: const EdgeInsets.only(
+                        bottom: 14.0, left: 14.0, top: 40.0),
                     child: new Text(
                       _user == null ? '' : _user.name,
                       style: new TextStyle(
                           color: Color(CLS.TEXT_0),
                           fontSize: 18.0,
                           fontWeight: FontWeight.w600),
-                    ),),
+                    ),
+                  ),
                   new Padding(
                     padding: const EdgeInsets.only(bottom: 14.0, left: 14.0),
                     child: new Text(
@@ -211,7 +219,9 @@ class _UserDetailPageState extends State<UserDetailPage>
                             child: new Row(
                               children: <Widget>[
                                 new Text(
-                                  _user == null ? '' : _user.followed == 0
+                                  _user == null
+                                      ? ''
+                                      : _user.followed == 0
                                       ? '暂无'
                                       : _user.followed.toString() + '  ',
                                   style: new TextStyle(
@@ -227,15 +237,15 @@ class _UserDetailPageState extends State<UserDetailPage>
                                       fontWeight: FontWeight.w300),
                                 ),
                               ],
-                            )
-                        ),
+                            )),
                         new Padding(
                             padding: const EdgeInsets.only(right: 30.0),
-
                             child: new Row(
                               children: <Widget>[
                                 new Text(
-                                  _user == null ? '' : _user.follower == 0
+                                  _user == null
+                                      ? ''
+                                      : _user.follower == 0
                                       ? '暂无'
                                       : _user.follower.toString() + '  ',
                                   style: new TextStyle(
@@ -251,8 +261,7 @@ class _UserDetailPageState extends State<UserDetailPage>
                                       fontWeight: FontWeight.w300),
                                 ),
                               ],
-                            )
-                        ),
+                            )),
                         new Text(
                           'Ta的赞',
                           style: new TextStyle(
@@ -261,7 +270,8 @@ class _UserDetailPageState extends State<UserDetailPage>
                               fontWeight: FontWeight.w300),
                         )
                       ],
-                    ),),
+                    ),
+                  ),
                   new Container(
                       height: 30.0,
                       color: Color(0xFFECEDF0),
@@ -270,35 +280,52 @@ class _UserDetailPageState extends State<UserDetailPage>
                         children: <Widget>[
                           new Flexible(
                             fit: FlexFit.tight,
-                            child: new Text("推文 " +
-                                (_user == null ? '' : _user.micropost_num
-                                    .toString()), style: new TextStyle(
-                                color: Color(CLS.TEXT_6),
-                                fontSize: 12.0,
-                                fontWeight: FontWeight.w300)),
+                            child: new Text(
+                                "推文 " +
+                                    (_user == null
+                                        ? ''
+                                        : _user.micropost_num.toString()),
+                                style: new TextStyle(
+                                    color: Color(CLS.TEXT_6),
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.w300)),
                           ),
-                          new Text("筛选", style: new TextStyle(
-                              color: Color(CLS.TEXT_6),
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.w300)),
+                          new Text("筛选",
+                              style: new TextStyle(
+                                  color: Color(CLS.TEXT_6),
+                                  fontSize: 12.0,
+                                  fontWeight: FontWeight.w300)),
                         ],
-                      )
-                  )
-
+                      ))
                 ],
               ),
             ),
           ],
         ),
         new Container(
-          child: new Opacity(
-            opacity: icon_alpha,
-            child: new ClipOval(
-              child: getLeftIcon(),
-            ),
+          child: new Row(
+            children: <Widget>[
+              new Container(
+                width: 80.0,
+                child: new Opacity(
+                  opacity: icon_alpha,
+                  child: new ClipOval(
+                    child: getLeftIcon(),
+                  ),
+                ),
+              ),
+              new Container(
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width - 110.0 - 100.0,
+              ),
+              getFollowButton(),
+
+            ],
           ),
           margin: const EdgeInsets.only(top: 60.0, left: 14.0),
-        )
+        ),
       ],
     );
   }
@@ -321,6 +348,32 @@ class _UserDetailPageState extends State<UserDetailPage>
         height: 80.0,
       );
     }
+  }
+
+  Widget getFollowButton() {
+    return new Container(
+      width: 88.0,
+      height: 40.0,
+      child: new RaisedButton(onPressed: () {
+        print('tap');
+      },
+        child: new Text(
+            _user == null || _user.relation == 0 || _user.relation == 1
+                ? '关注'
+                : _user.relation == 3 ? '互相关注' : '已关注',
+            style: new TextStyle(
+                fontSize: 14.0,
+                color: Color(0xffffffff)
+            ),
+            maxLines: 1),
+        color: Color(
+            my_id == 0 || my_id == widget.id ? 0xffffffff : barBackgroundColor),
+        elevation: 0.0,
+      ),
+
+      margin:
+      const EdgeInsets.only(top: 40.0, left: 14.0, right: 14.0),
+    );
   }
 
   Future<Null> _refreshData() {
@@ -398,24 +451,14 @@ class _UserDetailPageState extends State<UserDetailPage>
   }
 
   @override
-  jumpToUser(int item) {
-
-  }
+  jumpToUser(int item) {}
 
   @override
-  goPhotoView(String url) {
-
-  }
+  goPhotoView(String url) {}
 
   @override
-  jumpToDetail(Micropost item) {
-
-  }
+  jumpToDetail(Micropost item) {}
 
   @override
-  tap_dot(Micropost item) {
-
-  }
-
-
+  tap_dot(Micropost item) {}
 }
