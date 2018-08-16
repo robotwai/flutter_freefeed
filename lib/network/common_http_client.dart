@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:flutter_app/model/commit_model.dart';
 import 'package:flutter_app/model/dot_model.dart';
+import 'package:flutter_app/model/user_model.dart';
 class FFHttpUtils {
   static final FFHttpUtils origin =  FFHttpUtils(new HttpClient());
 
@@ -272,6 +273,74 @@ class FFHttpUtils {
       res = '请检查网络';
     }
     return res;
+  }
+
+  //获取用户信息
+  Future<User> getUser(int id) async {
+    Account account = await CommonSP.getAccount();
+    var uri = new Uri.http(Constant.baseUrlNoHttp, '/app/getUser',
+        {'user_id': '$id', 'token': account.token});
+    var request = await httpClient.getUrl(uri);
+    var response = await request.close();
+    User res = null;
+    if (response.statusCode == HttpStatus.OK) {
+      var json = await response.transform(UTF8.decoder).join();
+      print(uri.toString());
+      Map jsonMap = JSON.decode(json);
+      print(jsonMap['data']);
+      if (int.parse(jsonMap['status']) != Constant.HTTP_OK) {
+        res = null;
+      } else {
+        Map userMap = JSON.decode(jsonMap['data']);
+        User user = new User.fromJson(userMap);
+
+        print(user.email);
+
+        res = user;
+      }
+    } else {
+      res = null;
+    }
+    return res;
+  }
+
+  Future<List<Micropost>> getMicropostList(int id, int pageNum) async {
+    Map<String, String> op = new Map();
+    op['user_id'] = '$id';
+    op['page'] = '$pageNum';
+    Account account = await CommonSP.getAccount();
+    op['token'] = account.token;
+    var uri = new Uri.http(
+        Constant.baseUrlNoHttp, '/app/getUserMicroposts',
+        op);
+    List flModels = [];
+    try {
+      print(uri.toString());
+      var request = await httpClient.getUrl(uri);
+      var response = await request.close();
+      int statusCode = response.statusCode;
+      if (response.statusCode == HttpStatus.OK) {
+        var json = await response.transform(UTF8.decoder).join();
+        String code = jsonDecode(json)['status'];
+        print('code' + code);
+        if (int.parse(code) == Constant.HTTP_OK) {
+          print('codeok');
+          flModels = jsonDecode(json)['data'];
+        } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
+          print('codeHTTP_TOKEN_ERROR');
+          CommonSP.saveAccount('');
+        }
+      } else {
+        //todo
+        print('statusCode' + '$statusCode');
+      }
+    } catch (exception) {
+      //todo
+      print(exception.toString());
+    }
+    return flModels.map((model) {
+      return new Micropost.fromJson(model);
+    }).toList();
   }
 }
 

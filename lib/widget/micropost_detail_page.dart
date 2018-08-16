@@ -7,7 +7,7 @@ import 'package:flutter_app/utils/time_utils.dart';
 import 'package:flutter_app/widget/micropost_common_page.dart';
 import 'package:flutter_app/mvp/m_presenter.dart';
 import 'package:flutter_app/model/commit_model.dart';
-import 'package:flutter_app/mvp/m_presenter.impl.dart';
+import 'package:flutter_app/mvp/m_presenter_impl.dart';
 import 'dart:async';
 import 'package:flutter_app/widget/Indicator_line.dart';
 import 'package:flutter_app/model/dot_model.dart';
@@ -52,10 +52,10 @@ class _MicropostDetailState extends State<MicropostDetailPage>
       ..addListener(_scrollListener);
     _refreshData();
 
-    new Future.delayed(const Duration(microseconds: 300), () {
-      //任务具体代码
-      _persistentBottomSheet();
-    });
+//    new Future.delayed(const Duration(microseconds: 300), () {
+//      //任务具体代码
+//      _persistentBottomSheet();
+//    });
   }
 
   int Indicator_index = 1;
@@ -109,7 +109,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
         color: Color(0xFF000000),
         onPressed: () {
           Navigator.of(context).pop(micropost);
-          Navigator.of(context).pop(micropost);
+//          Navigator.of(context).pop(micropost);
         },
       ),
       actions: <Widget>[
@@ -214,56 +214,6 @@ class _MicropostDetailState extends State<MicropostDetailPage>
 
   int sendColor = 0xFF9c9c9c;
   FocusNode node;
-  void _persistentBottomSheet() {
-    node = new FocusNode();
-    _scaffoldKey.currentState.showBottomSheet((context) {
-      return new Container(
-          color: Color(0xffffff),
-          height: 41.0,
-          width: MediaQuery
-              .of(context)
-              .size
-              .width,
-          child: new Column(
-            children: <Widget>[
-              new Divider(
-                height: 1.0,
-              ),
-              new Container(
-                  height: 40.0,
-                  padding: const EdgeInsets.only(left: 14.0),
-                  child: new Row(
-                    children: <Widget>[
-                      new Flexible(
-                        child: new TextField(
-                          controller: _commentController,
-                          autofocus: false,
-                          focusNode: node,
-                          maxLines: 1,
-                          decoration: new InputDecoration(
-                              hintText: '写评论...',
-                              hintStyle:
-                              new TextStyle(color: Color(CLS.TextLabel))),
-                        ),
-                      ),
-                      new Container(
-                        margin: new EdgeInsets.symmetric(horizontal: 4.0),
-                        child: new IconButton(
-                            icon: new Icon(Icons.send),
-                            onPressed: () {
-                              node.unfocus();
-                              _presenter.sendCommit(
-                                  micropost,
-                                  _commentController
-                                      .text); //modified  当没有为onPressed绑定处理函数时，IconButton默认为禁用状态
-                            }),
-                      ),
-                    ],
-                  ))
-            ],
-          ));
-    });
-  }
 
   sw(int index) {
     print(index.toString());
@@ -337,10 +287,60 @@ class _MicropostDetailState extends State<MicropostDetailPage>
               node.unfocus();
             },
           ),
-          margin: const EdgeInsets.only(bottom: 40.0),
         ));
-
-    return _refreshIndicator;
+    node = new FocusNode();
+    return new Column(
+      children: <Widget>[
+        new Flexible(
+          child: _refreshIndicator,
+        ),
+        new Container(
+            color: Color(0xffffff),
+            height: 41.0,
+            width: MediaQuery
+                .of(context)
+                .size
+                .width,
+            child: new Column(
+              children: <Widget>[
+                new Divider(
+                  height: 1.0,
+                ),
+                new Container(
+                    height: 40.0,
+                    padding: const EdgeInsets.only(left: 14.0),
+                    child: new Row(
+                      children: <Widget>[
+                        new Flexible(
+                          child: new TextField(
+                            controller: _commentController,
+                            autofocus: false,
+                            focusNode: node,
+                            maxLines: 1,
+                            decoration: new InputDecoration(
+                                hintText: '写评论...',
+                                hintStyle:
+                                new TextStyle(color: Color(CLS.TextLabel))),
+                          ),
+                        ),
+                        new Container(
+                          margin: new EdgeInsets.symmetric(horizontal: 4.0),
+                          child: new IconButton(
+                              icon: new Icon(Icons.send),
+                              onPressed: () {
+                                node.unfocus();
+                                _presenter.sendCommit(
+                                    micropost,
+                                    _commentController
+                                        .text); //modified  当没有为onPressed绑定处理函数时，IconButton默认为禁用状态
+                              }),
+                        ),
+                      ],
+                    ))
+              ],
+            )),
+      ],
+    );
   }
 
   Widget _buildRow1(BuildContext context, int index) {
@@ -358,7 +358,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
                 margin: const EdgeInsets.all(12.0),
               ),
               onTap: () {
-                print("tap");
+                jumpToUser(dot.user_id);
               },
             ),
             new Column(
@@ -406,7 +406,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
                 margin: const EdgeInsets.all(12.0),
               ),
               onTap: () {
-                print("tap");
+                jumpToUser(commit.user_id);
               },
             ),
             new Column(
@@ -495,13 +495,11 @@ class _MicropostDetailState extends State<MicropostDetailPage>
   }
 
   @override
-  jumpToUser(Micropost item) {
-    Navigator
-        .of(context)
-        .push(new PageRouteBuilder(
+  jumpToUser(int id) {
+    Navigator.of(context).push(new PageRouteBuilder(
       opaque: false,
       pageBuilder: (BuildContext context, _, __) {
-        return new UserDetailPage(item.id);
+        return new UserDetailPage(id);
       },
     ));
   }
@@ -558,6 +556,6 @@ class _MicropostDetailState extends State<MicropostDetailPage>
   Future<bool> _singleExit() {
 //    Navigator.of(mContext).pop(micropost);
     Navigator.of(mContext).pop(micropost);
-    return new Future.value(true);
+    return new Future.value(false);
   }
 }

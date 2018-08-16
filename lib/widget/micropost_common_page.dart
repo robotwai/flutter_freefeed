@@ -33,7 +33,7 @@ class MicropostPage extends StatelessWidget {
                   margin: const EdgeInsets.all(12.0),
                 ),
                 onTap: () {
-                  callBack.jumpToUser(item);
+                  callBack.jumpToUser(item.user_id);
                 },
               ),
               new Column(
@@ -265,7 +265,7 @@ abstract class PageCallBack {
 
   goPhotoView(String url);
 
-  jumpToUser(Micropost item);
+  jumpToUser(int id);
 }
 
 abstract class controlChildWidget {

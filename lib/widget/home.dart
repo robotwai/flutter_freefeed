@@ -312,13 +312,13 @@ class _MyHomePageState extends State<MyHomePage>
 
 
   @override
-  jumpToUser(Micropost item) {
+  jumpToUser(int id) {
     Navigator
         .of(context)
         .push(new PageRouteBuilder(
       opaque: false,
       pageBuilder: (BuildContext context, _, __) {
-        return new UserDetailPage(item.id);
+        return new UserDetailPage(id);
       },
     ));
   }
@@ -375,6 +375,8 @@ class _MyHomePageState extends State<MyHomePage>
           getUserInfo();
         }
       });
+    } else {
+      jumpToUser(account.id);
     }
   }
 
