@@ -100,11 +100,11 @@ class MicropostProvider {
     await db.close();
   }
 
-  Future<List<Micropost>> getListAndInsertAll(List<Micropost> todo, int page) {
-    return CommonSP.getDBPath().then((path) {
+  Future<List<Micropost>> getListAndInsertAll(List<Micropost> todo,
+      int page) async {
+    String path = await CommonSP.getDBPath();
 //      print(path);
       return getAndInsert(todo, path, page);
-    });
   }
 
   Future<List<Micropost>> getAndInsert(

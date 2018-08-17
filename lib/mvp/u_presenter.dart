@@ -14,6 +14,8 @@ abstract class UserIPresenter implements IPresenter {
   loadUser(int id);
 
   loadMicroposts(int id, int pageNum);
+
+  follow(int id, int type);
 }
 
 abstract class UserIView implements IView<UserIPresenter> {
@@ -29,4 +31,5 @@ abstract class UserIView implements IView<UserIPresenter> {
 
   void onLoadUserSuc(User user);
 
+  void onFollowSuc(int type);
 }

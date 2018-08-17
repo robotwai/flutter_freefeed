@@ -267,7 +267,3 @@ abstract class PageCallBack {
 
   jumpToUser(int id);
 }
-
-abstract class controlChildWidget {
-  refresh(Micropost i);
-}

@@ -36,7 +36,7 @@ class FFHttpUtils {
           flModels = jsonDecode(json)['data'];
         }else if(int.parse(code)==Constant.HTTP_TOKEN_ERROR){
           print('codeHTTP_TOKEN_ERROR');
-          CommonSP.saveAccount('');
+          CommonSP.saveAccount(null);
         }
 
       } else {
@@ -84,7 +84,7 @@ class FFHttpUtils {
 //          data = new Micropost.fromJson(jsonDecode(json)['data']);
         } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
           print('codeHTTP_TOKEN_ERROR');
-          CommonSP.saveAccount('');
+          CommonSP.saveAccount(null);
         }
       } else {
         //todo
@@ -114,7 +114,7 @@ class FFHttpUtils {
       } else {
         Map userMap = JSON.decode(jsonMap['data']);
         Account user = new Account.fromJson(userMap);
-        await CommonSP.saveAccount(JSON.encode(user));
+        await CommonSP.saveAccount(user);
 
         print(user.email);
         CommonSP.saveEmail(user.email);
@@ -203,7 +203,7 @@ class FFHttpUtils {
           flModels = jsonDecode(json)['data'];
         } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
           print('codeHTTP_TOKEN_ERROR');
-          CommonSP.saveAccount('');
+          CommonSP.saveAccount(null);
         }
       } else {
         //todo
@@ -241,7 +241,7 @@ class FFHttpUtils {
           flModels = jsonDecode(json)['data'];
         } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
           print('codeHTTP_TOKEN_ERROR');
-          CommonSP.saveAccount('');
+          CommonSP.saveAccount(null);
         }
       } else {
         //todo
@@ -304,6 +304,7 @@ class FFHttpUtils {
     return res;
   }
 
+  //获取用户推文列表
   Future<List<Micropost>> getMicropostList(int id, int pageNum) async {
     Map<String, String> op = new Map();
     op['user_id'] = '$id';
@@ -328,7 +329,7 @@ class FFHttpUtils {
           flModels = jsonDecode(json)['data'];
         } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
           print('codeHTTP_TOKEN_ERROR');
-          CommonSP.saveAccount('');
+          CommonSP.saveAccount(null);
         }
       } else {
         //todo
@@ -340,6 +341,73 @@ class FFHttpUtils {
     }
     return flModels.map((model) {
       return new Micropost.fromJson(model);
+    }).toList();
+  }
+
+  //添加关注关系
+  Future<String> follow(int id, int type) async {
+    String res = '';
+    String ul = '';
+    if (type == 1) {
+      ul = '/app/follow';
+    } else {
+      ul = '/app/unfollow';
+    }
+    var uri = Uri.parse(Constant.baseUrl + ul);
+    print(uri.toString());
+    var request = new http.MultipartRequest("POST", uri);
+    Account account = await CommonSP.getAccount();
+    request.fields['token'] = account.token;
+    request.fields['id'] = '$id';
+
+
+    http.BaseResponse response = await request.send();
+    if (response.statusCode == 200) {
+      res = '0';
+    } else {
+      res = '请检查网络';
+    }
+    return res;
+  }
+
+  //获取用户关注/粉丝列表
+  Future<List<User>> getUserFollower(int id, int pageNum, int type) async {
+    Map<String, String> op = new Map();
+    op['id'] = '$id';
+    op['page'] = '$pageNum';
+    Account account = await CommonSP.getAccount();
+    op['token'] = account.token;
+    op['type'] = '$type';
+    var uri = new Uri.http(
+        Constant.baseUrlNoHttp, '/app/get_follower_users',
+        op);
+    List flModels = [];
+    try {
+      print(uri.toString());
+      var request = await httpClient.getUrl(uri);
+      var response = await request.close();
+      int statusCode = response.statusCode;
+      if (response.statusCode == HttpStatus.OK) {
+        var json = await response.transform(UTF8.decoder).join();
+        String code = jsonDecode(json)['status'];
+        print('code' + code);
+        if (int.parse(code) == Constant.HTTP_OK) {
+          print('codeok');
+          flModels = jsonDecode(json)['data'];
+        } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
+          print('codeHTTP_TOKEN_ERROR');
+          CommonSP.saveAccount(null);
+        }
+      } else {
+        //todo
+        print('statusCode' + '$statusCode');
+      }
+    } catch (exception) {
+      //todo
+      print(exception.toString());
+    }
+    return flModels.map((model) {
+      return new User.fromJson(model);
     }).toList();
   }
 }

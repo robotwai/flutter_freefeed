@@ -4,7 +4,14 @@ import 'dart:convert';
 import 'dart:async';
 
 class CommonSP{
-  static void saveAccount(String json) async{
+  static void saveAccount(Account a) async {
+    String json;
+    if (a != null) {
+      json = JSON.encode(a);
+    } else {
+      json = '';
+    }
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     print("saveAccount" + json);
     prefs.setString('account', json);

@@ -55,7 +55,7 @@ class _SettingState extends State<SettingPage> {
   }
 
   void logout() async {
-    await CommonSP.saveAccount("");
+    await CommonSP.saveAccount(null);
     setState(() {
       Navigator.of(context).pop(1);
     });
@@ -69,8 +69,8 @@ class _SettingState extends State<SettingPage> {
                 .of(context)
                 .size
                 .width,
-            color: Color(0xffFF461F),
-            height: 40.0,
+            color: Color(0xffDA4F49),
+            height: 44.0,
             child: new Center(
               child: Text(
                 "退出登录",

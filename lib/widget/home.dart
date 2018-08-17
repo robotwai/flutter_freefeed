@@ -12,6 +12,7 @@ import 'dart:async';
 import 'package:flutter_app/widget/micropost_detail_page.dart';
 import 'package:flutter_app/widget/micropost_common_page.dart';
 import 'package:flutter_app/widget/user_detail_page.dart';
+import 'user_list_page.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -223,25 +224,37 @@ class _MyHomePageState extends State<MyHomePage>
               mainAxisAlignment: MainAxisAlignment.center,
               textDirection: TextDirection.ltr,
               children: <Widget>[
-                new Container(
-                  child: new Text(
-                    followed == null ? 'xxx' : "正在关注 " + followed.toString(),
-                    style: new TextStyle(
-                        fontWeight: FontWeight.w300,
-                        color: Color(0xFF50616D),
-                        fontSize: 14.0),
+                new GestureDetector(
+                  child: new Container(
+                    child: new Text(
+                      followed == null ? 'xxx' : "正在关注 " + followed.toString(),
+                      style: new TextStyle(
+                          fontWeight: FontWeight.w300,
+                          color: Color(0xFF50616D),
+                          fontSize: 14.0),
+                    ),
+                    margin: const EdgeInsets.only(right: 6.0),
                   ),
-                  margin: const EdgeInsets.only(right: 6.0),
+                  onTap: () {
+                    Navigator.of(context).push(new PageRouteBuilder(
+                      opaque: false,
+                      pageBuilder: (BuildContext context, _, __) {
+                        return new UserListPage(account.id, 1);
+                      },
+                    ));
+                  },
                 ),
-                new Container(
-                  child: new Text(
-                    follower == null ? 'xxx' : "关注者 " + follower.toString(),
-                    style: new TextStyle(
-                        fontWeight: FontWeight.w300,
-                        color: Color(0xFF50616D),
-                        fontSize: 14.0),
+                new GestureDetector(
+                  child: new Container(
+                    child: new Text(
+                      follower == null ? 'xxx' : "关注者 " + follower.toString(),
+                      style: new TextStyle(
+                          fontWeight: FontWeight.w300,
+                          color: Color(0xFF50616D),
+                          fontSize: 14.0),
+                    ),
+                    margin: const EdgeInsets.only(left: 6.0),
                   ),
-                  margin: const EdgeInsets.only(left: 6.0),
                 ),
               ],
             ),
@@ -310,12 +323,9 @@ class _MyHomePageState extends State<MyHomePage>
     });
   }
 
-
   @override
   jumpToUser(int id) {
-    Navigator
-        .of(context)
-        .push(new PageRouteBuilder(
+    Navigator.of(context).push(new PageRouteBuilder(
       opaque: false,
       pageBuilder: (BuildContext context, _, __) {
         return new UserDetailPage(id);
