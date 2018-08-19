@@ -15,6 +15,7 @@ import 'package:flutter_app/widget/multi_touch_page.dart';
 import 'package:flutter_app/widget/micropost_detail_page.dart';
 import 'package:flutter_app/utils/db_helper.dart';
 import 'package:flutter_app/widget/user_list_page.dart';
+import 'package:flutter_app/widget/user_setting_page.dart';
 
 class UserDetailPage extends StatefulWidget {
   int id;
@@ -209,7 +210,8 @@ class _UserDetailPageState extends State<UserDetailPage>
                   new Padding(
                     padding: const EdgeInsets.only(bottom: 14.0, left: 14.0),
                     child: new Text(
-                      _user == null ? '' : _user.sign_content,
+                      _user == null || _user.sign_content == null ? '' : _user
+                          .sign_content,
                       style: new TextStyle(
                           color: Color(CLS.TEXT_3),
                           fontSize: 14.0,
@@ -340,12 +342,7 @@ class _UserDetailPageState extends State<UserDetailPage>
                   ),
                 ),
               ),
-              new Container(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width - 110.0 - 100.0,
-              ),
+              new Expanded(child: new Container()),
               getFollowButton(),
             ],
           ),
@@ -381,19 +378,26 @@ class _UserDetailPageState extends State<UserDetailPage>
         borderRadius: BorderRadius.circular(20.0),
         child: new RaisedButton(
           onPressed: () {
-            if (_user == null || _user.relation == 0 || _user.relation == 1) {
-              _presenter.follow(widget.id, 1);
+            if (my_id == widget.id) {
+              jumpToUserSet();
             } else {
-              _presenter.follow(widget.id, 2);
+              if (_user == null || _user.relation == 0 || _user.relation == 1) {
+                _presenter.follow(widget.id, 1);
+              } else {
+                _presenter.follow(widget.id, 2);
+              }
             }
+
           },
           child: new Text(
-              _user == null || _user.relation == 0 || _user.relation == 1
+              my_id == widget.id
+                  ? '编辑个人资料' : _user == null || _user.relation == 0 ||
+                  _user.relation == 1
                   ? '关注'
                   : _user.relation == 3 ? '互相关注' : '已关注',
               style: new TextStyle(fontSize: 14.0, color: Color(0xffffffff)),
               maxLines: 1),
-          color: Color(my_id == 0 || my_id == widget.id
+          color: Color(my_id == 0
               ? 0xffffffff
               : barBackgroundColor),
           elevation: 0.0,
@@ -515,6 +519,17 @@ class _UserDetailPageState extends State<UserDetailPage>
             ),
           );
         }));
+  }
+
+  jumpToUserSet() {
+    Navigator
+        .of(context)
+        .push(new PageRouteBuilder(
+      opaque: false,
+      pageBuilder: (BuildContext context, _, __) {
+        return new UserSettingPage();
+      },
+    ));
   }
 
   @override

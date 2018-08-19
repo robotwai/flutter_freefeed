@@ -114,7 +114,7 @@ class _UserListPageState extends State<UserListPage> {
                 ));
               },
             ),
-            new Flexible(
+            new Expanded(
               child: new Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -129,7 +129,7 @@ class _UserListPageState extends State<UserListPage> {
                     ),
                   ),
                   new Text(
-                    user.sign_content,
+                    user.sign_content != null ? user.sign_content : '',
                     style:
                     new TextStyle(color: Color(0xFF50616D), fontSize: 12.0),
                   ),

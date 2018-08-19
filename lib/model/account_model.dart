@@ -8,9 +8,11 @@ class Account{
   String sign_content;
   int followed;
   int follower;
+  int sex;
+
 
   Account(this.token, this.email, this.name, this.icon, this.id,
-      this.sign_content, this.followed, this.follower);
+      this.sign_content, this.followed, this.follower, this.sex);
 
   Account.fromJson(Map<String, dynamic> json)
       :
@@ -19,6 +21,7 @@ class Account{
         name = json['name'],
         icon = json['icon'],
         id = json['id'],
+        sex = json['sex'],
         sign_content = json['sign_content'],
         followed = json['followed'],
         follower = json['follower']
@@ -34,6 +37,7 @@ class Account{
         'isign_contentd': sign_content,
         'followed': followed,
         'follower': follower,
+        'sex': sex,
       };
 
 }

@@ -255,6 +255,14 @@ class _MyHomePageState extends State<MyHomePage>
                     ),
                     margin: const EdgeInsets.only(left: 6.0),
                   ),
+                  onTap: () {
+                    Navigator.of(context).push(new PageRouteBuilder(
+                      opaque: false,
+                      pageBuilder: (BuildContext context, _, __) {
+                        return new UserListPage(account.id, 2);
+                      },
+                    ));
+                  },
                 ),
               ],
             ),
@@ -268,6 +276,9 @@ class _MyHomePageState extends State<MyHomePage>
                 new ListTile(
                   leading: new Icon(Icons.person),
                   title: new Text("个人资料"),
+                  onTap: () {
+                    jumpToUser(account != null ? account.id : 0);
+                  },
                 ),
                 new ListTile(
                   leading: new Icon(Icons.bookmark),
@@ -276,7 +287,9 @@ class _MyHomePageState extends State<MyHomePage>
                 new ListTile(
                   leading: new Icon(Icons.settings),
                   title: new Text("设置"),
-                  onTap: jumpToSetting,
+                  onTap: () {
+                    jumpToSetting();
+                  },
                 ),
               ],
             ),

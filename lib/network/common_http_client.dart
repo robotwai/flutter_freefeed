@@ -410,5 +410,34 @@ class FFHttpUtils {
       return new User.fromJson(model);
     }).toList();
   }
+
+  //更新用户信息
+  Future<Account> updateUser(String iconPath, String name, String sign_content,
+      int sex) async {
+    String res = '';
+    try {
+      var uri = Uri.parse(Constant.baseUrl + '/app/user_update');
+      var request = new http.MultipartRequest("POST", uri);
+      request.fields['sign_content'] = sign_content;
+      request.fields['name'] = name;
+      request.fields['sex'] = '$sex';
+      if (iconPath != null && iconPath != '') {
+        http.MultipartFile icon = await http.MultipartFile
+            .fromPath('icon', iconPath,
+            contentType: MediaType.parse("multipart/form-data"));
+
+        request.files.add(icon);
+      }
+      http.BaseResponse response = await request.send();
+      if (response.statusCode == 200) {
+        res = '0';
+      } else {
+        res = '请检查网络';
+      }
+    } catch (exception) {
+      print(exception.toString());
+    }
+    return res;
+  }
 }
 

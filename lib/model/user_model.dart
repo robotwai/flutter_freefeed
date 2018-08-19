@@ -8,6 +8,7 @@ class User {
   int follower;
   int relation; //0为 无关系，1是他关注了你，2是你关注了他，3是互相关注
   int micropost_num;
+  int sex;
 
 
   User(this.email, this.name, this.icon, this.id, this.sign_content,
@@ -19,6 +20,7 @@ class User {
         name = json['name'],
         icon = json['icon'],
         id = json['id'],
+        sex = json['sex'],
         sign_content = json['sign_content'],
         followed = json['followed'],
         follower = json['follower'],
@@ -36,6 +38,7 @@ class User {
         'followed': followed,
         'follower': follower,
         'relation': relation,
+        'sex': sex,
         'micropost_num': micropost_num,
       };
 
