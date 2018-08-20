@@ -159,7 +159,6 @@ class _RegisterState extends State<RegisterPage> {
     }
   }
 
-  void selectPic() {}
 
   Future getImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);

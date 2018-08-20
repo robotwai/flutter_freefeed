@@ -32,7 +32,7 @@ class MicropostProvider {
       Database db = await openDatabase(dbPath);
 
       await db.execute(sql_createTable);
-      await db.close();
+//      await db.close();
       print('创建micropost.db成功，创建micropost_table成功');
     } else {
       print('has');
@@ -73,7 +73,7 @@ class MicropostProvider {
       }
     });
 
-    await db.close();
+//    await db.close();
   }
 
   insert(Micropost mic) async {
@@ -137,7 +137,7 @@ class MicropostProvider {
     print(sql_query);
     List<Map> result = await db.rawQuery(sql_query);
     print(result);
-    await db.close();
+//    await db.close();
     return result.map((model) {
       return new Micropost.fromJson(model);
     }).toList();
@@ -158,7 +158,7 @@ class MicropostProvider {
     String sql_query = "SELECT * FROM '$tab_name' WHERE ID= '$id'";
     List<Map> list = await db.rawQuery(sql_query);
     print(list);
-    await db.close();
+//    await db.close();
     return new Micropost.fromMap(list[0]);
   }
 
@@ -169,9 +169,15 @@ class MicropostProvider {
     String sql_query =
         "SELECT * FROM '$tab_name' ORDER BY id DESC LIMIT '$start','$end'";
     print(sql_query);
-    List<Map> list = await db.rawQuery(sql_query);
+    List<Map> list = [];
+    try {
+      list = await db.rawQuery(sql_query);
+    } catch (exception) {
+      print(exception.toString());
+    }
+
     print(list);
-    await db.close();
+//    await db.close();
     return list.map((model) {
       return new Micropost.fromJson(model);
     }).toList();

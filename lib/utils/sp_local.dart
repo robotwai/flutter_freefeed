@@ -4,10 +4,10 @@ import 'dart:convert';
 import 'dart:async';
 
 class CommonSP{
-  static void saveAccount(Account a) async {
+  static saveAccount(Account a) async {
     String json;
     if (a != null) {
-      json = JSON.encode(a);
+      json = jsonEncode(a);
     } else {
       json = '';
     }
@@ -24,7 +24,7 @@ class CommonSP{
       return null;
     }
     print("getAccount" + json);
-    Map userMap = JSON.decode(json);
+    Map userMap = jsonDecode(json);
     Account user = new Account.fromJson(userMap);
     if (user.token == null || user.token.isEmpty) {
       return null;

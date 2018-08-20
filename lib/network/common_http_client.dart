@@ -18,35 +18,27 @@ class FFHttpUtils {
 
   //获取首页Feed列表
   Future<List<Micropost>> getFeed(Map<String, String> options) async{
-    var uri = new Uri.http(
-        Constant.baseUrlNoHttp, '/app/feed',
-        options);
+    var uri = Uri.parse(Constant.baseUrl + '/app/feed');
     List flModels=[];
     try {
+      var request = new http.Request("GET", uri);
+      request.bodyFields = options;
       print(uri.toString());
-      var request = await httpClient.getUrl(uri);
-      var response = await request.close();
-      int statusCode = response.statusCode;
-      if (response.statusCode == HttpStatus.OK) {
-        var json = await response.transform(UTF8.decoder).join();
-        String code = jsonDecode(json)['status'];
-        print('code'+ code);
-        if(int.parse(code)==Constant.HTTP_OK){
-          print('codeok');
-          flModels = jsonDecode(json)['data'];
-        }else if(int.parse(code)==Constant.HTTP_TOKEN_ERROR){
-          print('codeHTTP_TOKEN_ERROR');
-          CommonSP.saveAccount(null);
-        }
-
-      } else {
-        //todo
-        print('statusCode'+ '$statusCode');
+      http.StreamedResponse response = await request.send();
+      String json = await response.stream.bytesToString();
+      String code = jsonDecode(json)['status'];
+      print('code' + code);
+      if (int.parse(code) == Constant.HTTP_OK) {
+        print('codeok');
+        flModels = jsonDecode(json)['data'];
+      } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
+        print('codeHTTP_TOKEN_ERROR');
+        CommonSP.saveAccount(null);
       }
-    } catch (exception) {
-      //todo
+    }
+    catch (exception) {
+//      //todo
       print(exception.toString());
-
     }
     return flModels.map((model) {
       return new Micropost.fromJson(model);
@@ -56,73 +48,74 @@ class FFHttpUtils {
 
   //点赞功能
   Future<Micropost> dot(Micropost item) async {
-    Micropost data;
+    Micropost mic;
     Account account = await CommonSP.getAccount();
     String token = account.token;
     String url = item.dotId != 0 ? '/app/dotDestroy' : '/app/dot';
-    var uri = new Uri.http(Constant.baseUrlNoHttp, url,
-        {
-          'token': '$token',
-          'micropost_id': item.dotId != 0 ? item.dotId.toString() : item.id
-              .toString()
-        });
+
+    Map<String, String> op = new Map();
+    op['token'] = token;
+    op['micropost_id'] = item.dotId != 0 ? item.dotId.toString() : item.id
+        .toString();
+    var uri = Uri.parse(Constant.baseUrl + url);
+
     try {
+      var request = new http.Request("POST", uri);
+      request.bodyFields = op;
       print(uri.toString());
-      var request = await httpClient.postUrl(uri);
-      var response = await request.close();
-      int statusCode = response.statusCode;
-      if (response.statusCode == HttpStatus.OK) {
-        var json = await response.transform(UTF8.decoder).join();
-        String code = jsonDecode(json)['status'];
-        print('code' + code);
-        if (int.parse(code) == Constant.HTTP_OK) {
-          print('codeok');
-          Map jsonMap = JSON.decode(json);
-          Map userMap = JSON.decode(jsonMap['data']);
-          data = new Micropost.fromJson(userMap);
-          print(jsonDecode(json)['data']);
-//          data = new Micropost.fromJson(jsonDecode(json)['data']);
-        } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
-          print('codeHTTP_TOKEN_ERROR');
-          CommonSP.saveAccount(null);
-        }
+      http.StreamedResponse response = await request.send();
+      String json = await response.stream.bytesToString();
+      String code = jsonDecode(json)['status'];
+      print('code' + code);
+      if (int.parse(code) == Constant.HTTP_OK) {
+        print('codeok');
+        String data = jsonDecode(json)['data'];
+        Map userMap = jsonDecode(data);
+        mic = new Micropost.fromJson(userMap);
+      } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
+        print('codeHTTP_TOKEN_ERROR');
+        CommonSP.saveAccount(null);
+      }
+
+    } catch (exception) {
+      //todo
+      print(exception.toString());
+    }
+    return mic;
+  }
+
+  //登录
+  Future<String> login(String email, String password) async {
+    String res = '';
+    var uri = Uri.parse(Constant.baseUrl + '/app/loggin');
+    Map<String, String> op = new Map();
+    op['email'] = '$email';
+    op['password'] = '$password';
+    try {
+      var request = new http.Request("POST", uri);
+      request.bodyFields = op;
+      print(uri.toString());
+      http.StreamedResponse response = await request.send();
+      String json = await response.stream.bytesToString();
+      String code = jsonDecode(json)['status'];
+      print('code' + code);
+      if (int.parse(code) == Constant.HTTP_OK) {
+        print('codeok');
+        String data = jsonDecode(json)['data'];
+        Map userMap = jsonDecode(data);
+        Account user = new Account.fromJson(userMap);
+        await CommonSP.saveAccount(user);
+        print(user.email);
+        CommonSP.saveEmail(user.email);
+        res = '0';
       } else {
-        //todo
-        print('statusCode' + '$statusCode');
+        res = '网络异常';
       }
     } catch (exception) {
       //todo
       print(exception.toString());
     }
-    return data;
-  }
 
-  //登录
-  Future<String> login(String email, String password) async {
-    var uri = new Uri.http(Constant.baseUrlNoHttp, '/app/loggin',
-        {'email': '$email', 'password': '$password'});
-    var request = await httpClient.postUrl(uri);
-    var response = await request.close();
-    String res = '';
-    if (response.statusCode == HttpStatus.OK) {
-      var json = await response.transform(UTF8.decoder).join();
-      print(json);
-      Map jsonMap = JSON.decode(json);
-      print(jsonMap['data']);
-      if (int.parse(jsonMap['status']) != Constant.HTTP_OK) {
-        res = '账号密码错误';
-      } else {
-        Map userMap = JSON.decode(jsonMap['data']);
-        Account user = new Account.fromJson(userMap);
-        await CommonSP.saveAccount(user);
-
-        print(user.email);
-        CommonSP.saveEmail(user.email);
-        res = '0';
-      }
-    } else {
-      res = '网络异常';
-    }
     return res;
   }
 
@@ -182,73 +175,62 @@ class FFHttpUtils {
 
   //获取评论列表
   Future<List<Commit>> getComment(int pageNum, int id) async {
+    var uri = Uri.parse(Constant.baseUrl + '/app/getCommit');
+    List flModels = [];
     Map<String, String> op = new Map();
     op['id'] = '$id';
     op['page'] = '$pageNum';
-    var uri = new Uri.http(
-        Constant.baseUrlNoHttp, '/app/getCommit',
-        op);
-    List flModels = [];
     try {
+      var request = new http.Request("GET", uri);
+      request.bodyFields = op;
       print(uri.toString());
-      var request = await httpClient.getUrl(uri);
-      var response = await request.close();
-      int statusCode = response.statusCode;
-      if (response.statusCode == HttpStatus.OK) {
-        var json = await response.transform(UTF8.decoder).join();
-        String code = jsonDecode(json)['status'];
-        print('code' + code);
-        if (int.parse(code) == Constant.HTTP_OK) {
-          print('codeok');
-          flModels = jsonDecode(json)['data'];
-        } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
-          print('codeHTTP_TOKEN_ERROR');
-          CommonSP.saveAccount(null);
-        }
-      } else {
-        //todo
-        print('statusCode' + '$statusCode');
+      http.StreamedResponse response = await request.send();
+      String json = await response.stream.bytesToString();
+      String code = jsonDecode(json)['status'];
+      print('code' + code);
+      if (int.parse(code) == Constant.HTTP_OK) {
+        print('codeok');
+        flModels = jsonDecode(json)['data'];
+      } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
+        print('codeHTTP_TOKEN_ERROR');
+        CommonSP.saveAccount(null);
       }
-    } catch (exception) {
-      //todo
+    }
+    catch (exception) {
+//      //todo
       print(exception.toString());
     }
     return flModels.map((model) {
       return new Commit.fromJson(model);
     }).toList();
+
   }
 
   //获取点赞列表
   Future<List<Dot>> getDots(int pageNum, int id) async {
+    var uri = Uri.parse(Constant.baseUrl + '/app/getDots');
+    List flModels = [];
     Map<String, String> op = new Map();
     op['id'] = '$id';
     op['page'] = '$pageNum';
-    var uri = new Uri.http(
-        Constant.baseUrlNoHttp, '/app/getDots',
-        op);
-    List flModels = [];
     try {
+      var request = new http.Request("GET", uri);
+      request.bodyFields = op;
       print(uri.toString());
-      var request = await httpClient.getUrl(uri);
-      var response = await request.close();
-      int statusCode = response.statusCode;
-      if (response.statusCode == HttpStatus.OK) {
-        var json = await response.transform(UTF8.decoder).join();
-        String code = jsonDecode(json)['status'];
-        print('code' + code);
-        if (int.parse(code) == Constant.HTTP_OK) {
-          print('codeok');
-          flModels = jsonDecode(json)['data'];
-        } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
-          print('codeHTTP_TOKEN_ERROR');
-          CommonSP.saveAccount(null);
-        }
-      } else {
-        //todo
-        print('statusCode' + '$statusCode');
+      http.StreamedResponse response = await request.send();
+      String json = await response.stream.bytesToString();
+      String code = jsonDecode(json)['status'];
+      print('code' + code);
+      if (int.parse(code) == Constant.HTTP_OK) {
+        print('codeok');
+        flModels = jsonDecode(json)['data'];
+      } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
+        print('codeHTTP_TOKEN_ERROR');
+        CommonSP.saveAccount(null);
       }
-    } catch (exception) {
-      //todo
+    }
+    catch (exception) {
+//      //todo
       print(exception.toString());
     }
     return flModels.map((model) {
@@ -277,71 +259,69 @@ class FFHttpUtils {
 
   //获取用户信息
   Future<User> getUser(int id) async {
-    Account account = await CommonSP.getAccount();
-    var uri = new Uri.http(Constant.baseUrlNoHttp, '/app/getUser',
-        {'user_id': '$id', 'token': account.token});
-    var request = await httpClient.getUrl(uri);
-    var response = await request.close();
-    User res = null;
-    if (response.statusCode == HttpStatus.OK) {
-      var json = await response.transform(UTF8.decoder).join();
+    User user;
+    try {
+      var uri = Uri.parse(Constant.baseUrl + '/app/getUser');
+      var request = new http.Request("GET", uri);
+      Account account = await CommonSP.getAccount();
+      Map<String, String> op = new Map();
+      op['user_id'] = '$id';
+      op['token'] = account.token;
+
+      request.bodyFields = op;
       print(uri.toString());
-      Map jsonMap = JSON.decode(json);
-      print(jsonMap['data']);
-      if (int.parse(jsonMap['status']) != Constant.HTTP_OK) {
-        res = null;
-      } else {
-        Map userMap = JSON.decode(jsonMap['data']);
-        User user = new User.fromJson(userMap);
-
-        print(user.email);
-
-        res = user;
+      http.StreamedResponse response = await request.send();
+      String json = await response.stream.bytesToString();
+      String code = jsonDecode(json)['status'];
+      print('code' + code);
+      if (int.parse(code) == Constant.HTTP_OK) {
+        print('codeok');
+        String data = jsonDecode(json)['data'];
+        Map userMap = jsonDecode(data);
+        user = new User.fromJson(userMap);
+      } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
+        print('codeHTTP_TOKEN_ERROR');
+        CommonSP.saveAccount(null);
       }
-    } else {
-      res = null;
+    } catch (exception) {
+      print(exception.toString());
     }
-    return res;
+
+
+    return user;
   }
 
   //获取用户推文列表
   Future<List<Micropost>> getMicropostList(int id, int pageNum) async {
-    Map<String, String> op = new Map();
-    op['user_id'] = '$id';
-    op['page'] = '$pageNum';
-    Account account = await CommonSP.getAccount();
-    op['token'] = account.token;
-    var uri = new Uri.http(
-        Constant.baseUrlNoHttp, '/app/getUserMicroposts',
-        op);
+    var uri = Uri.parse(Constant.baseUrl + '/app/getUserMicroposts');
     List flModels = [];
     try {
+      Map<String, String> op = new Map();
+      op['user_id'] = '$id';
+      op['page'] = '$pageNum';
+      var request = new http.Request("GET", uri);
+      request.bodyFields = op;
       print(uri.toString());
-      var request = await httpClient.getUrl(uri);
-      var response = await request.close();
-      int statusCode = response.statusCode;
-      if (response.statusCode == HttpStatus.OK) {
-        var json = await response.transform(UTF8.decoder).join();
-        String code = jsonDecode(json)['status'];
-        print('code' + code);
-        if (int.parse(code) == Constant.HTTP_OK) {
-          print('codeok');
-          flModels = jsonDecode(json)['data'];
-        } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
-          print('codeHTTP_TOKEN_ERROR');
-          CommonSP.saveAccount(null);
-        }
-      } else {
-        //todo
-        print('statusCode' + '$statusCode');
+      http.StreamedResponse response = await request.send();
+      String json = await response.stream.bytesToString();
+      String code = jsonDecode(json)['status'];
+      print('code' + code);
+      if (int.parse(code) == Constant.HTTP_OK) {
+        print('codeok');
+        flModels = jsonDecode(json)['data'];
+      } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
+        print('codeHTTP_TOKEN_ERROR');
+        CommonSP.saveAccount(null);
       }
-    } catch (exception) {
-      //todo
+    }
+    catch (exception) {
+//      //todo
       print(exception.toString());
     }
     return flModels.map((model) {
       return new Micropost.fromJson(model);
     }).toList();
+
   }
 
   //添加关注关系
@@ -378,32 +358,26 @@ class FFHttpUtils {
     Account account = await CommonSP.getAccount();
     op['token'] = account.token;
     op['type'] = '$type';
-    var uri = new Uri.http(
-        Constant.baseUrlNoHttp, '/app/get_follower_users',
-        op);
+    var uri = Uri.parse(Constant.baseUrl + '/app/get_follower_users');
     List flModels = [];
     try {
+      var request = new http.Request("GET", uri);
+      request.bodyFields = op;
       print(uri.toString());
-      var request = await httpClient.getUrl(uri);
-      var response = await request.close();
-      int statusCode = response.statusCode;
-      if (response.statusCode == HttpStatus.OK) {
-        var json = await response.transform(UTF8.decoder).join();
-        String code = jsonDecode(json)['status'];
-        print('code' + code);
-        if (int.parse(code) == Constant.HTTP_OK) {
-          print('codeok');
-          flModels = jsonDecode(json)['data'];
-        } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
-          print('codeHTTP_TOKEN_ERROR');
-          CommonSP.saveAccount(null);
-        }
-      } else {
-        //todo
-        print('statusCode' + '$statusCode');
+      http.StreamedResponse response = await request.send();
+      String json = await response.stream.bytesToString();
+      String code = jsonDecode(json)['status'];
+      print('code' + code);
+      if (int.parse(code) == Constant.HTTP_OK) {
+        print('codeok');
+        flModels = jsonDecode(json)['data'];
+      } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
+        print('codeHTTP_TOKEN_ERROR');
+        CommonSP.saveAccount(null);
       }
-    } catch (exception) {
-      //todo
+    }
+    catch (exception) {
+//      //todo
       print(exception.toString());
     }
     return flModels.map((model) {
@@ -412,15 +386,23 @@ class FFHttpUtils {
   }
 
   //更新用户信息
-  Future<Account> updateUser(String iconPath, String name, String sign_content,
+  Future<String> updateUser(String iconPath, String name, String sign_content,
       int sex) async {
     String res = '';
     try {
       var uri = Uri.parse(Constant.baseUrl + '/app/user_update');
       var request = new http.MultipartRequest("POST", uri);
-      request.fields['sign_content'] = sign_content;
-      request.fields['name'] = name;
-      request.fields['sex'] = '$sex';
+      Account account = await CommonSP.getAccount();
+      request.fields['token'] = account.token;
+      if (sign_content != null) {
+        request.fields['sign_content'] = sign_content;
+      }
+      if (name != null) {
+        request.fields['name'] = name;
+      }
+      if (sex != null) {
+        request.fields['sex'] = '$sex';
+      }
       if (iconPath != null && iconPath != '') {
         http.MultipartFile icon = await http.MultipartFile
             .fromPath('icon', iconPath,
@@ -428,7 +410,21 @@ class FFHttpUtils {
 
         request.files.add(icon);
       }
-      http.BaseResponse response = await request.send();
+      http.StreamedResponse response = await request.send();
+      String json = await response.stream.bytesToString();
+      Map jsonMap = jsonDecode(json);
+      print(jsonMap['data']);
+      if (int.parse(jsonMap['status']) != Constant.HTTP_OK) {
+        res = '请检查网络';
+      } else {
+        Map userMap = jsonDecode(jsonMap['data']);
+        Account user = new Account.fromJson(userMap);
+        await CommonSP.saveAccount(user);
+
+        print(user.email);
+        CommonSP.saveEmail(user.email);
+        res = '0';
+      }
       if (response.statusCode == 200) {
         res = '0';
       } else {
@@ -439,5 +435,6 @@ class FFHttpUtils {
     }
     return res;
   }
+
 }
 

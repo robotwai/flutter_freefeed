@@ -34,7 +34,7 @@ class Account{
         'token': token,
         'icon': icon,
         'id': id,
-        'isign_contentd': sign_content,
+        'sign_content': sign_content,
         'followed': followed,
         'follower': follower,
         'sex': sex,
