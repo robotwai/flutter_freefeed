@@ -47,6 +47,7 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
             ),
           ),
         ),
+        elevation: 0.0,
         backgroundColor: Color(0xFFFFFFFF),
         leading: new IconButton(
           tooltip: 'Previous choice',
@@ -69,25 +70,28 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
       ),
         body: new Stack(
           children: <Widget>[
-            new SingleChildScrollView(
-                child: new Column(
-                  children: <Widget>[
-                    _getEdit(),
-                    new Container(
-                      margin: const EdgeInsets.only(
-                          top: 30.0, left: 14.0, right: 14.0),
-                      height: MediaQuery
-                          .of(context)
-                          .size
-                          .width,
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width,
-                      child: _buildGrid(),
-                    ),
-                  ],
-                )),
+            new Container(
+              child: new SingleChildScrollView(
+                  child: new Column(
+                    children: <Widget>[
+                      _getEdit(),
+                      new Container(
+                        margin: const EdgeInsets.only(
+                            top: 30.0, left: 14.0, right: 14.0),
+                        height: MediaQuery
+                            .of(context)
+                            .size
+                            .width,
+                        width: MediaQuery
+                            .of(context)
+                            .size
+                            .width,
+                        child: _buildGrid(),
+                      ),
+                    ],
+                  )),
+              color: Color(CLS.BACKGROUND),
+            ),
             new Offstage(
               child: new Container(
                 color: Color(CLS.HALF_BACKGROUND),
@@ -121,6 +125,7 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
   Widget _getEdit() {
     return new Container(
       height: 150.0,
+      color: Color(CLS.BACKGROUND),
       padding: const EdgeInsets.only(left: 14.0, right: 14.0, top: 20.0),
       margin: const EdgeInsets.only(bottom: 20.0),
       child: new TextField(
@@ -128,7 +133,7 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
         onChanged: (text) {
           _onTextChange(text);
         },
-        decoration: new InputDecoration(hintText: '写点什么...'),
+        decoration: new InputDecoration(hintText: '写点什么...',border: InputBorder.none),
         style: new TextStyle(color: Color(0xff000000), fontSize: 16.0),
         autofocus: true,
         maxLines: 8,

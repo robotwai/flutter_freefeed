@@ -296,9 +296,11 @@ class FFHttpUtils {
     var uri = Uri.parse(Constant.baseUrl + '/app/getUserMicroposts');
     List flModels = [];
     try {
+      Account account = await CommonSP.getAccount();
       Map<String, String> op = new Map();
       op['user_id'] = '$id';
       op['page'] = '$pageNum';
+      op['token'] = account.token;
       var request = new http.Request("GET", uri);
       request.bodyFields = op;
       print(uri.toString());

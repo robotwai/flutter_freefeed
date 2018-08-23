@@ -13,6 +13,7 @@ import 'package:flutter_app/widget/micropost_detail_page.dart';
 import 'package:flutter_app/widget/micropost_common_page.dart';
 import 'package:flutter_app/widget/user_detail_page.dart';
 import 'user_list_page.dart';
+import 'package:flutter/services.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -389,7 +390,11 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   @override
-  void _tap_icon() {
+  void _tap_icon() async{
+    Account a = await CommonSP.getAccount();
+    setState(() {
+      account = a;
+    });
     if (account == null || account.token == '0') {
       Navigator.of(context).pushNamed('/c').then((value) {
         if (value == 1) {
@@ -492,8 +497,25 @@ class _MyHomePageState extends State<MyHomePage>
       new Future.delayed(const Duration(milliseconds: 1500), () {
         _lastClickTime = 0;
       });
-
+      _dataInteraction();
       return new Future.value(false);
     }
+  }
+
+  static const platform = const MethodChannel('samples.flutter.test/plugin');
+  String _returnData = '';
+
+  Future<Null> _dataInteraction() async {
+    String returnData;
+    try {
+      final int result = await platform.invokeMethod('dataInteraction');
+      returnData = '平台返回数据：$result';
+    } on PlatformException catch (e) {
+      returnData = '错误信息：${e.message}';
+    }
+
+    setState((){
+      _returnData = returnData;
+    });
   }
 }

@@ -192,7 +192,6 @@ class _UserDetailPageState extends State<UserDetailPage>
             new Container(
               padding: const EdgeInsets.only(top: 20.0, bottom: 12.0),
               color: Color(CLS.BACKGROUND),
-              height: 220.0,
               child: new Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -216,6 +215,7 @@ class _UserDetailPageState extends State<UserDetailPage>
                           color: Color(CLS.TEXT_3),
                           fontSize: 14.0,
                           fontWeight: FontWeight.w300),
+                      maxLines: 3,
                     ),
                   ),
                   new Padding(
@@ -375,7 +375,7 @@ class _UserDetailPageState extends State<UserDetailPage>
   Widget getFollowButton() {
     return new Container(
       child: new Material(
-        borderRadius: BorderRadius.circular(20.0),
+        borderRadius: BorderRadius.circular(24.0),
         child: new RaisedButton(
           onPressed: () {
             if (my_id == widget.id) {
@@ -403,7 +403,9 @@ class _UserDetailPageState extends State<UserDetailPage>
           elevation: 0.0,
         ),
       ),
-      margin: const EdgeInsets.only(top: 40.0, left: 14.0, right: 14.0),
+      height: 40.0,
+      width: my_id == widget.id?120.0:100.0,
+      margin: const EdgeInsets.only(top: 48.0, left: 14.0, right: 14.0),
     );
   }
 
