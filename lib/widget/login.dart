@@ -126,6 +126,7 @@ class _LoginState extends State<LoginPage> {
       if (onValue != null) {
         setState(() {
           _controller.text = onValue;
+          _email=onValue;
         });
       }
     });

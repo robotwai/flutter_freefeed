@@ -28,4 +28,6 @@ class CLS {
   static const int TITLE_ZISE = 0xFF593B96;
   static const int TITLE_RED = 0xFFDD373B;
 
+  static const int BASE_COLOR = 0xFF1B9E85;
+  static const int BASE_COLOR_2 = 0xFFB8E752;
 }

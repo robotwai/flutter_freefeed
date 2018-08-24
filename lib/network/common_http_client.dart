@@ -102,6 +102,7 @@ class FFHttpUtils {
       if (int.parse(code) == Constant.HTTP_OK) {
         print('codeok');
         String data = jsonDecode(json)['data'];
+        print('data' + data);
         Map userMap = jsonDecode(data);
         Account user = new Account.fromJson(userMap);
         await CommonSP.saveAccount(user);
@@ -137,12 +138,20 @@ class FFHttpUtils {
 
         request.files.add(icon);
       }
-      http.BaseResponse response = await request.send();
-      if (response.statusCode == 200) {
-        res = '0';
-      } else {
+      http.StreamedResponse response = await request.send();
+      String json = await response.stream.bytesToString();
+      Map jsonMap = jsonDecode(json);
+      print(jsonMap['data']);
+      if (int.parse(jsonMap['status']) != Constant.HTTP_OK) {
         res = '请检查网络';
+      } else {
+        res = '0';
       }
+//      if (response.statusCode == 200) {
+//        res = '0';
+//      } else {
+//        res = '请检查网络';
+//      }
     } catch (exception) {
       print(exception.toString());
     }

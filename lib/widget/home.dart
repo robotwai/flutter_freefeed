@@ -13,7 +13,7 @@ import 'package:flutter_app/widget/micropost_detail_page.dart';
 import 'package:flutter_app/widget/micropost_common_page.dart';
 import 'package:flutter_app/widget/user_detail_page.dart';
 import 'user_list_page.dart';
-import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -497,25 +497,16 @@ class _MyHomePageState extends State<MyHomePage>
       new Future.delayed(const Duration(milliseconds: 1500), () {
         _lastClickTime = 0;
       });
-      _dataInteraction();
+      Fluttertoast.showToast(
+          msg: "再按一次返回键退出程序",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIos: 1,
+          bgcolor: "#e74c3c",
+          textcolor: '#ffffff'
+      );
       return new Future.value(false);
     }
   }
 
-  static const platform = const MethodChannel('samples.flutter.test/plugin');
-  String _returnData = '';
-
-  Future<Null> _dataInteraction() async {
-    String returnData;
-    try {
-      final int result = await platform.invokeMethod('dataInteraction');
-      returnData = '平台返回数据：$result';
-    } on PlatformException catch (e) {
-      returnData = '错误信息：${e.message}';
-    }
-
-    setState((){
-      _returnData = returnData;
-    });
-  }
 }
