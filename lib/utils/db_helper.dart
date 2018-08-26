@@ -153,13 +153,23 @@ class MicropostProvider {
   }
 
   Future<Micropost> getItem(int id) async {
-    String path = await CommonSP.getDBPath();
-    Database db = await openDatabase(path);
-    String sql_query = "SELECT * FROM '$tab_name' WHERE ID= '$id'";
-    List<Map> list = await db.rawQuery(sql_query);
-    print(list);
+    try {
+      String path = await CommonSP.getDBPath();
+      Database db = await openDatabase(path);
+      String sql_query = "SELECT * FROM '$tab_name' WHERE ID= '$id'";
+      List<Map> list = await db.rawQuery(sql_query);
+      if (list != null) {
+        print(list);
+      }
+
 //    await db.close();
-    return new Micropost.fromMap(list[0]);
+      return new Micropost.fromMap(list[0]);
+    } catch (exception) {
+      print(exception.toString());
+    } finally {
+      return null;
+    }
+
   }
 
   Future<List<Micropost>> realgetList(int page, String d_path) async {

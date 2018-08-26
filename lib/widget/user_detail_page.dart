@@ -16,6 +16,7 @@ import 'package:flutter_app/widget/micropost_detail_page.dart';
 import 'package:flutter_app/utils/db_helper.dart';
 import 'package:flutter_app/widget/user_list_page.dart';
 import 'package:flutter_app/widget/user_setting_page.dart';
+import 'package:flutter_app/widget/micropost_list_page.dart';
 
 class UserDetailPage extends StatefulWidget {
   int id;
@@ -209,8 +210,9 @@ class _UserDetailPageState extends State<UserDetailPage>
                   new Padding(
                     padding: const EdgeInsets.only(bottom: 14.0, left: 14.0),
                     child: new Text(
-                      _user == null || _user.sign_content == null ? '' : _user
-                          .sign_content,
+                      _user == null || _user.sign_content == null
+                          ? ''
+                          : _user.sign_content,
                       style: new TextStyle(
                           color: Color(CLS.TEXT_3),
                           fontSize: 14.0,
@@ -290,13 +292,23 @@ class _UserDetailPageState extends State<UserDetailPage>
                             ));
                           },
                         ),
-                        new Text(
-                          'Ta的赞',
-                          style: new TextStyle(
-                              color: Color(CLS.TEXT_6),
-                              fontSize: 14.0,
-                              fontWeight: FontWeight.w300),
-                        )
+                        new GestureDetector(
+                          child: new Text(
+                            'Ta的赞',
+                            style: new TextStyle(
+                                color: Color(CLS.TEXT_6),
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.w300),
+                          ),
+                          onTap: () {
+                            Navigator.of(context).push(new PageRouteBuilder(
+                              opaque: false,
+                              pageBuilder: (BuildContext context, _, __) {
+                                return new MicropostListPage(widget.id, 0);
+                              },
+                            ));
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -387,24 +399,21 @@ class _UserDetailPageState extends State<UserDetailPage>
                 _presenter.follow(widget.id, 2);
               }
             }
-
           },
           child: new Text(
               my_id == widget.id
-                  ? '编辑个人资料' : _user == null || _user.relation == 0 ||
-                  _user.relation == 1
+                  ? '编辑个人资料'
+                  : _user == null || _user.relation == 0 || _user.relation == 1
                   ? '关注'
                   : _user.relation == 3 ? '互相关注' : '已关注',
               style: new TextStyle(fontSize: 14.0, color: Color(0xffffffff)),
               maxLines: 1),
-          color: Color(my_id == 0
-              ? 0xffffffff
-              : barBackgroundColor),
+          color: Color(my_id == 0 ? 0xffffffff : barBackgroundColor),
           elevation: 0.0,
         ),
       ),
       height: 40.0,
-      width: my_id == widget.id?120.0:100.0,
+      width: my_id == widget.id ? 120.0 : 100.0,
       margin: const EdgeInsets.only(top: 48.0, left: 14.0, right: 14.0),
     );
   }
@@ -437,11 +446,13 @@ class _UserDetailPageState extends State<UserDetailPage>
 
   @override
   void updateSingleFeed(Micropost m) {
-    List<Micropost> l = [];
-    print(m.id.toString());
-    l.add(m);
-    setState(() {});
-    addAndRemoveDuplicate(l);
+    if (m != null) {
+      List<Micropost> l = [];
+      print(m.id.toString());
+      l.add(m);
+      setState(() {});
+      addAndRemoveDuplicate(l);
+    }
   }
 
   @override
@@ -524,9 +535,7 @@ class _UserDetailPageState extends State<UserDetailPage>
   }
 
   jumpToUserSet() {
-    Navigator
-        .of(context)
-        .push(new PageRouteBuilder(
+    Navigator.of(context).push(new PageRouteBuilder(
       opaque: false,
       pageBuilder: (BuildContext context, _, __) {
         return new UserSettingPage();
@@ -537,8 +546,7 @@ class _UserDetailPageState extends State<UserDetailPage>
   @override
   jumpToDetail(Micropost item) {
     print('jumpToDetail');
-    Navigator
-        .of(context)
+    Navigator.of(context)
         .push(new PageRouteBuilder(
       opaque: false,
       pageBuilder: (BuildContext context, _, __) {
@@ -546,14 +554,20 @@ class _UserDetailPageState extends State<UserDetailPage>
       },
     ))
         .then((onValue) {
-      forDetailUpdate(item);
+      if (onValue != null) {
+        forDetailUpdate(item);
+      }
     });
   }
 
   void forDetailUpdate(Micropost item) async {
     Micropost m = await MicropostProvider.origin.getItem(item.id);
     print(m);
-    updateSingleFeed(m);
+    if (m == null) {
+      updateSingleFeed(item);
+    } else {
+      updateSingleFeed(m);
+    }
   }
 
   @override

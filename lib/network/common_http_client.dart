@@ -447,5 +447,38 @@ class FFHttpUtils {
     return res;
   }
 
+  //获取用户点赞推文列表
+  Future<List<Micropost>> getDotMicropostList(int id, int pageNum) async {
+    var uri = Uri.parse(Constant.baseUrl + '/app/getUserDotMicroposts');
+    List flModels = [];
+    try {
+      Account account = await CommonSP.getAccount();
+      Map<String, String> op = new Map();
+      op['user_id'] = '$id';
+      op['page'] = '$pageNum';
+      op['token'] = account.token;
+      var request = new http.Request("GET", uri);
+      request.bodyFields = op;
+      print(uri.toString());
+      http.StreamedResponse response = await request.send();
+      String json = await response.stream.bytesToString();
+      String code = jsonDecode(json)['status'];
+      print('code' + code);
+      if (int.parse(code) == Constant.HTTP_OK) {
+        print('codeok');
+        flModels = jsonDecode(json)['data'];
+      } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
+        print('codeHTTP_TOKEN_ERROR');
+        CommonSP.saveAccount(null);
+      }
+    }
+    catch (exception) {
+//      //todo
+      print(exception.toString());
+    }
+    return flModels.map((model) {
+      return new Micropost.fromJson(model);
+    }).toList();
+  }
 }
 

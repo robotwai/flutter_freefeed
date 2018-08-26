@@ -14,6 +14,7 @@ import 'package:flutter_app/widget/micropost_common_page.dart';
 import 'package:flutter_app/widget/user_detail_page.dart';
 import 'user_list_page.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_app/widget/micropost_list_page.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -151,6 +152,7 @@ class _MyHomePageState extends State<MyHomePage>
               fontWeight: FontWeight.w400,
             ),
           ),
+          elevation: 0.0,
         ),
         drawer: new Container(
           color: Color(CLS.BACKGROUND),
@@ -284,6 +286,14 @@ class _MyHomePageState extends State<MyHomePage>
                 new ListTile(
                   leading: new Icon(Icons.bookmark),
                   title: new Text("收藏"),
+                  onTap: () {
+                    Navigator.of(context).push(new PageRouteBuilder(
+                      opaque: false,
+                      pageBuilder: (BuildContext context, _, __) {
+                        return new MicropostListPage(account.id, 0);
+                      },
+                    ));
+                  },
                 ),
                 new ListTile(
                   leading: new Icon(Icons.settings),
@@ -455,7 +465,7 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   void updateSingleFeed(Micropost item) {
     List<Micropost> l = [];
-    print(item.id.toString());
+//    print(item.id.toString());
     l.add(item);
     setState(() {});
     addAndRemoveDuplicate(l);

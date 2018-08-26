@@ -30,95 +30,147 @@ class _LoginState extends State<LoginPage> {
   Widget build(BuildContext context) {
     var node = new FocusNode();
     return new Scaffold(
-        key: _scaffoldkey,
-        appBar: new AppBar(
-          title: new Text("登录"),
-          centerTitle: true,
+      key: _scaffoldkey,
+      appBar: new AppBar(
+        centerTitle: true,
+        elevation: 0.0,
+        backgroundColor: Color(CLS.BACKGROUND),
+        title: new Image.asset(
+          "images/icon_transparent.png",
+          fit: BoxFit.fitWidth,
+          width: 36.0,
+          height: 36.0,
         ),
-        backgroundColor: Colors.white,
-        body: new Builder(builder: (BuildContext context) {
-          return new Stack(
-            children: <Widget>[
-
-              new Padding(
-                padding: EdgeInsets.all(10.0),
-                child: new Form(
-                    key: formKey,
-                    child: new Column(
-                      children: <Widget>[
-                        new TextField(
-                          onChanged: (str) {
-                            _email = str;
-                            print(_email);
-                          },
-                          controller: _controller,
-                          decoration: new InputDecoration(
-                              labelText: '邮箱',
-                              hintText: '请输入邮箱',
-                              labelStyle:
-                              new TextStyle(color: Color(CLS.TextLabel))),
-                          maxLines: 1,
-                          onSubmitted: (text) {
-                            FocusScope.of(context).reparentIfNeeded(node);
-                          },
-                        ),
-                        new TextField(
-                          onChanged: (text) {
-                            _password = text;
-                            print(_password);
-                          },
-                          obscureText: true,
-                          maxLines: 1,
-                          decoration: new InputDecoration(
-                              hintText: '请输入长度大于6的密码',
-                              labelText: '密码',
-                              labelStyle:
-                              new TextStyle(color: Color(CLS.TextLabel))),
-                          keyboardType: TextInputType.text,
-                          onSubmitted: (text) {},
-                        ),
-                        new Container(
-                          width: MediaQuery
-                              .of(context)
-                              .size
-                              .width,
-                          margin: const EdgeInsets.only(
-                              top: 20.0, left: 30.0, right: 30.0),
-                          child: RaisedButton(
-                            child: Text("登录"),
-                            onPressed: onPressed,
-                          ),
-                        ),
-                        new Container(
-                          margin: const EdgeInsets.only(top: 14.0),
-                          child: new Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              new GestureDetector(
-                                child: new Text('注册'),
-                                onTap: register,
-                              ),
-                              new GestureDetector(
-                                child: new Text('忘记密码'),
-                                onTap: register,
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    )),
+        leading: new GestureDetector(
+          child: new Container(
+            child: new Center(
+              child: new Text(
+                '取消',
+                style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w400,
+                    color: Color(CLS.BASE_COLOR)),
               ),
-              new Offstage(
-                child: new Container(
-                  color: Color(CLS.HALF_BACKGROUND),
-                  child: new Center(
-                    child: new CupertinoActivityIndicator(radius: 20.0),),
+            ),
+            padding: const EdgeInsets.only(left: 14.0),
+          ),
+          onTap: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        actions: <Widget>[
+          new GestureDetector(
+            child: new Container(
+              child: new Center(
+                child: new Text(
+                  '注册',
+                  style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w400,
+                      color: Color(CLS.BASE_COLOR)),
                 ),
-                offstage: !isLoading,
-              )
+              ),
+              padding: const EdgeInsets.only(right: 14.0),
+            ),
+            onTap: () {
+              register();
+            },
+          ),
+        ],
+      ),
+      backgroundColor: Colors.white,
+      body: new SingleChildScrollView(
+        child: new Container(
+          padding: const EdgeInsets.only(top: 40.0, left: 40.0, right: 40.0),
+          child: new Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              new Text(
+                "登录Free Feed",
+                style: new TextStyle(
+                    fontSize: 32.0,
+                    fontWeight: FontWeight.bold,
+                    color: Color(CLS.TEXT_0)),
+              ),
+              new Container(
+                margin: EdgeInsets.only(
+                  top: 40.0,
+                ),
+                child: new TextField(
+                  onChanged: (str) {
+                    _email = str;
+                    _onTextChange();
+                  },
+                  decoration: new InputDecoration(
+                    hintText: '电子邮箱地址',
+                    border: UnderlineInputBorder(
+                        borderSide: BorderSide(width: 1.0)),
+                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(
+                        width: 1.0, color: Color(CLS.BASE_COLOR))),
+                  ),
+                  maxLines: 1,
+                  keyboardType: TextInputType.text,
+                  onSubmitted: (text) {
+                    FocusScope.of(context).reparentIfNeeded(node);
+                  },
+                ),
+              ),
+              new Padding(
+                child: new TextField(
+                  onChanged: (text) {
+                    _password = text;
+                    _onTextChange();
+                  },
+                  obscureText: true,
+                  maxLines: 1,
+                  decoration: new InputDecoration(
+                    hintText: '请输入密码',
+                    border: UnderlineInputBorder(
+                        borderSide: BorderSide(width: 1.0)),
+                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(
+                        width: 1.0, color: Color(CLS.BASE_COLOR))),
+                  ),
+                  keyboardType: TextInputType.text,
+                  onSubmitted: (text) {
+                    FocusScope.of(context).reparentIfNeeded(node);
+                  },
+                ),
+                padding: const EdgeInsets.only(top: 14.0, bottom: 14.0),
+              ),
+
             ],
-          );
-        }));
+          ),
+        ),
+      ),
+      bottomNavigationBar: new Container(
+        width: MediaQuery
+            .of(context)
+            .size
+            .width,
+        color: Colors.white,
+        height: 48.0,
+        alignment: Alignment.centerRight,
+        child: new Container(
+          margin: const EdgeInsets.only(right: 14.0),
+          child: new Material(
+            borderRadius: BorderRadius.circular(24.0),
+            child: new RaisedButton(
+              onPressed: () {
+                onPressed();
+              },
+              child: new Text('登录',
+                  style: new TextStyle(fontSize: 14.0, color: Colors.white),
+                  maxLines: 1),
+              color: Color(sendColor),
+              elevation: 0.0,
+            ),
+          ),
+          height: 40.0,
+          width: 90.0,
+        ),
+      ),
+      resizeToAvoidBottomPadding: true,
+    );
   }
 
   void register() {
@@ -132,13 +184,22 @@ class _LoginState extends State<LoginPage> {
     });
   }
 
-  void onPressed() async {
-    var form = formKey.currentState;
-    if (form.validate()) {
-      form.save();
+  int sendColor = 0xA01B9E85;
 
-      print('phone: $_email');
-      print('phone: $_password');
+  void _onTextChange() {
+    if (_email != null && _email.length > 0 &&
+        _password != null && _password.length > 0) {
+      setState(() {
+        sendColor = 0xFF1B9E85;
+      });
+    } else {
+      setState(() {
+        sendColor = 0xA01B9E85;
+      });
+    }
+  }
+
+  void onPressed() async {
 
       try {
         setState(() {
@@ -168,7 +229,6 @@ class _LoginState extends State<LoginPage> {
       } catch (exception) {
         print(exception.toString());
       }
-    }
   }
 
   @override
