@@ -166,7 +166,6 @@ class MicropostProvider {
       return new Micropost.fromMap(list[0]);
     } catch (exception) {
       print(exception.toString());
-    } finally {
       return null;
     }
 

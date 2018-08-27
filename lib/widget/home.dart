@@ -359,7 +359,6 @@ class _MyHomePageState extends State<MyHomePage>
 
   void forDetailUpdate(Micropost item) async {
     Micropost m = await MicropostProvider.origin.getItem(item.id);
-    print(m);
     updateSingleFeed(m);
   }
 

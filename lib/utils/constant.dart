@@ -1,5 +1,5 @@
 class Constant {
-  static const String baseUrlNoHttp = '192.168.1.103:3000';
+  static const String baseUrlNoHttp = '192.168.1.107:3000';
   static const String baseUrl = 'http://' + baseUrlNoHttp;
 
   static const int HTTP_OK = 0;

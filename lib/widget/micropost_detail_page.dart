@@ -12,6 +12,7 @@ import 'dart:async';
 import 'package:flutter_app/widget/Indicator_line.dart';
 import 'package:flutter_app/model/dot_model.dart';
 import 'package:flutter_app/widget/user_detail_page.dart';
+import 'package:flutter_app/widget/multi_touch_page.dart';
 
 class MicropostDetailPage extends StatefulWidget {
   Micropost micropost;
@@ -108,10 +109,12 @@ class _MicropostDetailState extends State<MicropostDetailPage>
         icon: const Icon(Icons.arrow_back),
         color: Color(0xFF000000),
         onPressed: () {
+
           Navigator.of(context).pop(micropost);
 //          Navigator.of(context).pop(micropost);
         },
       ),
+      elevation: 0.0,
       actions: <Widget>[
         new IconButton(
           icon: const Icon(Icons.more_horiz),
@@ -235,7 +238,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
       datas = commitDatas;
     }
     content = new ListView.builder(
-      itemCount: datas.length == 0 ? 1 : datas.length + 1,
+      itemCount: datas.length == 0 ? 2 : datas.length + 1,
       itemBuilder: (context, i) {
         if (i == 0) {
           return new Column(
@@ -268,6 +271,47 @@ class _MicropostDetailState extends State<MicropostDetailPage>
           );
         } else {
           i -= 1;
+          if (datas.length == 0) {
+            if (Indicator_index == 1) {
+              return new Container(
+                color: Color(CLS.BACKGROUND),
+                height: 200.0,
+                padding: const EdgeInsets.only(top: 80.0),
+                child: new Center(
+                  child: new Column(
+                    children: <Widget>[
+                      new Image.asset(
+                        "images/blank_dot.png",
+                        fit: BoxFit.fitWidth,
+                        width: 80.0,
+                        height: 80.0,
+                      ),
+                      new Text("还没有人点赞哦")
+                    ],
+                  ),
+                ),
+              );
+            } else {
+              return new Container(
+                color: Color(CLS.BACKGROUND),
+                height: 200.0,
+                padding: const EdgeInsets.only(top: 80.0),
+                child: new Center(
+                  child: new Column(
+                    children: <Widget>[
+                      new Image.asset(
+                        "images/blank_commit.png",
+                        fit: BoxFit.fitWidth,
+                        width: 80.0,
+                        height: 80.0,
+                      ),
+                      new Text("发表自己的看法，做第一个评论的人吧！")
+                    ],
+                  ),
+                ),
+              );
+            }
+          }
           if (Indicator_index == 1) {
             return _buildRow1(context, i);
           } else {
@@ -281,6 +325,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
     var _refreshIndicator = new RefreshIndicator(
         onRefresh: _refreshData,
         child: new Container(
+          color: Color(CLS.BACKGROUND),
           child: new GestureDetector(
             child: content,
             onTap: () {
@@ -505,7 +550,22 @@ class _MicropostDetailState extends State<MicropostDetailPage>
   }
 
   @override
-  goPhotoView(String url) {}
+  goPhotoView(String url) {
+    Navigator.of(context).push(new PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (BuildContext context, _, __) {
+          return new MultiTouchPage(url);
+        },
+        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+          return new FadeTransition(
+            opacity: animation,
+            child: new RotationTransition(
+              turns: new Tween<double>(begin: 0.5, end: 1.0).animate(animation),
+              child: child,
+            ),
+          );
+        }));
+  }
 
   @override
   void updateSingleFeed(Micropost m) {
