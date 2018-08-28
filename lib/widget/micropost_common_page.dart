@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/model/feed_model.dart';
 import 'package:flutter_app/utils/time_utils.dart';
 import 'package:flutter_app/utils/constant.dart';
-import 'package:flutter_app/widget/multi_touch_page.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class MicropostPage extends StatelessWidget {
   Micropost item;
@@ -173,7 +173,7 @@ class MicropostPage extends StatelessWidget {
     bool yizan = item.dotId > 0;
     String zanNum = item.dots_num.toString();
     String commitNum = item.comment_num.toString();
-    String zhuanfaNum = 123.toString();
+    String zhuanfaNum = '0';
     if (type == 2) {
       zanNum = '';
       commitNum = '';
@@ -246,7 +246,14 @@ class MicropostPage extends StatelessWidget {
                 ],
               ),
               onTap: () {
-                callBack.tap_dot(item);
+                Fluttertoast.showToast(
+                    msg: "转发功能尚未开放哦",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    timeInSecForIos: 1,
+                    bgcolor: "#1B9E85",
+                    textcolor: '#ffffff'
+                );
               },
             ),
             height: size,

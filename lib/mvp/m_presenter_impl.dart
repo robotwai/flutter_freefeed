@@ -59,4 +59,16 @@ class MicropostPresenterImpl extends MicropostIPresenter {
       }
     });
   }
+
+  @override
+  loadMicropost(int id) {
+    FFHttpUtils.origin.getMicropost(id).then((onValue){
+      if (onValue != null) {
+        micropostIView.updateSingleFeed(onValue);
+      }
+    });
+
+  }
+
+
 }

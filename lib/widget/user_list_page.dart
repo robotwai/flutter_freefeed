@@ -33,10 +33,8 @@ class _UserListPageState extends State<UserListPage> {
       });
     });
     _refreshData();
-    _scrollController = new ScrollController()
-      ..addListener(_scrollListener);
+    _scrollController = new ScrollController()..addListener(_scrollListener);
   }
-
 
   void _scrollListener() {
     if (_scrollController.position.pixels ==
@@ -68,16 +66,38 @@ class _UserListPageState extends State<UserListPage> {
   Widget _buildList() {
     var content;
 
-    if (datas.isEmpty) {
-      content = new Center(child: new CircularProgressIndicator());
-    } else {
-      content = new ListView.builder(
-        physics: AlwaysScrollableScrollPhysics(),
-        itemCount: datas.length,
-        itemBuilder: _buildRow,
-        controller: _scrollController,
-      );
-    }
+    double a = MediaQuery.of(context).size.height / 2 - 80.0;
+    a = a > 0 ? a : a + 80.0;
+    content = new ListView.builder(
+      physics: AlwaysScrollableScrollPhysics(),
+      itemCount: datas.length == 0 ? 1 : datas.length,
+      itemBuilder: (context, i) {
+        if (i == 0 && datas.length == 0) {
+          return new Container(
+            padding:  EdgeInsets.only(top:a),
+            color: Color(CLS.BACKGROUND),
+            child: new Center(
+              child: new Column(
+                children: <Widget>[
+                  new Image.asset(
+                    "images/blank.png",
+                    fit: BoxFit.fitWidth,
+                    width: 64.0,
+                    height: 64.0,
+                  ),
+                  new Text(
+                    widget.type == 1 ? '还没有关注别人哦' : '还没有关注者，快去发发推文吧',
+                  )
+                ],
+              ),
+            ),
+          );
+        } else {
+          return _buildRow(context, i);
+        }
+      },
+      controller: _scrollController,
+    );
 
     var _refreshIndicator = new Container(
       child: new RefreshIndicator(
@@ -131,7 +151,7 @@ class _UserListPageState extends State<UserListPage> {
                   new Text(
                     user.sign_content != null ? user.sign_content : '',
                     style:
-                    new TextStyle(color: Color(0xFF50616D), fontSize: 12.0),
+                        new TextStyle(color: Color(0xFF50616D), fontSize: 12.0),
                   ),
                 ],
               ),

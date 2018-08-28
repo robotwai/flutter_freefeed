@@ -84,6 +84,42 @@ class FFHttpUtils {
     return mic;
   }
 
+  Future<Micropost> getMicropost(int id) async {
+    Micropost mic;
+    Account account = await CommonSP.getAccount();
+    String token = account.token;
+    String url = '/app/getMicropost';
+
+    Map<String, String> op = new Map();
+    op['token'] = token;
+    op['id'] = '$id';
+    var uri = Uri.parse(Constant.baseUrl + url);
+
+    try {
+      var request = new http.Request("GET", uri);
+      request.bodyFields = op;
+      print(uri.toString());
+      http.StreamedResponse response = await request.send();
+      String json = await response.stream.bytesToString();
+      String code = jsonDecode(json)['status'];
+      print('code' + code);
+      if (int.parse(code) == Constant.HTTP_OK) {
+        print('codeok');
+        String data = jsonDecode(json)['data'];
+        Map userMap = jsonDecode(data);
+        mic = new Micropost.fromJson(userMap);
+      } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
+        print('codeHTTP_TOKEN_ERROR');
+        CommonSP.saveAccount(null);
+      }
+
+    } catch (exception) {
+      //todo
+      print(exception.toString());
+    }
+    return mic;
+  }
+
   //登录
   Future<String> login(String email, String password) async {
     String res = '';

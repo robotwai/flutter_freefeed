@@ -21,7 +21,7 @@ class MicropostDetailPage extends StatefulWidget {
   _MicropostDetailState createState() {
     myMicropostDetailState = new _MicropostDetailState(micropost);
     MicropostIPresenter presenter =
-    new MicropostPresenterImpl(myMicropostDetailState);
+        new MicropostPresenterImpl(myMicropostDetailState);
     presenter.init();
     return myMicropostDetailState;
   }
@@ -49,8 +49,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
     CommonSP.getAccount().then((onValue) {
       account = onValue;
     });
-    _scrollController = new ScrollController()
-      ..addListener(_scrollListener);
+    _scrollController = new ScrollController()..addListener(_scrollListener);
     _refreshData();
 
 //    new Future.delayed(const Duration(microseconds: 300), () {
@@ -98,18 +97,17 @@ class _MicropostDetailState extends State<MicropostDetailPage>
       title: new Container(
         child: new Center(
             child: Offstage(
-              offstage: !isShowTitle,
-              child: new ClipOval(
-                child: _getTopIcon(),
-              ),
-            )),
+          offstage: !isShowTitle,
+          child: new ClipOval(
+            child: _getTopIcon(),
+          ),
+        )),
       ),
       backgroundColor: Color(0xFFFFFFFF),
       leading: new IconButton(
         icon: const Icon(Icons.arrow_back),
         color: Color(0xFF000000),
         onPressed: () {
-
           Navigator.of(context).pop(micropost);
 //          Navigator.of(context).pop(micropost);
         },
@@ -141,10 +139,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
                         : Color(CLS.TextLabel)),
               ),
             ),
-            width: (MediaQuery
-                .of(context)
-                .size
-                .width) / 3,
+            width: (MediaQuery.of(context).size.width) / 3,
             height: 40.0,
           ),
           onTap: () {
@@ -160,10 +155,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
                           ? Color(CLS.INDICATOR)
                           : Color(CLS.TextLabel))),
             ),
-            width: (MediaQuery
-                .of(context)
-                .size
-                .width) / 3,
+            width: (MediaQuery.of(context).size.width) / 3,
             height: 40.0,
           ),
           onTap: () {
@@ -179,10 +171,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
                           ? Color(CLS.INDICATOR)
                           : Color(CLS.TextLabel))),
             ),
-            width: (MediaQuery
-                .of(context)
-                .size
-                .width) / 3,
+            width: (MediaQuery.of(context).size.width) / 3,
             height: 40.0,
           ),
           onTap: () {
@@ -255,16 +244,10 @@ class _MicropostDetailState extends State<MicropostDetailPage>
               new Container(
                 child: new CustomPaint(
                   painter: new IndicatorLine(
-                      Indicator_index, 3, MediaQuery
-                      .of(context)
-                      .size
-                      .width),
+                      Indicator_index, 3, MediaQuery.of(context).size.width),
                   isComplex: true,
                 ),
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width,
+                width: MediaQuery.of(context).size.width,
                 height: 6.0,
               ),
             ],
@@ -281,10 +264,10 @@ class _MicropostDetailState extends State<MicropostDetailPage>
                   child: new Column(
                     children: <Widget>[
                       new Image.asset(
-                        "images/blank_dot.png",
+                        "images/blank.png",
                         fit: BoxFit.fitWidth,
-                        width: 80.0,
-                        height: 80.0,
+                        width: 64.0,
+                        height: 64.0,
                       ),
                       new Text("还没有人点赞哦")
                     ],
@@ -300,10 +283,10 @@ class _MicropostDetailState extends State<MicropostDetailPage>
                   child: new Column(
                     children: <Widget>[
                       new Image.asset(
-                        "images/blank_commit.png",
+                        "images/blank.png",
                         fit: BoxFit.fitWidth,
-                        width: 80.0,
-                        height: 80.0,
+                        width: 64.0,
+                        height: 64.0,
                       ),
                       new Text("发表自己的看法，做第一个评论的人吧！")
                     ],
@@ -342,10 +325,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
         new Container(
             color: Color(0xffffff),
             height: 41.0,
-            width: MediaQuery
-                .of(context)
-                .size
-                .width,
+            width: MediaQuery.of(context).size.width,
             child: new Column(
               children: <Widget>[
                 new Divider(
@@ -365,7 +345,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
                             decoration: new InputDecoration(
                                 hintText: '写评论...',
                                 hintStyle:
-                                new TextStyle(color: Color(CLS.TextLabel))),
+                                    new TextStyle(color: Color(CLS.TextLabel))),
                           ),
                         ),
                         new Container(
@@ -374,10 +354,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
                               icon: new Icon(Icons.send),
                               onPressed: () {
                                 node.unfocus();
-                                _presenter.sendCommit(
-                                    micropost,
-                                    _commentController
-                                        .text); //modified  当没有为onPressed绑定处理函数时，IconButton默认为禁用状态
+                                sendCommit(); //modified  当没有为onPressed绑定处理函数时，IconButton默认为禁用状态
                               }),
                         ),
                       ],
@@ -422,7 +399,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
                 new Text(
                   TimeUtils.CalculateTime(dot.created_at),
                   style:
-                  new TextStyle(color: Color(0xFF50616D), fontSize: 10.0),
+                      new TextStyle(color: Color(0xFF50616D), fontSize: 10.0),
                 ),
               ],
             ),
@@ -470,7 +447,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
                 new Text(
                   TimeUtils.CalculateTime(commit.created_at),
                   style:
-                  new TextStyle(color: Color(0xFF50616D), fontSize: 10.0),
+                      new TextStyle(color: Color(0xFF50616D), fontSize: 10.0),
                 ),
               ],
             ),
@@ -531,22 +508,58 @@ class _MicropostDetailState extends State<MicropostDetailPage>
     return completer.future;
   }
 
+  Future<bool> checkToLogin() async {
+    Account a = await CommonSP.getAccount();
+    setState(() {
+      account = a;
+    });
+    if (account == null || account.token == '0') {
+      Navigator.of(context).pushNamed('/c').then((value) {
+        if (value == 1) {
+          print('login success');
+          print("getUserInfo");
+          getMicropostInfo();
+        }
+      });
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  sendCommit() {
+    checkToLogin().then((onValue) {
+      if (onValue) _presenter.sendCommit(micropost, _commentController.text);
+    });
+  }
+
+  getMicropostInfo() {
+    _presenter.loadMicropost(micropost.id);
+  }
+
   @override
   jumpToDetail(Micropost item) {}
 
   @override
   tap_dot(Micropost item) {
-    _presenter.dot(item);
+    checkToLogin().then((onValue) {
+      if (onValue) _presenter.dot(item);
+    });
   }
 
   @override
   jumpToUser(int id) {
-    Navigator.of(context).push(new PageRouteBuilder(
-      opaque: false,
-      pageBuilder: (BuildContext context, _, __) {
-        return new UserDetailPage(id);
-      },
-    ));
+    checkToLogin().then((onValue) {
+      if (onValue) {
+        Navigator.of(context).push(new PageRouteBuilder(
+          opaque: false,
+          pageBuilder: (BuildContext context, _, __) {
+            return new UserDetailPage(id);
+          },
+        ));
+      }
+    });
+
   }
 
   @override

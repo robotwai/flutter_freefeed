@@ -10,6 +10,7 @@ abstract class MicropostIPresenter implements IPresenter {
   void dot(Micropost item);
 
   void sendCommit(Micropost item, String body);
+  loadMicropost(int id);
 }
 
 abstract class MicropostIView implements IView<MicropostIPresenter> {

@@ -70,42 +70,68 @@ class _MicropostListPageState extends State<MicropostListPage>
         backgroundColor: Color(CLS.BACKGROUND),
         elevation: 0.0,
       ),
-      backgroundColor: Color(CLS.BACKGROUND),
       body: getList(),
     );
   }
 
   getList() {
     var content;
-
+    double a =MediaQuery.of(context).size.height/2-80.0;
+    a= a>0?a:a+80.0;
     content = new ListView.builder(
       addRepaintBoundaries: false,
-      itemCount: datas.length,
+      itemCount: datas.length==0?1:datas.length,
       itemBuilder: (context, i) {
-        final Micropost item = datas[i];
-        return new GestureDetector(
-          child: new Card(
+        if(i==0&&datas.length==0){
+          return new Container(
+            width: MediaQuery.of(context).size.width,
             color: Color(CLS.BACKGROUND),
-            margin: const EdgeInsets.all(10.0),
-            child: new MicropostPage(item, this, 1),
-          ),
-          onTap: () {
-//            jumpToDetail(item);
-          },
-        );
+            padding:  EdgeInsets.only(top:a),
+            child: new Center(
+              child: new Column(
+                children: <Widget>[
+                  new Image.asset(
+                    "images/blank.png",
+                    fit: BoxFit.fitWidth,
+                    width: 64.0,
+                    height: 64.0,
+                  ),
+                  new Text('还没有点过赞' )
+                ],
+              ),
+            ),
+          );
+        }else{
+          final Micropost item = datas[i];
+          return new GestureDetector(
+            child: new Card(
+              color: Color(CLS.BACKGROUND),
+              margin: const EdgeInsets.all(10.0),
+              child: new MicropostPage(item, this, 1),
+            ),
+            onTap: () {
+              jumpToDetail(item);
+            },
+          );
+        }
+
       },
       controller: _scrollController,
     );
 
-    var _refreshIndicator = new RefreshIndicator(
-        onRefresh: _refreshData,
-        child: new Container(
-          color: Color(CLS.BACKGROUND),
-          child: new GestureDetector(
-            child: content,
-            onTap: () {},
-          ),
-        ));
+    var _refreshIndicator = new Container(
+      child: new RefreshIndicator(
+          onRefresh: _refreshData,
+          child: new Container(
+            color: Color(CLS.BACKGROUND),
+            child: new GestureDetector(
+              child: content,
+              onTap: () {},
+            ),
+          )),
+      margin: const EdgeInsets.only(top: 10.0),
+      color: const Color(0xffffffff),
+    );
 
     return _refreshIndicator;
   }

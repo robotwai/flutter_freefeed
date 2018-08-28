@@ -40,7 +40,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage>
-    implements FeedIView, PageCallBack {
+    with FeedIView, PageCallBack{
   Account account;
   String name;
   String email;
@@ -62,23 +62,16 @@ class _MyHomePageState extends State<MyHomePage>
     // so that the display can reflect the updated values. If we changed
     // _counter without calling setState(), then the build method would not be
     // called again, and so nothing would appear to happen.
-    if (account.token != '0') {
-      Navigator.of(context).pushNamed('/d').then((onValue) {
-        if (onValue == 1) {
-          getUserInfo();
-//          setState(() {
 
-//          });
-        }
-      });
-    } else {
-      Navigator.of(context).pushNamed('/c').then((value) {
-        if (value == 1) {
-          print('login success');
-          getUserInfo();
-        }
-      });
-    }
+    checkToLogin().then((onValue){
+      if(onValue) {
+        Navigator.of(context).pushNamed('/d').then((onValue) {
+          if (onValue == 1) {
+            getUserInfo();
+          }
+        });
+      }
+    });
   }
 
   @override
@@ -88,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage>
     _lastClickTime = 0;
     _scrollController = new ScrollController()
       ..addListener(_scrollListener);
+
   }
 
   void getUserInfo() async {
@@ -132,6 +126,7 @@ class _MyHomePageState extends State<MyHomePage>
     super.dispose();
     _scrollController.removeListener(_scrollListener);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -239,12 +234,18 @@ class _MyHomePageState extends State<MyHomePage>
                     margin: const EdgeInsets.only(right: 6.0),
                   ),
                   onTap: () {
-                    Navigator.of(context).push(new PageRouteBuilder(
-                      opaque: false,
-                      pageBuilder: (BuildContext context, _, __) {
-                        return new UserListPage(account.id, 1);
-                      },
-                    ));
+
+                    checkToLogin().then((onValue){
+                      if(onValue) {
+                        Navigator.of(context).push(new PageRouteBuilder(
+                          opaque: false,
+                          pageBuilder: (BuildContext context, _, __) {
+                            return new UserListPage(account.id, 1);
+                          },
+                        ));
+                      }
+                    });
+
                   },
                 ),
                 new GestureDetector(
@@ -259,12 +260,16 @@ class _MyHomePageState extends State<MyHomePage>
                     margin: const EdgeInsets.only(left: 6.0),
                   ),
                   onTap: () {
-                    Navigator.of(context).push(new PageRouteBuilder(
-                      opaque: false,
-                      pageBuilder: (BuildContext context, _, __) {
-                        return new UserListPage(account.id, 2);
-                      },
-                    ));
+                    checkToLogin().then((onValue){
+                      if(onValue) {
+                        Navigator.of(context).push(new PageRouteBuilder(
+                          opaque: false,
+                          pageBuilder: (BuildContext context, _, __) {
+                            return new UserListPage(account.id, 2);
+                          },
+                        ));
+                      }
+                    });
                   },
                 ),
               ],
@@ -287,12 +292,16 @@ class _MyHomePageState extends State<MyHomePage>
                   leading: new Icon(Icons.bookmark),
                   title: new Text("收藏"),
                   onTap: () {
-                    Navigator.of(context).push(new PageRouteBuilder(
-                      opaque: false,
-                      pageBuilder: (BuildContext context, _, __) {
-                        return new MicropostListPage(account.id, 0);
-                      },
-                    ));
+                    checkToLogin().then((onValue){
+                      if(onValue) {
+                        Navigator.of(context).push(new PageRouteBuilder(
+                          opaque: false,
+                          pageBuilder: (BuildContext context, _, __) {
+                            return new MicropostListPage(account.id, 0);
+                          },
+                        ));
+                      }
+                    });
                   },
                 ),
                 new ListTile(
@@ -344,17 +353,23 @@ class _MyHomePageState extends State<MyHomePage>
     ))
         .then((onValue) {
       forDetailUpdate(item);
+      getUserInfo();
     });
   }
 
   @override
   jumpToUser(int id) {
-    Navigator.of(context).push(new PageRouteBuilder(
-      opaque: false,
-      pageBuilder: (BuildContext context, _, __) {
-        return new UserDetailPage(id);
-      },
-    ));
+    checkToLogin().then((onValue){
+      if(onValue){
+        Navigator.of(context).push(new PageRouteBuilder(
+          opaque: false,
+          pageBuilder: (BuildContext context, _, __) {
+            return new UserDetailPage(id);
+          },
+        ));
+      }
+    });
+
   }
 
   void forDetailUpdate(Micropost item) async {
@@ -398,13 +413,13 @@ class _MyHomePageState extends State<MyHomePage>
         }));
   }
 
-  @override
-  void _tap_icon() async{
+  Future<bool> checkToLogin() async{
     Account a = await CommonSP.getAccount();
     setState(() {
       account = a;
     });
     if (account == null || account.token == '0') {
+
       Navigator.of(context).pushNamed('/c').then((value) {
         if (value == 1) {
           print('login success');
@@ -412,14 +427,25 @@ class _MyHomePageState extends State<MyHomePage>
           getUserInfo();
         }
       });
-    } else {
-      jumpToUser(account.id);
+      return false;
+    }else{
+      return true;
     }
   }
 
   @override
+  void _tap_icon() async{
+    checkToLogin().then((onValue){
+      if(onValue) jumpToUser(account.id);
+    });
+  }
+
+  @override
   tap_dot(Micropost item) {
-    _presenter.dot(token, item);
+    checkToLogin().then((onValue){
+      if(onValue) _presenter.dot(token, item);
+    });
+
   }
 
   Future<Null> _refreshData() {

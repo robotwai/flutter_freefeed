@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/utils/sp_local.dart';
 import 'dart:async';
 import 'package:flutter_app/utils/constant.dart';
+import 'package:flutter_app/widget/common_webview.dart';
 
 class SettingPage extends StatefulWidget {
   @override
@@ -31,20 +32,31 @@ class _SettingState extends State<SettingPage> {
     return new Scaffold(
         appBar: AppBar(
           title: new Text('设置'),
+          elevation: 0.0,
+          centerTitle: true,
         ),
         body: new Stack(
           children: <Widget>[
             new Container(
+              margin: const EdgeInsets.only(top: 10.0),
+              color: Color(CLS.BACKGROUND),
               child: new Column(
                 children: <Widget>[
                   new ListTile(
-                    title: new Text('关于我们'),
+                    title: new Text('关于我'),
                     leading: new Icon(Icons.more),
+                    onTap: (){
+                      jumpToAboutUs('关于我');
+                    },
                   ),
                   new ListTile(
                     title: new Text('意见'),
                     leading: new Icon(Icons.feedback),
+                    onTap: (){
+                      jumpToAboutUs('提交issues');
+                    },
                   ),
+
                 ],
               ),
             ),
@@ -115,5 +127,23 @@ class _SettingState extends State<SettingPage> {
         );
       },
     );
+  }
+
+  jumpToAboutUs(String title){
+    Navigator.of(context).push(new PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (BuildContext context, _, __) {
+          return new CommonWebView(title, 'https://github.com/robotwai/flutter_freefeed');
+        },
+        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+          return new FadeTransition(
+            opacity: animation,
+            child: new FadeTransition(
+              opacity:
+              new Tween<double>(begin: 0.5, end: 1.0).animate(animation),
+              child: child,
+            ),
+          );
+        }));
   }
 }
