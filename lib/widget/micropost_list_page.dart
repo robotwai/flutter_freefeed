@@ -5,6 +5,10 @@ import 'package:flutter_app/model/feed_model.dart';
 import 'package:flutter_app/model/user_model.dart';
 import 'package:flutter_app/widget/micropost_common_page.dart';
 import 'package:flutter_app/network/common_http_client.dart';
+import 'package:flutter_app/widget/user_detail_page.dart';
+import 'package:flutter_app/widget/multi_touch_page.dart';
+import 'package:flutter_app/widget/micropost_detail_page.dart';
+import 'package:flutter_app/utils/db_helper.dart';
 
 class MicropostListPage extends StatefulWidget {
   int id;
@@ -65,7 +69,7 @@ class _MicropostListPageState extends State<MicropostListPage>
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: AppBar(
-        title: new Text('赞'),
+        title: new Text(widget.type == 0 ? '赞' : '推文广场'),
         centerTitle: true,
         backgroundColor: Color(CLS.BACKGROUND),
         elevation: 0.0,
@@ -96,7 +100,7 @@ class _MicropostListPageState extends State<MicropostListPage>
                     width: 64.0,
                     height: 64.0,
                   ),
-                  new Text('还没有点过赞' )
+                  new Text(widget.type == 0 ? '还没有点过赞' : '发现更大的世界')
                 ],
               ),
             ),
@@ -148,21 +152,40 @@ class _MicropostListPageState extends State<MicropostListPage>
   }
 
   loadMicroposts() {
-    FFHttpUtils.origin
-        .getDotMicropostList(widget.id, currentPage)
-        .then((onValue) {
-      if (onValue != null && onValue.length > 0) {
-        if (onValue.length < 30) {
-          isFullLoad = true;
-        } else {
-          isFullLoad = false;
+    if (widget.type == 0) {
+      FFHttpUtils.origin
+          .getDotMicropostList(widget.id, currentPage)
+          .then((onValue) {
+        if (onValue != null && onValue.length > 0) {
+          if (onValue.length < 30) {
+            isFullLoad = true;
+          } else {
+            isFullLoad = false;
+          }
+          setState(() {
+            print('onloadFLSuc');
+            addAndRemoveDuplicate(onValue);
+          });
         }
-        setState(() {
-          print('onloadFLSuc');
-          addAndRemoveDuplicate(onValue);
-        });
-      }
-    });
+      });
+    } else {
+      FFHttpUtils.origin
+          .getFindMicropostList(currentPage)
+          .then((onValue) {
+        if (onValue != null && onValue.length > 0) {
+          if (onValue.length < 30) {
+            isFullLoad = true;
+          } else {
+            isFullLoad = false;
+          }
+          setState(() {
+            print('onloadFLSuc');
+            addAndRemoveDuplicate(onValue);
+          });
+        }
+      });
+    }
+
   }
 
   void addAndRemoveDuplicate(List<Micropost> list) {
@@ -179,14 +202,67 @@ class _MicropostListPageState extends State<MicropostListPage>
   }
 
   @override
-  jumpToUser(int id) {}
+  jumpToUser(int id) {
+    Navigator.of(context).push(new PageRouteBuilder(
+      opaque: false,
+      pageBuilder: (BuildContext context, _, __) {
+        return new UserDetailPage(id);
+      },
+    ));
+  }
 
   @override
-  goPhotoView(String url) {}
+  goPhotoView(String url) {
+    Navigator.of(context).push(new PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (BuildContext context, _, __) {
+          return new MultiTouchPage(url);
+        },
+        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+          return new FadeTransition(
+            opacity: animation,
+            child: new RotationTransition(
+              turns: new Tween<double>(begin: 0.5, end: 1.0).animate(animation),
+              child: child,
+            ),
+          );
+        }));
+  }
+
+  void jumpToDetail(Micropost item) {
+    Navigator
+        .of(context)
+        .push(new PageRouteBuilder(
+      opaque: false,
+      pageBuilder: (BuildContext context, _, __) {
+        return new MicropostDetailPage(item);
+      },
+    ))
+        .then((onValue) {
+      forDetailUpdate(item);
+    });
+  }
+
+  void forDetailUpdate(Micropost item) async {
+    Micropost m = await MicropostProvider.origin.getItem(item.id);
+    updateSingleFeed(m);
+  }
 
   @override
-  jumpToDetail(Micropost item) {}
-
+  void updateSingleFeed(Micropost item) {
+    List<Micropost> l = [];
+//    print(item.id.toString());
+    l.add(item);
+    setState(() {});
+    addAndRemoveDuplicate(l);
+  }
   @override
-  tap_dot(Micropost item) {}
+  tap_dot(Micropost item) {
+    FFHttpUtils.origin.dot(item).then((onValue) {
+      if (onValue != null) {
+        MicropostProvider.origin.insert(onValue);
+        updateSingleFeed(onValue);
+      }
+    });
+  }
 }

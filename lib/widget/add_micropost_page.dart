@@ -223,12 +223,79 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
   _addImage(int index) {
     print('addimage' + '$index');
 
-    getImage(index);
+//    getImage(index);
+
+    _selectIcon(index);
   }
 
 
-  Future getImage(int index) async {
-    var image = await ImagePicker.pickImage(source: ImageSource.camera);
+  _selectIcon(int index) {
+    showModalBottomSheet<Null>(
+        context: context,
+        builder: (BuildContext context) {
+          return new Container(
+              height: 162.0,
+              child: new Column(
+                children: <Widget>[
+                  new Container(
+                    child: new Text(
+                      '选择照片',
+                      style: new TextStyle(
+                          color: Color(CLS.TEXT_9), fontSize: 12.0),
+                    ),
+                    height: 40.0,
+                    alignment: Alignment.center,
+                  ),
+                  new Padding(
+                    padding: const EdgeInsets.only(left: 14.0, right: 14.0),
+                    child: new Divider(
+                      height: 1.0,
+                    ),
+                  ),
+                  new GestureDetector(
+                    child: new Container(
+                      child: new Text(
+                        '拍照',
+                        style: new TextStyle(
+                            color: Color(CLS.TEXT_3), fontSize: 14.0),
+                      ),
+                      height: 60.0,
+                      alignment: Alignment.center,
+                    ),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      getImage(1, index);
+                    },
+                  ),
+                  new Padding(
+                    padding: const EdgeInsets.only(left: 14.0, right: 14.0),
+                    child: new Divider(
+                      height: 1.0,
+                    ),
+                  ),
+                  new GestureDetector(
+                    child: new Container(
+                      child: new Text(
+                        '从相册中选取',
+                        style: new TextStyle(
+                            color: Color(CLS.TEXT_3), fontSize: 14.0),
+                      ),
+                      height: 60.0,
+                      alignment: Alignment.center,
+                    ),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      getImage(2, index);
+                    },
+                  ),
+                ],
+              ));
+        });
+  }
+
+  Future getImage(int type, int index) async {
+    var image = await ImagePicker.pickImage(
+        source: type == 1 ? ImageSource.camera : ImageSource.gallery);
 
     setState(() {
       print(image.path);

@@ -165,7 +165,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
         new GestureDetector(
           child: new Container(
             child: new Center(
-              child: new Text("转发 " + '123',
+              child: new Text("转发 " + '',
                   style: TextStyle(
                       color: Indicator_index == 3
                           ? Color(CLS.INDICATOR)
@@ -223,8 +223,10 @@ class _MicropostDetailState extends State<MicropostDetailPage>
 
     if (Indicator_index == 1) {
       datas = dotDatas;
-    } else {
+    } else if (Indicator_index == 2) {
       datas = commitDatas;
+    } else {
+      datas = [];
     }
     content = new ListView.builder(
       itemCount: datas.length == 0 ? 2 : datas.length + 1,
@@ -274,7 +276,7 @@ class _MicropostDetailState extends State<MicropostDetailPage>
                   ),
                 ),
               );
-            } else {
+            } else if (Indicator_index == 2) {
               return new Container(
                 color: Color(CLS.BACKGROUND),
                 height: 200.0,
@@ -289,6 +291,25 @@ class _MicropostDetailState extends State<MicropostDetailPage>
                         height: 64.0,
                       ),
                       new Text("发表自己的看法，做第一个评论的人吧！")
+                    ],
+                  ),
+                ),
+              );
+            } else {
+              return new Container(
+                color: Color(CLS.BACKGROUND),
+                height: 200.0,
+                padding: const EdgeInsets.only(top: 80.0),
+                child: new Center(
+                  child: new Column(
+                    children: <Widget>[
+                      new Image.asset(
+                        "images/blank.png",
+                        fit: BoxFit.fitWidth,
+                        width: 64.0,
+                        height: 64.0,
+                      ),
+                      new Text("转发功能还未开放哦")
                     ],
                   ),
                 ),
@@ -497,8 +518,10 @@ class _MicropostDetailState extends State<MicropostDetailPage>
     curPageNum = 1;
     if (Indicator_index == 1) {
       _presenter.loadDots(curPageNum, micropost.id);
-    } else {
+    } else if (Indicator_index == 2) {
       _presenter.loadCommit(curPageNum, micropost.id);
+    } else {
+
     }
 
     setState(() {});

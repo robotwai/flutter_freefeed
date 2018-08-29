@@ -305,6 +305,22 @@ class _MyHomePageState extends State<MyHomePage>
                   },
                 ),
                 new ListTile(
+                  leading: new Icon(Icons.find_in_page),
+                  title: new Text("发现"),
+                  onTap: () {
+                    checkToLogin().then((onValue) {
+                      if (onValue) {
+                        Navigator.of(context).push(new PageRouteBuilder(
+                          opaque: false,
+                          pageBuilder: (BuildContext context, _, __) {
+                            return new MicropostListPage(account.id, 1);
+                          },
+                        ));
+                      }
+                    });
+                  },
+                ),
+                new ListTile(
                   leading: new Icon(Icons.settings),
                   title: new Text("设置"),
                   onTap: () {

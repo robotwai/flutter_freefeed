@@ -20,9 +20,9 @@ class MyApp extends StatelessWidget {
         primaryColor: Color(CLS.ACTIONBAR),
         accentColor: Color(CLS.ACTIONBAR),
       ),
-      home: new MyHomePage(title: 'Free Feed'),
+      home: new MyHomePage(title: 'Simple Weibo'),
       routes: <String, WidgetBuilder> {
-        '/a': (BuildContext context) => new MyHomePage(title: 'Free Feed'),
+        '/a': (BuildContext context) => new MyHomePage(title: 'Simple Weibo'),
         '/c': (BuildContext context) => new LoginPage(),
         '/d': (BuildContext context) => new AddMicropostPage(),
         '/r': (BuildContext context) => new RegisterPage(),
