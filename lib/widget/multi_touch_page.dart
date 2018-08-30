@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/utils/constant.dart';
-
-const double _kMinFlingVelocity = 800.0;
+import 'package:cached_network_image/cached_network_image.dart';
 
 class MultiTouchAppPage extends StatefulWidget {
-  final String imgUrl;
+  List<String> imgUrls;
+  int position;
 
-  MultiTouchAppPage(this.imgUrl);
+  MultiTouchAppPage(this.imgUrls, this.position);
 
   @override
   State<StatefulWidget> createState() {
@@ -16,110 +16,66 @@ class MultiTouchAppPage extends StatefulWidget {
 
 class _MultiTouchAppPage extends State<MultiTouchAppPage>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  Animation<Offset> _flingAnimation;
-  Offset _offset = Offset.zero;
-  double _scale = 1.0;
-  Offset _normalizedOffset;
-  double _previousScale;
+  PageController _pageController;
 
-  double _start_v = 0.0;
-
+  double _currentPage = 0.0;
   @override
   void initState() {
     super.initState();
-    _controller = new AnimationController(vsync: this)
-      ..addListener(_handleFlingAnimation);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  // The maximum offset value is 0,0. If the size of this renderer's box is w,h
-  // then the minimum offset value is w - _scale * w, h - _scale * h.
-  Offset _clampOffset(Offset offset) {
-    final Size size = context.size;
-    final Offset minOffset =
-        new Offset(size.width, size.height) * (1.0 - _scale);
-    return new Offset(
-        offset.dx.clamp(minOffset.dx, 0.0), offset.dy.clamp(minOffset.dy, 0.0));
-  }
-
-  void _handleFlingAnimation() {
-    setState(() {
-      _offset = _flingAnimation.value;
-    });
-  }
-
-  void _handleOnScaleStart(ScaleStartDetails details) {
-    setState(() {
-      _previousScale = _scale;
-      _normalizedOffset = (details.focalPoint - _offset) / _scale;
-      // The fling animation stops if an input gesture starts.
-      _controller.stop();
-    });
-  }
-
-  void _handleOnScaleUpdate(ScaleUpdateDetails details) {
-    setState(() {
-      _scale = (_previousScale * details.scale).clamp(1.0, 4.0);
-      // Ensure that image location under the focal point stays in the same place despite scaling.
-      _offset = _clampOffset(details.focalPoint - _normalizedOffset * _scale);
-    });
-  }
-
-  void _handleOnScaleEnd(ScaleEndDetails details) {
-    final double magnitude = details.velocity.pixelsPerSecond.distance;
-    if (magnitude < _kMinFlingVelocity) return;
-    final Offset direction = details.velocity.pixelsPerSecond / magnitude;
-    final double distance = (Offset.zero & context.size).shortestSide;
-    _flingAnimation = new Tween<Offset>(
-            begin: _offset, end: _clampOffset(_offset + direction * distance))
-        .animate(_controller);
-    _controller
-      ..value = 0.0
-      ..fling(velocity: magnitude / 1000.0);
+    _pageController = new PageController(initialPage: widget.position);
   }
 
   @override
   Widget build(BuildContext context) {
-    return new GestureDetector(
-      onScaleStart: _handleOnScaleStart,
-      onScaleUpdate: _handleOnScaleUpdate,
-      onScaleEnd: _handleOnScaleEnd,
-      child: new Container(
-        color: const Color(0xf0000000),
-        child: new Center(
-          child: new ClipRect(
-            child: new Transform(
-              transform: new Matrix4.identity()
-                ..translate(_offset.dx, _offset.dy)
-                ..scale(_scale),
-              child: new Image.network(
-                widget.imgUrl,
-                fit: BoxFit.cover,
+    return new Scaffold(
+      body: new LayoutBuilder(
+          builder: (context, constraints) =>
+          new NotificationListener(
+            onNotification: (ScrollNotification note) {
+              setState(() {
+                _currentPage = _pageController.page;
+              });
+            },
+            child: new PageView.custom(
+              physics: const PageScrollPhysics(
+                  parent: const BouncingScrollPhysics()),
+              controller: _pageController,
+              childrenDelegate: new SliverChildBuilderDelegate(
+                    (context, index) =>
+                new _SimplePage(
+                  widget.imgUrls[index],
+                  parallaxOffset: constraints.maxWidth /
+                      2.0 *
+                      (index - _currentPage),
+                ),
+                childCount: widget.imgUrls.length,
               ),
             ),
-          ),
-        ),
-      ),
-      onTap: () {
-        Navigator.of(context).pop();
-      },
+          )),
     );
   }
 }
 
-class MultiTouchPage extends StatelessWidget {
-  final String imgUrl;
+class _SimplePage extends StatelessWidget {
+  _SimplePage(this.data, {Key key, this.parallaxOffset = 0.0})
+      : super(key: key);
 
-  MultiTouchPage(this.imgUrl);
+  final String data;
+  final double parallaxOffset;
 
   @override
-  Widget build(BuildContext context) {
-    return new MultiTouchAppPage(imgUrl);
-  }
+  Widget build(BuildContext context) =>
+      new GestureDetector(
+        child: new Container(
+          child: new Center(
+            child: new CachedNetworkImage(
+              fit: BoxFit.fitWidth,
+              imageUrl: Constant.baseUrl + data,
+            ),
+          ),
+        ),
+        onTap: () {
+          Navigator.of(context).pop();
+        },
+      );
 }

@@ -5,6 +5,7 @@ import 'package:flutter_app/utils/constant.dart';
 import 'package:flutter_app/network/common_http_client.dart';
 import 'package:flutter_app/utils/sp_local.dart';
 import 'package:flutter_app/widget/user_detail_page.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class UserListPage extends StatefulWidget {
   int id;
@@ -210,11 +211,10 @@ class _UserListPageState extends State<UserListPage> {
         height: 36.0,
       );
     } else {
-      return new FadeInImage.assetNetwork(
-        placeholder: "images/shutter.png",
+      return new CachedNetworkImage(
         //预览图
         fit: BoxFit.fitWidth,
-        image: Constant.baseUrl + url,
+        imageUrl: Constant.baseUrl + url,
         width: 36.0,
         height: 36.0,
       );

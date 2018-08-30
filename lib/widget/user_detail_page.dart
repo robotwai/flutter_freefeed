@@ -17,6 +17,7 @@ import 'package:flutter_app/utils/db_helper.dart';
 import 'package:flutter_app/widget/user_list_page.dart';
 import 'package:flutter_app/widget/user_setting_page.dart';
 import 'package:flutter_app/widget/micropost_list_page.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class UserDetailPage extends StatefulWidget {
   int id;
@@ -373,11 +374,10 @@ class _UserDetailPageState extends State<UserDetailPage>
         height: 80.0,
       );
     } else {
-      return new FadeInImage.assetNetwork(
-        placeholder: "images/shutter.png",
+      return new CachedNetworkImage(
         //预览图
         fit: BoxFit.fitWidth,
-        image: Constant.baseUrl + _user.icon,
+        imageUrl: Constant.baseUrl + _user.icon,
         width: 80.0,
         height: 80.0,
       );
@@ -517,11 +517,11 @@ class _UserDetailPageState extends State<UserDetailPage>
   jumpToUser(int item) {}
 
   @override
-  goPhotoView(String url) {
+  goPhotoView(int type, List<String> list) {
     Navigator.of(context).push(new PageRouteBuilder(
         opaque: false,
         pageBuilder: (BuildContext context, _, __) {
-          return new MultiTouchPage(url);
+          return new MultiTouchAppPage(list, type);
         },
         transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
           return new FadeTransition(

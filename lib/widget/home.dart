@@ -6,7 +6,7 @@ import 'package:flutter_app/utils/constant.dart';
 import 'package:flutter_app/model/feed_model.dart';
 import 'package:flutter_app/mvp/f_presenter.dart';
 import 'package:flutter_app/mvp/f_presenter_impl.dart';
-import 'package:flutter_app/utils/time_utils.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_app/widget/multi_touch_page.dart';
 import 'dart:async';
 import 'package:flutter_app/widget/micropost_detail_page.dart';
@@ -402,21 +402,22 @@ class _MyHomePageState extends State<MyHomePage>
         height: 80.0,
       );
     } else {
-      return new FadeInImage.assetNetwork(
-        placeholder: "images/shutter.png", //预览图
+      return new CachedNetworkImage(
+
         fit: BoxFit.fitWidth,
-        image: Constant.baseUrl + icon,
+        imageUrl: Constant.baseUrl + icon,
         width: 80.0,
         height: 80.0,
       );
     }
   }
 
-  void goPhotoView(String url) {
+  @override
+  goPhotoView(int type, List<String> list) {
     Navigator.of(context).push(new PageRouteBuilder(
         opaque: false,
         pageBuilder: (BuildContext context, _, __) {
-          return new MultiTouchPage(url);
+          return new MultiTouchAppPage(list, type);
         },
         transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
           return new FadeTransition(

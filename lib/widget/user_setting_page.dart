@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io';
+import 'package:image_jpeg/image_jpeg.dart';
 
 class UserSettingPage extends StatefulWidget {
   @override
@@ -238,10 +239,13 @@ class _UserSettingPageState extends State<UserSettingPage> {
   Future getImage(int type) async {
     var image = await ImagePicker.pickImage(
         source: type == 1 ? ImageSource.camera : ImageSource.gallery);
+
     if (image != null) {
+      String newfileName = await ImageJpeg.encodeJpeg(
+          image.path, image.path, 70, 120, 120);
       setState(() {
         print(image.path);
-        icon = image.path;
+        icon = newfileName;
         account.icon = icon;
       });
     }

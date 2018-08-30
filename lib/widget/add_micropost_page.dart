@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/model/account_model.dart';
 import 'package:flutter_app/utils/sp_local.dart';
 import 'package:flutter_app/utils/constant.dart';
-import 'package:flutter_app/widget/add_icon.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:async';
-import 'package:intl/intl.dart';
+import 'package:image_jpeg/image_jpeg.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/network/common_http_client.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class AddMicropostPage extends StatefulWidget {
   @override
@@ -111,12 +111,11 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
         width: 36.0,
         height: 36.0,);
     } else {
-      return new FadeInImage.assetNetwork(
+      return new CachedNetworkImage(
 
-        placeholder: "images/shutter.png",
         //预览图
         fit: BoxFit.fitWidth,
-        image: Constant.baseUrl + account.icon,
+        imageUrl: Constant.baseUrl + account.icon,
         width: 36.0,
         height: 36.0,
       );
@@ -296,14 +295,26 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
   Future getImage(int type, int index) async {
     var image = await ImagePicker.pickImage(
         source: type == 1 ? ImageSource.camera : ImageSource.gallery);
+    if (image != null) {
+      String newfileName;
+      try {
+        newfileName =
+        await ImageJpeg.encodeJpeg(image.path, image.path, 70, 720, 1280);
+//        print(newfileName);
 
-    setState(() {
-      print(image.path);
-      images[index]=(image.path);
-      if (images.length < 9 && index == images.length - 1) {
-        images.add('0');
+      } catch (exception) {
+        newfileName = image.path;
       }
-    });
+
+      setState(() {
+        print(image.path);
+        images[index] = (newfileName);
+        if (images.length < 9 && index == images.length - 1) {
+          images.add('0');
+        }
+      });
+    }
+
   }
 
   void _onTextChange(String s) {

@@ -212,11 +212,11 @@ class _MicropostListPageState extends State<MicropostListPage>
   }
 
   @override
-  goPhotoView(String url) {
+  void goPhotoView(int type, List<String> list) {
     Navigator.of(context).push(new PageRouteBuilder(
         opaque: false,
         pageBuilder: (BuildContext context, _, __) {
-          return new MultiTouchPage(url);
+          return new MultiTouchAppPage(list, type);
         },
         transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
           return new FadeTransition(
