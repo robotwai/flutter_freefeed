@@ -51,11 +51,6 @@ class _MicropostDetailState extends State<MicropostDetailPage>
     });
     _scrollController = new ScrollController()..addListener(_scrollListener);
     _refreshData();
-
-//    new Future.delayed(const Duration(microseconds: 300), () {
-//      //任务具体代码
-//      _persistentBottomSheet();
-//    });
   }
 
   int Indicator_index = 1;
@@ -205,11 +200,10 @@ class _MicropostDetailState extends State<MicropostDetailPage>
   }
 
   int sendColor = 0xFF9c9c9c;
-  FocusNode node;
 
   sw(int index) {
     print(index.toString());
-    node.unfocus();
+    FocusScope.of(context).requestFocus(new FocusNode());
     setState(() {
       Indicator_index = index;
       _refreshData();
@@ -333,11 +327,10 @@ class _MicropostDetailState extends State<MicropostDetailPage>
           child: new GestureDetector(
             child: content,
             onTap: () {
-              node.unfocus();
+              FocusScope.of(context).requestFocus(new FocusNode());
             },
           ),
         ));
-    node = new FocusNode();
     return new Column(
       children: <Widget>[
         new Flexible(
@@ -361,7 +354,8 @@ class _MicropostDetailState extends State<MicropostDetailPage>
                           child: new TextField(
                             controller: _commentController,
                             autofocus: false,
-                            focusNode: node,
+                            autocorrect: false,
+
                             maxLines: 1,
                             decoration: new InputDecoration(
                                 hintText: '写评论...',
@@ -374,7 +368,8 @@ class _MicropostDetailState extends State<MicropostDetailPage>
                           child: new IconButton(
                               icon: new Icon(Icons.send),
                               onPressed: () {
-                                node.unfocus();
+                                FocusScope.of(context).requestFocus(
+                                    new FocusNode());
                                 sendCommit(); //modified  当没有为onPressed绑定处理函数时，IconButton默认为禁用状态
                               }),
                         ),
@@ -561,7 +556,9 @@ class _MicropostDetailState extends State<MicropostDetailPage>
   }
 
   @override
-  jumpToDetail(Micropost item) {}
+  jumpToDetail(Micropost item) {
+    FocusScope.of(context).requestFocus(new FocusNode());
+  }
 
   @override
   tap_dot(Micropost item) {

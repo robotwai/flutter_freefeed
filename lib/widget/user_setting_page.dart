@@ -303,6 +303,11 @@ class _UserSettingPageState extends State<UserSettingPage> {
                       ),
                       height: 60.0,
                       alignment: Alignment.center,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
+                      color: Color(0xffffffff),
                     ),
                     onTap: (){
                       Navigator.of(context).pop();
@@ -324,6 +329,11 @@ class _UserSettingPageState extends State<UserSettingPage> {
                       ),
                       height: 60.0,
                       alignment: Alignment.center,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
+                      color: Color(0xffffffff),
                     ),
                     onTap: (){
                       Navigator.of(context).pop();

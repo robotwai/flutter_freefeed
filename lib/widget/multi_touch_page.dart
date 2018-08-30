@@ -63,6 +63,7 @@ class _SimplePage extends StatelessWidget {
   final String data;
   final double parallaxOffset;
 
+  double position_y;
   @override
   Widget build(BuildContext context) =>
       new GestureDetector(
@@ -74,8 +75,17 @@ class _SimplePage extends StatelessWidget {
             ),
           ),
         ),
-        onTap: () {
-          Navigator.of(context).pop();
+//        onTap: () {
+//          Navigator.of(context).pop();
+//        },
+        onVerticalDragDown: (de) {
+          position_y = de.globalPosition.dy;
+          print(position_y.toString());
+        },
+        onVerticalDragUpdate: (de) {
+          if (de.globalPosition.dy - position_y > 40.0) {
+            Navigator.of(context).pop();
+          }
         },
       );
 }

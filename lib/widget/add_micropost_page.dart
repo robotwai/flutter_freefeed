@@ -121,22 +121,37 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
       );
     }
   }
+
+  double position_y;
   Widget _getEdit() {
-    return new Container(
-      height: 150.0,
-      color: Color(CLS.BACKGROUND),
-      padding: const EdgeInsets.only(left: 14.0, right: 14.0, top: 20.0),
-      margin: const EdgeInsets.only(bottom: 20.0),
-      child: new TextField(
-        maxLength: 140,
-        onChanged: (text) {
-          _onTextChange(text);
-        },
-        decoration: new InputDecoration(hintText: '写点什么...',border: InputBorder.none),
-        style: new TextStyle(color: Color(0xff000000), fontSize: 16.0),
-        autofocus: true,
-        maxLines: 8,
+    return new GestureDetector(
+      child: new Container(
+        height: 150.0,
+        color: Color(CLS.BACKGROUND),
+        padding: const EdgeInsets.only(left: 14.0, right: 14.0, top: 20.0),
+        margin: const EdgeInsets.only(bottom: 20.0),
+        child: new TextField(
+          maxLength: 140,
+          onChanged: (text) {
+            _onTextChange(text);
+          },
+          decoration: new InputDecoration(
+              hintText: '写点什么...', border: InputBorder.none),
+          style: new TextStyle(color: Color(0xff000000), fontSize: 16.0),
+          autofocus: true,
+          maxLines: 8,
+        ),
       ),
+      onVerticalDragDown: (de) {
+        position_y = de.globalPosition.dy;
+        print(position_y.toString());
+      },
+      onVerticalDragUpdate: (de) {
+        if (de.globalPosition.dy - position_y > 40.0) {
+          FocusScope.of(context).requestFocus(new FocusNode());
+        }
+      },
+
     );
   }
 
@@ -221,7 +236,7 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
 
   _addImage(int index) {
     print('addimage' + '$index');
-
+    FocusScope.of(context).requestFocus(new FocusNode());
 //    getImage(index);
 
     _selectIcon(index);
@@ -244,6 +259,11 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
                     ),
                     height: 40.0,
                     alignment: Alignment.center,
+                    color: Color(0xffffffff),
+                    width: MediaQuery
+                        .of(context)
+                        .size
+                        .width,
                   ),
                   new Padding(
                     padding: const EdgeInsets.only(left: 14.0, right: 14.0),
@@ -259,7 +279,12 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
                             color: Color(CLS.TEXT_3), fontSize: 14.0),
                       ),
                       height: 60.0,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
                       alignment: Alignment.center,
+                      color: Color(0xffffffff),
                     ),
                     onTap: () {
                       Navigator.of(context).pop();
@@ -280,7 +305,12 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
                             color: Color(CLS.TEXT_3), fontSize: 14.0),
                       ),
                       height: 60.0,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
                       alignment: Alignment.center,
+                      color: Color(0xffffffff),
                     ),
                     onTap: () {
                       Navigator.of(context).pop();

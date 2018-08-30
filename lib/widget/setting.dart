@@ -133,7 +133,9 @@ class _SettingState extends State<SettingPage> {
     Navigator.of(context).push(new PageRouteBuilder(
         opaque: false,
         pageBuilder: (BuildContext context, _, __) {
-          return new CommonWebView(title, 'https://github.com/robotwai/flutter_freefeed');
+          return new CommonWebView(title, title == '关于我'
+              ? 'https://github.com/robotwai/flutter_freefeed'
+              : 'https://github.com/robotwai/flutter_freefeed/issues');
         },
         transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
           return new FadeTransition(
