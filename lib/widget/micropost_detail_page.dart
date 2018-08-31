@@ -13,6 +13,7 @@ import 'package:flutter_app/widget/Indicator_line.dart';
 import 'package:flutter_app/model/dot_model.dart';
 import 'package:flutter_app/widget/user_detail_page.dart';
 import 'package:flutter_app/widget/multi_touch_page.dart';
+import 'package:flutter_app/utils/toast_utils.dart';
 
 class MicropostDetailPage extends StatefulWidget {
   Micropost micropost;
@@ -44,11 +45,18 @@ class _MicropostDetailState extends State<MicropostDetailPage>
   final TextEditingController _commentController = new TextEditingController();
 
   bool isShowTitle = false;
+  List<String> choices;
   @override
   void initState() {
     CommonSP.getAccount().then((onValue) {
       account = onValue;
+      if (account.id == widget.micropost.user_id) {
+        choices = ['删除'];
+      } else {
+        choices = [];
+      }
     });
+
     _scrollController = new ScrollController()..addListener(_scrollListener);
     _refreshData();
   }
@@ -104,20 +112,29 @@ class _MicropostDetailState extends State<MicropostDetailPage>
         color: Color(0xFF000000),
         onPressed: () {
           Navigator.of(context).pop(micropost);
-//          Navigator.of(context).pop(micropost);
         },
       ),
       elevation: 0.0,
       actions: <Widget>[
-        new IconButton(
-          icon: const Icon(Icons.more_horiz),
-          color: Color(0xFF000000),
-          onPressed: () {
-//              _sendMicropost();
+
+
+        new PopupMenuButton<String>( // overflow menu
+          onSelected: _select,
+          itemBuilder: (BuildContext context) {
+            return choices.map((String choice) {
+              return new PopupMenuItem<String>(
+                value: choice,
+                child: new Text(choice),
+              );
+            }).toList();
           },
         ),
       ],
     );
+  }
+
+  void _select(String s) {
+    _presenter.destroy(widget.micropost.id);
   }
 
   Widget getTabs() {
@@ -644,6 +661,13 @@ class _MicropostDetailState extends State<MicropostDetailPage>
   void onCommitSuc() {
     sw(2);
     _commentController.clear();
+  }
+
+
+  @override
+  void onDestroy() {
+    ToastUtils.showWarnToast('删除成功');
+    Navigator.of(mContext).pop();
   }
 
   Future<bool> _singleExit() {

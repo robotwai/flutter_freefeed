@@ -7,7 +7,7 @@ import 'dart:async';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io';
-import 'package:image_jpeg/image_jpeg.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
 
 class UserSettingPage extends StatefulWidget {
   @override
@@ -241,8 +241,25 @@ class _UserSettingPageState extends State<UserSettingPage> {
         source: type == 1 ? ImageSource.camera : ImageSource.gallery);
 
     if (image != null) {
-      String newfileName = await ImageJpeg.encodeJpeg(
-          image.path, image.path, 70, 120, 120);
+      String newfileName;
+
+      ImageProperties properties = await FlutterNativeImage.getImageProperties(
+          image.path);
+      print('pro== width' + properties.width.toString() + '+++++height' +
+          properties.height.toString());
+      int width = properties.width;
+      int height = 0;
+      if (width < 200) {
+        height = properties.height;
+      } else {
+        height = (200 * (properties.height / width)).toInt();
+        width = 200;
+      }
+      print('compressedFile== width' + width.toString() + '+++++height' +
+          height.toString());
+      File compressedFile = await FlutterNativeImage.compressImage(image.path,
+          quality: 70, targetWidth: width, targetHeight: height);
+      newfileName = compressedFile.path;
       setState(() {
         print(image.path);
         icon = newfileName;

@@ -11,6 +11,8 @@ abstract class MicropostIPresenter implements IPresenter {
 
   void sendCommit(Micropost item, String body);
   loadMicropost(int id);
+
+  destroy(int id);
 }
 
 abstract class MicropostIView implements IView<MicropostIPresenter> {
@@ -24,4 +26,6 @@ abstract class MicropostIView implements IView<MicropostIPresenter> {
   void onCommitSuc();
 
   void onCommitFail(String f);
+
+  void onDestroy();
 }

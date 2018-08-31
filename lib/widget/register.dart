@@ -1,15 +1,6 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
-
+import 'package:flutter_app/utils/toast_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/main.dart';
-import 'package:flutter_app/model/account_model.dart';
-import 'package:flutter_app/utils/sp_local.dart';
 import 'package:flutter_app/utils/constant.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:flutter_app/network/common_http_client.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -167,22 +158,17 @@ class _RegisterState extends State<RegisterPage> {
     FFHttpUtils.origin.register(_name, _email, _password, null).then((onValue) {
       if (onValue != null) {
         if (onValue == '0') {
-          showToast("注册成功，请到注册邮箱激活账号");
+          ToastUtils.showSuccessToast("注册成功，请到注册邮箱激活账号");
           Navigator.of(context).pop(_email);
         } else {
-          showToast(onValue);
+          ToastUtils.showWarnToast(onValue);
         }
       } else {
-        showToast('请检查网络');
+        ToastUtils.showWarnToast('请检查网络');
       }
     });
   }
 
-  void showToast(String text) {
-    final snackBar = new SnackBar(content: new Text(text));
-
-    _scaffoldkey.currentState.showSnackBar(snackBar);
-  }
   int sendColor = 0xA01B9E85;
   void _onTextChange() {
     if(_email!=null&&_email.length>0&&

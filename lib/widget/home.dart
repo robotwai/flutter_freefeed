@@ -13,7 +13,7 @@ import 'package:flutter_app/widget/micropost_detail_page.dart';
 import 'package:flutter_app/widget/micropost_common_page.dart';
 import 'package:flutter_app/widget/user_detail_page.dart';
 import 'user_list_page.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_app/utils/toast_utils.dart';
 import 'package:flutter_app/widget/micropost_list_page.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -359,18 +359,23 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   void jumpToDetail(Micropost item) {
-    Navigator
-        .of(context)
-        .push(new PageRouteBuilder(
-      opaque: false,
-      pageBuilder: (BuildContext context, _, __) {
-        return new MicropostDetailPage(item);
-      },
-    ))
-        .then((onValue) {
-      forDetailUpdate(item);
-      getUserInfo();
+    checkToLogin().then((onValue) {
+      if (onValue) {
+        Navigator
+            .of(context)
+            .push(new PageRouteBuilder(
+          opaque: false,
+          pageBuilder: (BuildContext context, _, __) {
+            return new MicropostDetailPage(item);
+          },
+        ))
+            .then((onValue) {
+          forDetailUpdate(item);
+          getUserInfo();
+        });
+      }
     });
+
   }
 
   @override
@@ -390,7 +395,25 @@ class _MyHomePageState extends State<MyHomePage>
 
   void forDetailUpdate(Micropost item) async {
     Micropost m = await MicropostProvider.origin.getItem(item.id);
-    updateSingleFeed(m);
+    if (m != null) {
+      updateSingleFeed(m);
+    } else {
+      removeSingleFeed(item);
+    }
+  }
+
+  removeSingleFeed(Micropost item) {
+    int index = -1;
+    for (int i = 0; i < datas.length; i++) {
+      if (datas[i].id == item.id) {
+        index = i;
+      }
+    }
+    if (index != -1) {
+      setState(() {
+        datas.removeAt(index);
+      });
+    }
   }
 
   Widget getLeftIcon() {
@@ -549,14 +572,7 @@ class _MyHomePageState extends State<MyHomePage>
       new Future.delayed(const Duration(milliseconds: 1500), () {
         _lastClickTime = 0;
       });
-      Fluttertoast.showToast(
-          msg: "再按一次返回键退出程序",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIos: 1,
-          bgcolor: "#e74c3c",
-          textcolor: '#ffffff'
-      );
+      ToastUtils.showWarnToast('再按一次返回键退出程序');
       return new Future.value(false);
     }
   }

@@ -1,10 +1,6 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
+import 'package:flutter_app/utils/toast_utils.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/main.dart';
-import 'package:flutter_app/model/account_model.dart';
 import 'package:flutter_app/utils/sp_local.dart';
 import 'package:flutter_app/utils/constant.dart';
 import 'package:flutter/cupertino.dart';
@@ -211,16 +207,17 @@ class _LoginState extends State<LoginPage> {
               setState(() {
                 isLoading = false;
               });
+              ToastUtils.showSuccessToast('登录成功');
               Navigator.of(context).pop(1);
             } else {
               setState(() {
-                showToast(onValue);
+                ToastUtils.showWarnToast(onValue);
                 isLoading = false;
               });
             }
           } else {
             setState(() {
-              showToast('请检查网络');
+              ToastUtils.showWarnToast('请检查网络');
               isLoading = false;
             });
           }
@@ -241,9 +238,4 @@ class _LoginState extends State<LoginPage> {
     });
   }
 
-  void showToast(String message) {
-    final snackBar = new SnackBar(content: new Text(message));
-
-    _scaffoldkey.currentState.showSnackBar(snackBar);
-  }
 }

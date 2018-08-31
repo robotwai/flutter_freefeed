@@ -111,7 +111,10 @@ class MicropostPage extends StatelessWidget {
         return new Container(
           child: GridView.builder(
             gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: (system_width) / 3),
+              maxCrossAxisExtent: (system_width) / 3,
+              mainAxisSpacing: 6.0,
+            ),
+
             itemBuilder: (context, i) {
               return _buildImageRow(i, list);
             },

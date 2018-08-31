@@ -5,12 +5,13 @@ import 'package:flutter_app/utils/constant.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:async';
-import 'package:image_jpeg/image_jpeg.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/network/common_http_client.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
+import 'package:flutter_app/utils/toast_utils.dart';
 
 class AddMicropostPage extends StatefulWidget {
   @override
@@ -184,8 +185,13 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
           .then((onValue) {
         if (onValue != null) {
           if (onValue == '0') {
+            ToastUtils.showSuccessToast('发送成功');
             Navigator.of(context).pop(1);
+          } else {
+            ToastUtils.showWarnToast('发送失败');
           }
+        } else {
+          ToastUtils.showWarnToast('发送失败');
         }
         setState(() {
           isLoading = false;
@@ -325,14 +331,36 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
   Future getImage(int type, int index) async {
     var image = await ImagePicker.pickImage(
         source: type == 1 ? ImageSource.camera : ImageSource.gallery);
+
     if (image != null) {
       String newfileName;
       try {
-        newfileName =
-        await ImageJpeg.encodeJpeg(image.path, image.path, 70, 720, 1280);
+        ImageProperties properties = await FlutterNativeImage
+            .getImageProperties(image.path);
+        print('pro== width' + properties.width.toString() + '+++++height' +
+            properties.height.toString());
+        int width = properties.width;
+        int height = 0;
+        if (width < 720) {
+          height = properties.height;
+        } else {
+          height = (720 * (properties.height / width)).toInt();
+          width = 720;
+        }
+        print('compressedFile== width' + width.toString() + '+++++height' +
+            height.toString());
+        File compressedFile = await FlutterNativeImage.compressImage(image.path,
+            quality: 70, targetWidth: width, targetHeight: height);
+        newfileName = compressedFile.path;
+//        Im.Image im = Im.decodeImage(image.readAsBytesSync());
+//        Im.Image thumbnail = Im.copyResize(im, 720);
+//        var  a =new File('thumbnail.png')
+//          ..writeAsBytesSync(Im.encodePng(thumbnail));
+//        print('aaa'+a.path);
 //        print(newfileName);
-
+        print(compressedFile.path);
       } catch (exception) {
+        print(exception.toString());
         newfileName = image.path;
       }
 
