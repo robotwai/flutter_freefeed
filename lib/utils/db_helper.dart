@@ -206,6 +206,20 @@ class MicropostProvider {
     }
   }
 
+  Future<int> clearAll() async {
+    try {
+      String path = await CommonSP.getDBPath();
+      Database db = await openDatabase(path);
+      String sql_query = "DELETE FROM '$tab_name'";
+      int i = await db.rawDelete(sql_query);
+      print('delete ' + '$i');
+      return i;
+    } catch (exception) {
+      print(exception.toString());
+      return null;
+    }
+  }
+
   Future<int> update(Micropost todo) async {
     return await db.update(tableTodo, todo.toMap(),
         where: "$columnId = ?", whereArgs: [todo.id]);

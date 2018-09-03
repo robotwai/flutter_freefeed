@@ -1,5 +1,5 @@
 import 'package:flutter_app/utils/toast_utils.dart';
-
+import 'package:flutter_app/utils/db_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/utils/sp_local.dart';
 import 'package:flutter_app/utils/constant.dart';
@@ -209,6 +209,7 @@ class _LoginState extends State<LoginPage> {
               });
               ToastUtils.showSuccessToast('登录成功');
               Navigator.of(context).pop(1);
+              MicropostProvider.origin.clearAll();
             } else {
               setState(() {
                 ToastUtils.showWarnToast(onValue);

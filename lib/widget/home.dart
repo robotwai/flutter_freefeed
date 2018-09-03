@@ -72,6 +72,7 @@ class _MyHomePageState extends State<MyHomePage>
         });
       }
     });
+
   }
 
   @override
@@ -167,21 +168,23 @@ class _MyHomePageState extends State<MyHomePage>
 
   Widget _buildFeeds() {
     var content;
-
-    if (datas.isEmpty) {
-      content = new Center(child: new CircularProgressIndicator());
-    } else {
+//
+//    if (datas.isEmpty) {
+//      content = new Center(child: new CircularProgressIndicator());
+//    } else {
       content = new ListView.builder(
         physics: AlwaysScrollableScrollPhysics(),
         itemCount: datas.length,
-        controller: _scrollController,
+
+        primary: true,
         itemBuilder: _buildRow,
       );
-    }
+//    }
 
     var _refreshIndicator = new RefreshIndicator(
       onRefresh: _refreshData,
-      child: content,
+      child: new PrimaryScrollController(
+          controller: _scrollController, child: content),
     );
 
     return _refreshIndicator;
@@ -516,6 +519,9 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   void onloadFLSuc(List<Micropost> list) {
+    if (curPageNum == 1) {
+      datas.clear();
+    }
     if (list.length < 30) {
       isFullLoad = true;
     } else {

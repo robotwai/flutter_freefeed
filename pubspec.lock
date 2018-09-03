@@ -94,6 +94,15 @@ packages:
       url: "https://github.com/Cretezy/flutter_cache_manager.git"
     source: git
     version: "0.1.2"
+  flutter_native_image:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "570cafee663b360c27be9a002d15bda020332f5b"
+      url: "https://github.com/btastic/flutter_native_image.git"
+    source: git
+    version: "0.0.3"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -155,15 +164,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.1.3"
-  image_jpeg:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "755eb74e5f76f2ea1bf8851a5c194743ef5e084e"
-      url: "git://github.com/yangyxd/image_jpeg.git"
-    source: git
-    version: "0.0.1"
   image_picker:
     dependency: "direct main"
     description:
