@@ -73,7 +73,7 @@ class MicropostPresenterImpl extends MicropostIPresenter {
   @override
   destroy(int id) {
     FFHttpUtils.origin.micropost_destroy(id).then((onValue) {
-      if (onValue != null) {
+      if (onValue != null && onValue == '0') {
         MicropostProvider.origin.delete(id);
         micropostIView.onDestroy();
       }

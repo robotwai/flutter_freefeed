@@ -82,7 +82,7 @@ class _LoginState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               new Text(
-                "登录Free Feed",
+                "登录简单微博",
                 style: new TextStyle(
                     fontSize: 32.0,
                     fontWeight: FontWeight.bold,

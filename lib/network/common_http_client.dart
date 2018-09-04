@@ -577,5 +577,31 @@ class FFHttpUtils {
     }
     return res;
   }
+
+  //注销账号
+  Future<String> account_destroy(String password) async {
+    var uri = Uri.parse(Constant.baseUrl + '/app/account_destroy');
+    print(uri.toString());
+    var request = new http.MultipartRequest("POST", uri);
+    Account account = await CommonSP.getAccount();
+    request.fields['token'] = account.token;
+    request.fields['password'] = password;
+    String res = '';
+
+    http.StreamedResponse response = await request.send();
+    String json = await response.stream.bytesToString();
+    String code = jsonDecode(json)['status'];
+    print('code' + code);
+    if (int.parse(code) == Constant.HTTP_OK) {
+      print('codeok');
+      res = '0';
+    } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
+      print('codeHTTP_TOKEN_ERROR');
+      CommonSP.saveAccount(null);
+    } else {
+      res = '请检查网络';
+    }
+    return res;
+  }
 }
 

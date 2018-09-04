@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/utils/sp_local.dart';
 import 'dart:async';
 import 'package:flutter_app/utils/constant.dart';
 import 'package:flutter_app/widget/common_webview.dart';
 import 'package:flutter_app/utils/db_helper.dart';
+import 'package:flutter_app/network/common_http_client.dart';
+import 'package:flutter_app/utils/toast_utils.dart';
 
 class SettingPage extends StatefulWidget {
   @override
@@ -14,7 +17,7 @@ class SettingPage extends StatefulWidget {
 
 class _SettingState extends State<SettingPage> {
   String token;
-
+  bool isLoading = false;
   @override
   void initState() {
     super.initState();
@@ -69,6 +72,14 @@ class _SettingState extends State<SettingPage> {
                 ],
               ),
             ),
+            new Offstage(
+              child: new Container(
+                color: Color(CLS.HALF_BACKGROUND),
+                child: new Center(
+                  child: new CupertinoActivityIndicator(radius: 20.0),),
+              ),
+              offstage: !isLoading,
+            )
           ],
         ),
       bottomNavigationBar: getBottom(),
@@ -239,75 +250,85 @@ class _SettingState extends State<SettingPage> {
         }));
   }
 
+  String password;
   finalSendPassword() {
-    showModalBottomSheet<Null>(
-        context: context,
-        builder: (BuildContext context) {
-          return new Container(
-              height: 127.0,
-              child: new Column(
-                children: <Widget>[
-                  new Container(
-                    child: new Text(
-                      '正在注销账号，请输入密码',
-                      style: new TextStyle(
-                          color: Color(CLS.TEXT_9), fontSize: 12.0),
-                    ),
-                    height: 40.0,
-                    alignment: Alignment.center,
-                    color: Color(0xffffffff),
-                    width: MediaQuery
-                        .of(context)
-                        .size
-                        .width,
-                  ),
-                  new Padding(
-                    padding: const EdgeInsets.only(left: 14.0, right: 14.0),
-                    child: new Divider(
-                      height: 1.0,
-                    ),
-                  ),
-                  new Padding(
-                    child: new TextField(
-                      onChanged: (text) {},
-                      obscureText: true,
-                      maxLines: 1,
-                      decoration: new InputDecoration(
-                        hintText: '请输入密码',
-                        border: InputBorder.none,
-                      ),
-                      keyboardType: TextInputType.text,
-                    ),
-                    padding: const EdgeInsets.only(left: 14.0, right: 14.0),
-                  ),
+    return showDialog<Null>(
+      context: context,
+      barrierDismissible: true, // user must tap button!
+      builder: (BuildContext context) {
+        return new AlertDialog(
+          title: new Text(
+            '正在注销账号，请输入密码',
+            style: new TextStyle(fontSize: 16.0),
+          ),
+          content: new Container(
+            height: 44.0,
+            child: new TextField(
+              onChanged: (text) {
+                password = text;
+              },
+              obscureText: true,
+              maxLines: 1,
+              decoration: new InputDecoration(
+                hintText: '请输入密码',
+                border: InputBorder.none,
+              ),
+              keyboardType: TextInputType.text,
+            ),
+            padding: const EdgeInsets.only(left: 14.0, right: 14.0),
+          ),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text(
+                '确认注销',
+                style: new TextStyle(color: Color(CLS.TextWarning)),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                removeAccount();
+              },
+            ),
+            new FlatButton(
+              child: new Text(
+                '我还要用',
+                style: new TextStyle(color: Color(CLS.TextLabel)),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-                  new Padding(
-                    padding: const EdgeInsets.only(left: 14.0, right: 14.0),
-                    child: new Divider(
-                      height: 1.0,
-                    ),
-                  ),
-                  new GestureDetector(
-                    child: new Container(
-                      child: new Text(
-                        '确认注销',
-                        style: new TextStyle(
-                          color: Color(CLS.BACKGROUND), fontSize: 14.0,),
-                      ),
-                      height: 40.0,
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width,
-                      alignment: Alignment.center,
-                      color: Color(CLS.TextWarning),
-                    ),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              ));
-        });
+  removeAccount() {
+    setState(() {
+      isLoading = true;
+    });
+    if (password != null && password.length >= 6) {
+      FFHttpUtils.origin.account_destroy(password).then((onValue) {
+        if (onValue != null && onValue == '0') {
+          setState(() {
+            isLoading = false;
+          });
+          ToastUtils.showSuccessToast('账号注销成功');
+          CommonSP.saveAccount(null);
+          Navigator.of(context).pop(1);
+        } else {
+          ToastUtils.showWarnToast('请输入正确的密码');
+          setState(() {
+            isLoading = false;
+          });
+        }
+      });
+    } else {
+      ToastUtils.showWarnToast('请输入正确的密码');
+      setState(() {
+        isLoading = false;
+      });
+    }
+
   }
 }
