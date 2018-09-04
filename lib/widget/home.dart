@@ -153,7 +153,13 @@ class _MyHomePageState extends State<MyHomePage>
         drawer: new Container(
           color: Color(CLS.BACKGROUND),
           width: 250.0,
-          child: getLeftPage(),
+          height: MediaQuery
+              .of(context)
+              .size
+              .height,
+          child: new SingleChildScrollView(
+            child: getLeftPage(),
+          ),
         ),
         body: _buildFeeds(),
         floatingActionButton: new FloatingActionButton(

@@ -20,9 +20,10 @@ class MyApp extends StatelessWidget {
         primaryColor: Color(CLS.ACTIONBAR),
         accentColor: Color(CLS.ACTIONBAR),
       ),
-      home: new MyHomePage(title: 'Simple Weibo'),
+      debugShowCheckedModeBanner: false,
+      home: new MyHomePage(title: '首页'),
       routes: <String, WidgetBuilder> {
-        '/a': (BuildContext context) => new MyHomePage(title: 'Simple Weibo'),
+        '/a': (BuildContext context) => new MyHomePage(title: '首页'),
         '/c': (BuildContext context) => new LoginPage(),
         '/d': (BuildContext context) => new AddMicropostPage(),
         '/r': (BuildContext context) => new RegisterPage(),

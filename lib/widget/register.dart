@@ -158,7 +158,7 @@ class _RegisterState extends State<RegisterPage> {
     FFHttpUtils.origin.register(_name, _email, _password, null).then((onValue) {
       if (onValue != null) {
         if (onValue == '0') {
-          ToastUtils.showSuccessToast("注册成功，请到注册邮箱激活账号");
+          ToastUtils.showSuccessToast("注册成功");
           Navigator.of(context).pop(_email);
         } else {
           ToastUtils.showWarnToast(onValue);
