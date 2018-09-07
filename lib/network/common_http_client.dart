@@ -29,7 +29,7 @@ class FFHttpUtils {
       String code = jsonDecode(json)['status'];
       print('code' + code);
       if (int.parse(code) == Constant.HTTP_OK) {
-        print('codeok');
+        print(jsonDecode(json)['data']);
         flModels = jsonDecode(json)['data'];
       } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
         print('codeHTTP_TOKEN_ERROR');
@@ -145,8 +145,11 @@ class FFHttpUtils {
         print(user.email);
         CommonSP.saveEmail(user.email);
         res = '0';
+      } else if (int.parse(code) == Constant.HTTP_FAILED) {
+        String a = jsonDecode(json)['data'];
+        res = jsonDecode(a)['message'];
       } else {
-        res = '网络异常';
+        res = '请检查网络';
       }
     } catch (exception) {
       //todo
@@ -178,16 +181,14 @@ class FFHttpUtils {
       String json = await response.stream.bytesToString();
       Map jsonMap = jsonDecode(json);
       print(jsonMap['data']);
-      if (int.parse(jsonMap['status']) != Constant.HTTP_OK) {
-        res = '请检查网络';
-      } else {
+      if (int.parse(jsonMap['status']) == Constant.HTTP_OK) {
         res = '0';
+      } else if (int.parse(jsonMap['status']) == Constant.HTTP_FAILED) {
+        String a = jsonDecode(json)['data'];
+        res = jsonDecode(a)['message'];
+      } else {
+        res = '请检查网络';
       }
-//      if (response.statusCode == 200) {
-//        res = '0';
-//      } else {
-//        res = '请检查网络';
-//      }
     } catch (exception) {
       print(exception.toString());
     }
@@ -209,10 +210,18 @@ class FFHttpUtils {
     if (f != null) {
       request.files.addAll(f);
     }
-    http.BaseResponse response = await request.send();
-    if (response.statusCode == 200) {
+    http.StreamedResponse response = await request.send();
+    String json = await response.stream.bytesToString();
+    Map jsonMap = jsonDecode(json);
+    print(jsonMap['data']);
+    if (int.parse(jsonMap['status']) == Constant.HTTP_OK) {
       res = '0';
-    } else {
+    } else if (int.parse(jsonMap['status']) == Constant.HTTP_FAILED) {
+      String a = jsonDecode(json)['data'];
+      res = jsonDecode(a)['message'];
+    } else if (int.parse(jsonMap['status']) == Constant.HTTP_TOKEN_ERROR) {
+      print('codeHTTP_TOKEN_ERROR');
+      CommonSP.saveAccount(null);
       res = '请检查网络';
     }
     return res;
@@ -234,7 +243,7 @@ class FFHttpUtils {
       String code = jsonDecode(json)['status'];
       print('code' + code);
       if (int.parse(code) == Constant.HTTP_OK) {
-        print('codeok');
+        print(jsonDecode(json)['data']);
         flModels = jsonDecode(json)['data'];
       } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
         print('codeHTTP_TOKEN_ERROR');
@@ -269,7 +278,7 @@ class FFHttpUtils {
       String code = jsonDecode(json)['status'];
       print('code' + code);
       if (int.parse(code) == Constant.HTTP_OK) {
-        print('codeok');
+        print(jsonDecode(json)['data']);
         flModels = jsonDecode(json)['data'];
       } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
         print('codeHTTP_TOKEN_ERROR');
@@ -295,10 +304,18 @@ class FFHttpUtils {
     request.fields['comment'] = content;
     request.fields['micropost_id'] = '$micropostId';
 
-    http.BaseResponse response = await request.send();
-    if (response.statusCode == 200) {
+    http.StreamedResponse response = await request.send();
+    String json = await response.stream.bytesToString();
+    Map jsonMap = jsonDecode(json);
+    print(jsonMap['data']);
+    if (int.parse(jsonMap['status']) == Constant.HTTP_OK) {
       res = '0';
-    } else {
+    } else if (int.parse(jsonMap['status']) == Constant.HTTP_FAILED) {
+      String a = jsonDecode(json)['data'];
+      res = jsonDecode(a)['message'];
+    } else if (int.parse(jsonMap['status']) == Constant.HTTP_TOKEN_ERROR) {
+      print('codeHTTP_TOKEN_ERROR');
+      CommonSP.saveAccount(null);
       res = '请检查网络';
     }
     return res;
@@ -322,7 +339,7 @@ class FFHttpUtils {
       String code = jsonDecode(json)['status'];
       print('code' + code);
       if (int.parse(code) == Constant.HTTP_OK) {
-        print('codeok');
+        print(jsonDecode(json)['data']);
         String data = jsonDecode(json)['data'];
         Map userMap = jsonDecode(data);
         user = new User.fromJson(userMap);
@@ -356,7 +373,7 @@ class FFHttpUtils {
       String code = jsonDecode(json)['status'];
       print('code' + code);
       if (int.parse(code) == Constant.HTTP_OK) {
-        print('codeok');
+        print(jsonDecode(json)['data']);
         flModels = jsonDecode(json)['data'];
       } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
         print('codeHTTP_TOKEN_ERROR');
@@ -390,10 +407,18 @@ class FFHttpUtils {
     request.fields['id'] = '$id';
 
 
-    http.BaseResponse response = await request.send();
-    if (response.statusCode == 200) {
+    http.StreamedResponse response = await request.send();
+    String json = await response.stream.bytesToString();
+    Map jsonMap = jsonDecode(json);
+    print(jsonMap['data']);
+    if (int.parse(jsonMap['status']) == Constant.HTTP_OK) {
       res = '0';
-    } else {
+    } else if (int.parse(jsonMap['status']) == Constant.HTTP_FAILED) {
+      String a = jsonDecode(json)['data'];
+      res = jsonDecode(a)['message'];
+    } else if (int.parse(jsonMap['status']) == Constant.HTTP_TOKEN_ERROR) {
+      print('codeHTTP_TOKEN_ERROR');
+      CommonSP.saveAccount(null);
       res = '请检查网络';
     }
     return res;
@@ -418,7 +443,7 @@ class FFHttpUtils {
       String code = jsonDecode(json)['status'];
       print('code' + code);
       if (int.parse(code) == Constant.HTTP_OK) {
-        print('codeok');
+        print(jsonDecode(json)['data']);
         flModels = jsonDecode(json)['data'];
       } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
         print('codeHTTP_TOKEN_ERROR');
@@ -463,9 +488,7 @@ class FFHttpUtils {
       String json = await response.stream.bytesToString();
       Map jsonMap = jsonDecode(json);
       print(jsonMap['data']);
-      if (int.parse(jsonMap['status']) != Constant.HTTP_OK) {
-        res = '请检查网络';
-      } else {
+      if (int.parse(jsonMap['status']) == Constant.HTTP_OK) {
         Map userMap = jsonDecode(jsonMap['data']);
         Account user = new Account.fromJson(userMap);
         await CommonSP.saveAccount(user);
@@ -473,10 +496,12 @@ class FFHttpUtils {
         print(user.email);
         CommonSP.saveEmail(user.email);
         res = '0';
-      }
-      if (response.statusCode == 200) {
-        res = '0';
-      } else {
+      } else if (int.parse(jsonMap['status']) == Constant.HTTP_FAILED) {
+        String a = jsonDecode(json)['data'];
+        res = jsonDecode(a)['message'];
+      } else if (int.parse(jsonMap['status']) == Constant.HTTP_TOKEN_ERROR) {
+        print('codeHTTP_TOKEN_ERROR');
+        CommonSP.saveAccount(null);
         res = '请检查网络';
       }
     } catch (exception) {
@@ -503,7 +528,7 @@ class FFHttpUtils {
       String code = jsonDecode(json)['status'];
       print('code' + code);
       if (int.parse(code) == Constant.HTTP_OK) {
-        print('codeok');
+        print(jsonDecode(json)['data']);
         flModels = jsonDecode(json)['data'];
       } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
         print('codeHTTP_TOKEN_ERROR');
@@ -527,19 +552,19 @@ class FFHttpUtils {
       Account account = await CommonSP.getAccount();
       Map<String, String> op = new Map();
       op['page'] = '$pageNum';
-      op['token'] = account.token;
+      if (account != null && account.token != null) {
+        op['token'] = account.token;
+      }
       var request = new http.Request("GET", uri);
       request.bodyFields = op;
       print(uri.toString());
       http.StreamedResponse response = await request.send();
       String json = await response.stream.bytesToString();
       String code = jsonDecode(json)['status'];
-      print('code' + code);
       if (int.parse(code) == Constant.HTTP_OK) {
-        print('codeok');
+        print(jsonDecode(json)['data']);
         flModels = jsonDecode(json)['data'];
       } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
-        print('codeHTTP_TOKEN_ERROR');
         CommonSP.saveAccount(null);
       }
     }
@@ -564,15 +589,16 @@ class FFHttpUtils {
 
     http.StreamedResponse response = await request.send();
     String json = await response.stream.bytesToString();
-    String code = jsonDecode(json)['status'];
-    print('code' + code);
-    if (int.parse(code) == Constant.HTTP_OK) {
-      print('codeok');
+    Map jsonMap = jsonDecode(json);
+    print(jsonMap['data']);
+    if (int.parse(jsonMap['status']) == Constant.HTTP_OK) {
       res = '0';
-    } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
+    } else if (int.parse(jsonMap['status']) == Constant.HTTP_FAILED) {
+      String a = jsonDecode(json)['data'];
+      res = jsonDecode(a)['message'];
+    } else if (int.parse(jsonMap['status']) == Constant.HTTP_TOKEN_ERROR) {
       print('codeHTTP_TOKEN_ERROR');
       CommonSP.saveAccount(null);
-    } else {
       res = '请检查网络';
     }
     return res;
@@ -590,15 +616,16 @@ class FFHttpUtils {
 
     http.StreamedResponse response = await request.send();
     String json = await response.stream.bytesToString();
-    String code = jsonDecode(json)['status'];
-    print('code' + code);
-    if (int.parse(code) == Constant.HTTP_OK) {
-      print('codeok');
+    Map jsonMap = jsonDecode(json);
+    print(jsonMap['data']);
+    if (int.parse(jsonMap['status']) == Constant.HTTP_OK) {
       res = '0';
-    } else if (int.parse(code) == Constant.HTTP_TOKEN_ERROR) {
+    } else if (int.parse(jsonMap['status']) == Constant.HTTP_FAILED) {
+      String a = jsonDecode(json)['data'];
+      res = jsonDecode(a)['message'];
+    } else if (int.parse(jsonMap['status']) == Constant.HTTP_TOKEN_ERROR) {
       print('codeHTTP_TOKEN_ERROR');
       CommonSP.saveAccount(null);
-    } else {
       res = '请检查网络';
     }
     return res;

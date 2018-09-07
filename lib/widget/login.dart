@@ -5,6 +5,7 @@ import 'package:flutter_app/utils/sp_local.dart';
 import 'package:flutter_app/utils/constant.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/network/common_http_client.dart';
+import 'package:flutter_app/utils/app_state.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -104,6 +105,7 @@ class _LoginState extends State<LoginPage> {
                     focusedBorder: UnderlineInputBorder(borderSide: BorderSide(
                         width: 1.0, color: Color(CLS.BASE_COLOR))),
                   ),
+                  controller: _controller,
                   maxLines: 1,
                   keyboardType: TextInputType.text,
                   onSubmitted: (text) {
@@ -169,9 +171,19 @@ class _LoginState extends State<LoginPage> {
     );
   }
 
+  AppState state;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (state == null) {
+      state = AppStateContainer.of(context);
+    }
+  }
   void register() {
     Navigator.of(context).pushNamed('/r').then((onValue) {
       if (onValue != null) {
+        print('email' + onValue);
         setState(() {
           _controller.text = onValue;
           _email=onValue;
@@ -208,8 +220,9 @@ class _LoginState extends State<LoginPage> {
                 isLoading = false;
               });
               ToastUtils.showSuccessToast('登录成功');
-              Navigator.of(context).pop(1);
+              Navigator.of(context).pop();
               MicropostProvider.origin.clearAll();
+              state.canListenLoading.value = !state.canListenLoading.value;
             } else {
               setState(() {
                 ToastUtils.showWarnToast(onValue);

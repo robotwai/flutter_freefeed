@@ -113,6 +113,7 @@ class MicropostPage extends StatelessWidget {
             gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: (system_width) / 3,
               mainAxisSpacing: 6.0,
+                crossAxisSpacing: 6.0
             ),
 
             itemBuilder: (context, i) {

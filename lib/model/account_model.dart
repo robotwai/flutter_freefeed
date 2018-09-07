@@ -40,4 +40,11 @@ class Account{
         'sex': sex,
       };
 
+  @override
+  String toString() {
+    return "{name:$name,email:$email,token:$token,icon:$icon,id:$id,"
+        "sign_content:$sign_content,followed:$followed,follower:$follower,sex:$sex}";
+  }
+
+
 }

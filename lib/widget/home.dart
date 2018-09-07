@@ -15,6 +15,7 @@ import 'package:flutter_app/widget/user_detail_page.dart';
 import 'user_list_page.dart';
 import 'package:flutter_app/utils/toast_utils.dart';
 import 'package:flutter_app/widget/micropost_list_page.dart';
+import 'package:flutter_app/utils/app_state.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -75,6 +76,19 @@ class _MyHomePageState extends State<MyHomePage>
 
   }
 
+  AppState appState;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (appState == null) {
+      appState = AppStateContainer.of(context);
+      //在这里添加监听事件
+      appState.canListenLoading.addListener(listener);
+    }
+  }
+
+  VoidCallback listener;
   @override
   void initState() {
     super.initState();
@@ -82,6 +96,10 @@ class _MyHomePageState extends State<MyHomePage>
     _lastClickTime = 0;
     _scrollController = new ScrollController()
       ..addListener(_scrollListener);
+    listener = () {
+      print('i can feel value is change');
+      getUserInfo();
+    };
 
   }
 
@@ -126,6 +144,12 @@ class _MyHomePageState extends State<MyHomePage>
   void dispose() {
     super.dispose();
     _scrollController.removeListener(_scrollListener);
+    print('dispose');
+    if (appState != null) {
+      //在这里移除监听事件
+      appState.canListenLoading.removeListener(listener);
+    }
+    super.dispose();
   }
 
 
@@ -161,7 +185,10 @@ class _MyHomePageState extends State<MyHomePage>
             child: getLeftPage(),
           ),
         ),
-        body: _buildFeeds(),
+        body: new Container(
+          color: Color(CLS.BACKGROUND),
+          child: _buildFeeds(),
+        ),
         floatingActionButton: new FloatingActionButton(
           onPressed: _addMicropost,
           tooltip: 'Increment',
@@ -180,7 +207,7 @@ class _MyHomePageState extends State<MyHomePage>
 //    } else {
       content = new ListView.builder(
         physics: AlwaysScrollableScrollPhysics(),
-        itemCount: datas.length,
+        itemCount: datas.length == 0 ? 1 : datas.length,
 
         primary: true,
         itemBuilder: _buildRow,
@@ -317,16 +344,13 @@ class _MyHomePageState extends State<MyHomePage>
                   leading: new Icon(Icons.find_in_page),
                   title: new Text("发现"),
                   onTap: () {
-                    checkToLogin().then((onValue) {
-                      if (onValue) {
+
                         Navigator.of(context).push(new PageRouteBuilder(
                           opaque: false,
                           pageBuilder: (BuildContext context, _, __) {
-                            return new MicropostListPage(account.id, 1);
+                            return new MicropostListPage(0, 1);
                           },
                         ));
-                      }
-                    });
                   },
                 ),
                 new ListTile(
@@ -345,26 +369,50 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   Widget _buildRow(BuildContext context, int index) {
-    final Micropost item = datas[index];
-    return new GestureDetector(
-      child: new Card(
+    if (datas.length == 0) {
+      double a = MediaQuery
+          .of(context)
+          .size
+          .height / 2 - 80.0;
+      a = a > 0 ? a : a + 80.0;
+      return new Container(
+        width: MediaQuery
+            .of(context)
+            .size
+            .width,
         color: Color(CLS.BACKGROUND),
-        margin: const EdgeInsets.all(10.0),
-        child: new MicropostPage(item, this, 1),
-      ),
-      onTap: () {
-        jumpToDetail(item);
-      },
-    );
+        padding: EdgeInsets.only(top: a),
+        child: new Center(
+          child: new Column(
+            children: <Widget>[
+              new Image.asset(
+                "images/blank_main.png",
+                fit: BoxFit.fitWidth,
+                width: 64.0,
+                height: 64.0,
+              ),
+              new Text('一切都是新的开始')
+            ],
+          ),
+        ),
+      );
+    } else {
+      final Micropost item = datas[index];
+      return new GestureDetector(
+        child: new Card(
+          color: Color(CLS.BACKGROUND),
+          margin: const EdgeInsets.all(10.0),
+          child: new MicropostPage(item, this, 1),
+        ),
+        onTap: () {
+          jumpToDetail(item);
+        },
+      );
+    }
   }
 
   void jumpToSetting() {
-    Navigator.of(context).pushNamed('/s').then((onValue) {
-      if (onValue == 1) {
-        print("getUserInfo");
-        getUserInfo();
-      }
-    });
+    Navigator.of(context).pushNamed('/s');
   }
 
   void jumpToDetail(Micropost item) {
@@ -468,14 +516,7 @@ class _MyHomePageState extends State<MyHomePage>
       account = a;
     });
     if (account == null || account.token == '0') {
-
-      Navigator.of(context).pushNamed('/c').then((value) {
-        if (value == 1) {
-          print('login success');
-          print("getUserInfo");
-          getUserInfo();
-        }
-      });
+      Navigator.of(context).pushNamed('/c');
       return false;
     }else{
       return true;

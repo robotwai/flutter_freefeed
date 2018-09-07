@@ -7,6 +7,7 @@ import 'package:flutter_app/widget/common_webview.dart';
 import 'package:flutter_app/utils/db_helper.dart';
 import 'package:flutter_app/network/common_http_client.dart';
 import 'package:flutter_app/utils/toast_utils.dart';
+import 'package:flutter_app/utils/app_state.dart';
 
 class SettingPage extends StatefulWidget {
   @override
@@ -86,11 +87,21 @@ class _SettingState extends State<SettingPage> {
       resizeToAvoidBottomPadding: true,);
   }
 
+  AppState state;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (state == null) {
+      state = AppStateContainer.of(context);
+    }
+  }
   void logout() async {
     await CommonSP.saveAccount(null);
     MicropostProvider.origin.clearAll();
     setState(() {
-      Navigator.of(context).pop(1);
+      state.canListenLoading.value = !state.canListenLoading.value;
+      Navigator.of(context).pop();
     });
   }
 

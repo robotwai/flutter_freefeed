@@ -41,10 +41,14 @@ class FeedRepositoryImpl implements FeedRepository{
   }
 
   Future<List<Micropost>> loadForNetWork(String token,int pageNum) {
-    Map<String,String> op = new Map();
-    op['token'] = token;
-    op['page'] = '$pageNum';
-    return FFHttpUtils.origin.getFeed(op);
+    if (token == '0' || token == null) {
+      return FFHttpUtils.origin.getFindMicropostList(pageNum);
+    } else {
+      Map<String, String> op = new Map();
+      op['token'] = token;
+      op['page'] = '$pageNum';
+      return FFHttpUtils.origin.getFeed(op);
+    }
   }
 
   @override
