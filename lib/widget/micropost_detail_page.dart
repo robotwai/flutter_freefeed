@@ -14,6 +14,7 @@ import 'package:flutter_app/model/dot_model.dart';
 import 'package:flutter_app/widget/user_detail_page.dart';
 import 'package:flutter_app/widget/multi_touch_page.dart';
 import 'package:flutter_app/utils/toast_utils.dart';
+import 'package:flutter_app/widget/video_player_page.dart';
 
 class MicropostDetailPage extends StatefulWidget {
   Micropost micropost;
@@ -605,6 +606,24 @@ class _MicropostDetailState extends State<MicropostDetailPage>
         opaque: false,
         pageBuilder: (BuildContext context, _, __) {
           return new MultiTouchAppPage(list, type);
+        },
+        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+          return new FadeTransition(
+            opacity: animation,
+            child: new RotationTransition(
+              turns: new Tween<double>(begin: 0.5, end: 1.0).animate(animation),
+              child: child,
+            ),
+          );
+        }));
+  }
+
+  @override
+  goVideoView(String video_url, String img_url) {
+    Navigator.of(context).push(new PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (BuildContext context, _, __) {
+          return new VideoPage(video_url, img_url);
         },
         transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
           return new FadeTransition(

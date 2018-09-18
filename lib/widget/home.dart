@@ -16,6 +16,7 @@ import 'user_list_page.dart';
 import 'package:flutter_app/utils/toast_utils.dart';
 import 'package:flutter_app/widget/micropost_list_page.dart';
 import 'package:flutter_app/utils/app_state.dart';
+import 'package:flutter_app/widget/video_player_page.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -498,6 +499,25 @@ class _MyHomePageState extends State<MyHomePage>
         opaque: false,
         pageBuilder: (BuildContext context, _, __) {
           return new MultiTouchAppPage(list, type);
+        },
+        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+          return new FadeTransition(
+            opacity: animation,
+            child: new RotationTransition(
+              turns: new Tween<double>(begin: 0.5, end: 1.0).animate(animation),
+              child: child,
+            ),
+          );
+        }));
+  }
+
+
+  @override
+  goVideoView(String video_url, String img_url) {
+    Navigator.of(context).push(new PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (BuildContext context, _, __) {
+          return new VideoPage(video_url, img_url);
         },
         transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
           return new FadeTransition(

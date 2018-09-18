@@ -41,7 +41,7 @@ class MicropostProvider {
 
   String sql_createTable =
       "CREATE TABLE '$tab_name' (id INTEGER PRIMARY KEY, content TEXT,user_id INTEGER,picture TEXT,"
-      "icon TEXT,user_name TEXT,created_at TEXT,dotId INTEGER,dots_num INTEGER,comment_num INTEGER)";
+      "icon TEXT,user_name TEXT,video TEXT,video_pre TEXT,created_at TEXT,dotId INTEGER,dots_num INTEGER,comment_num INTEGER)";
 
   insertAll(List<Micropost> todo) async {
     CommonSP.getDBPath().then((path) {
@@ -66,9 +66,11 @@ class MicropostProvider {
         var dotId = mic.dotId;
         var dots_num = mic.dots_num;
         var comment_num = mic.comment_num;
+        var video = mic.video;
+        var video_pre = mic.video_pre;
         String sql = " REPLACE INTO '$tab_name'"
-            "(id,content,user_id,picture,icon,user_name,created_at,dotId,dots_num,comment_num)"
-            " VALUES('$_id','$_content','$user_id','$picture','$icon','$user_name','$created_at','$dotId','$dots_num','$comment_num')";
+            "(id,content,user_id,picture,icon,user_name,created_at,dotId,dots_num,comment_num,video,video_pre)"
+            " VALUES('$_id','$_content','$user_id','$picture','$icon','$user_name','$created_at','$dotId','$dots_num','$comment_num','$video','$video_pre')";
         await txn.rawInsert(sql);
       }
     });
@@ -92,9 +94,11 @@ class MicropostProvider {
       var dotId = mic.dotId;
       var dots_num = mic.dots_num;
       var comment_num = mic.comment_num;
+      var video = mic.video;
+      var video_pre = mic.video_pre;
       String sql = " REPLACE INTO '$tab_name'"
-          "(id,content,user_id,picture,icon,user_name,created_at,dotId,dots_num,comment_num)"
-          " VALUES('$_id','$_content','$user_id','$picture','$icon','$user_name','$created_at','$dotId','$dots_num','$comment_num')";
+          "(id,content,user_id,picture,icon,user_name,created_at,dotId,dots_num,comment_num,video,video_pre)"
+          " VALUES('$_id','$_content','$user_id','$picture','$icon','$user_name','$created_at','$dotId','$dots_num','$comment_num','$video','$video_pre')";
       await txn.rawInsert(sql);
     });
     await db.close();
@@ -123,9 +127,11 @@ class MicropostProvider {
         var dotId = mic.dotId;
         var dots_num = mic.dots_num;
         var comment_num = mic.comment_num;
+        var video = mic.video;
+        var video_pre = mic.video_pre;
         String sql = " REPLACE INTO '$tab_name'"
-            "(id,content,user_id,picture,icon,user_name,created_at,dotId,dots_num,comment_num)"
-            " VALUES('$_id','$_content','$user_id','$picture','$icon','$user_name','$created_at','$dotId','$dots_num','$comment_num')";
+            "(id,content,user_id,picture,icon,user_name,created_at,dotId,dots_num,comment_num,video,video_pre)"
+            " VALUES('$_id','$_content','$user_id','$picture','$icon','$user_name','$created_at','$dotId','$dots_num','$comment_num','$video','$video_pre')";
         await txn.rawInsert(sql);
       }
     });

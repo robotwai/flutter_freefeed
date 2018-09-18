@@ -5,6 +5,7 @@ class Micropost{
   int user_id;
   String picture;
   String video;
+  String video_pre;
   String icon;
   String user_name;
   String created_at;
@@ -14,8 +15,8 @@ class Micropost{
 
 
   Micropost(this.content, this.id, this.user_id, this.picture, this.video,
-      this.icon, this.user_name, this.created_at, this.dotId, this.dots_num,
-      this.comment_num);
+      this.video_pre, this.icon, this.user_name, this.created_at, this.dotId,
+      this.dots_num, this.comment_num);
 
   Micropost.fromJson(Map<String, dynamic> json)
       :
@@ -29,6 +30,7 @@ class Micropost{
         dots_num=json['dots_num'],
         comment_num=json['comment_num'],
         video=json['video'],
+        video_pre=json['video_pre'],
         id = json['id']
   ;
 
@@ -44,6 +46,7 @@ class Micropost{
         'dotId': dotId,
         'dots_num': dots_num,
         'video': video,
+        'video_pre': video_pre,
         'comment_num': comment_num,
       };
 
@@ -57,6 +60,7 @@ class Micropost{
     map['created_at'] = created_at;
     map['dotId'] = dotId;
     map['video'] = video;
+    map['video_pre'] = video_pre;
     map['dots_num'] = dots_num;
     map['comment_num'] = comment_num;
 
@@ -75,6 +79,7 @@ class Micropost{
     created_at = map['created_at'];
     dotId = map['dotId'];
     video = map['video'];
+    video_pre = map['video_pre'];
     dots_num = map['dots_num'];
     comment_num = map['comment_num'];
   }

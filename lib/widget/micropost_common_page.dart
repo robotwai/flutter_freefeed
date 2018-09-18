@@ -4,13 +4,15 @@ import 'package:flutter_app/utils/time_utils.dart';
 import 'package:flutter_app/utils/constant.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:video_player/video_player.dart';
+import 'package:flutter_app/widget/test.page.dart';
 
 class MicropostPage extends StatelessWidget {
   Micropost item;
   PageCallBack callBack;
   double system_width;
   int type;
-
+  bool isHaveVideo = false;
   MicropostPage(this.item, this.callBack, this.type);
 
   @override
@@ -19,7 +21,7 @@ class MicropostPage extends StatelessWidget {
         .of(context)
         .size
         .width;
-
+    isHaveVideo = item.video != null && item.video != "null";
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -70,7 +72,9 @@ class MicropostPage extends StatelessWidget {
         ),
         new Center(
           child: new Card(
-            child: _getImageChild(item.picture),
+            child: isHaveVideo
+                ? _getVideo(item.video_pre, item.video)
+                : _getImageChild(item.picture),
           ),
         ),
         new Container(
@@ -83,6 +87,47 @@ class MicropostPage extends StatelessWidget {
         ),
         _getBottomView(item),
       ],
+    );
+  }
+
+  _getVideo(String pic_url, String video_url) {
+    return new GestureDetector(
+      onTap: () {
+        callBack.goVideoView(video_url, pic_url);
+      },
+      child: new ConstrainedBox(
+        child: new Stack(
+          children: <Widget>[
+            new Center(
+              child: new CachedNetworkImage(
+                placeholder: new CircularProgressIndicator(),
+                imageUrl: Constant.baseUrl + pic_url,
+              ),
+            ),
+            new Align(
+              alignment: Alignment.center,
+              child: new ClipRRect(
+                borderRadius:
+                const BorderRadius.all(const Radius.circular(90.0)),
+                child: new Container(
+                  child: new Container(
+                    child: new Icon(
+                      Icons.play_arrow, color: Color(0xa0ffffff),),
+                    height: 30.0,
+                    width: 30.0,
+
+                  ),
+                  width: 50.0,
+                  height: 50.0,
+                  color: const Color(0x60000000),
+                ),
+              ),
+            ),
+
+          ],
+        ),
+        constraints: new BoxConstraints(maxHeight: (system_width - 20) / 2),
+      ),
     );
   }
 
@@ -104,18 +149,16 @@ class MicropostPage extends StatelessWidget {
                 placeholder: new CircularProgressIndicator(),
                 imageUrl: Constant.baseUrl + list[0],
               ),
-              constraints: new BoxConstraints(
-                  maxHeight: (system_width - 20) / 2),
+              constraints:
+              new BoxConstraints(maxHeight: (system_width - 20) / 2),
             ));
       } else {
         return new Container(
           child: GridView.builder(
             gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: (system_width) / 3,
-              mainAxisSpacing: 6.0,
-                crossAxisSpacing: 6.0
-            ),
-
+                maxCrossAxisExtent: (system_width) / 3,
+                mainAxisSpacing: 6.0,
+                crossAxisSpacing: 6.0),
             itemBuilder: (context, i) {
               return _buildImageRow(i, list);
             },
@@ -278,4 +321,6 @@ abstract class PageCallBack {
   goPhotoView(int position, List<String> list);
 
   jumpToUser(int id);
+
+  goVideoView(String video_url, String img_url);
 }

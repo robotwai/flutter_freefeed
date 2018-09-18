@@ -9,6 +9,7 @@ import 'package:flutter_app/widget/user_detail_page.dart';
 import 'package:flutter_app/widget/multi_touch_page.dart';
 import 'package:flutter_app/widget/micropost_detail_page.dart';
 import 'package:flutter_app/utils/db_helper.dart';
+import 'package:flutter_app/widget/video_player_page.dart';
 
 class MicropostListPage extends StatefulWidget {
   int id;
@@ -217,6 +218,24 @@ class _MicropostListPageState extends State<MicropostListPage>
         opaque: false,
         pageBuilder: (BuildContext context, _, __) {
           return new MultiTouchAppPage(list, type);
+        },
+        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+          return new FadeTransition(
+            opacity: animation,
+            child: new RotationTransition(
+              turns: new Tween<double>(begin: 0.5, end: 1.0).animate(animation),
+              child: child,
+            ),
+          );
+        }));
+  }
+
+  @override
+  goVideoView(String video_url, String img_url) {
+    Navigator.of(context).push(new PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (BuildContext context, _, __) {
+          return new VideoPage(video_url, img_url);
         },
         transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
           return new FadeTransition(
