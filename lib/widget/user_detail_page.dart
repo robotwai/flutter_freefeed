@@ -11,7 +11,7 @@ import 'package:flutter_app/widget/micropost_common_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/utils/sp_local.dart';
 import 'package:flutter_app/model/account_model.dart';
-import 'package:flutter_app/widget/multi_touch_page.dart';
+import 'package:flutter_app/utils/app_state.dart';
 import 'package:flutter_app/widget/micropost_detail_page.dart';
 import 'package:flutter_app/utils/db_helper.dart';
 import 'package:flutter_app/widget/user_list_page.dart';
@@ -47,6 +47,20 @@ class _UserDetailPageState extends State<UserDetailPage>
   int currentPage = 1;
   bool isFullLoad = false;
   int my_id;
+
+
+  AppState appState;
+  VoidCallback listener;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (appState == null) {
+      appState = AppStateContainer.of(context);
+      //在这里添加监听事件
+      appState.canListenLoading.addListener(listener);
+    }
+  }
   @override
   void initState() {
     super.initState();
@@ -67,14 +81,24 @@ class _UserDetailPageState extends State<UserDetailPage>
     });
     CommonSP.getAccount().then((onValue) {
       setState(() {
-        my_id = onValue.id;
+        if (onValue != null) {
+          my_id = onValue.id;
+        } else {
+          my_id = 0;
+        }
       });
     });
     _presenter.loadUser(widget.id);
     _presenter.loadMicroposts(widget.id, currentPage);
     _scrollController = new ScrollController()
       ..addListener(_scrollListener);
+    listener = () {
+      print('i can feel value is change');
+      _presenter.loadUser(widget.id);
+      _refreshData();
+    };
   }
+
 
   void _scrollListener() {
     //超过该高度则显示头部icon
@@ -107,6 +131,11 @@ class _UserDetailPageState extends State<UserDetailPage>
   void dispose() {
     super.dispose();
     _scrollController.removeListener(_scrollListener);
+    print('dispose');
+    if (appState != null) {
+      //在这里移除监听事件
+      appState.canListenLoading.removeListener(listener);
+    }
   }
 
   @override
@@ -158,7 +187,7 @@ class _UserDetailPageState extends State<UserDetailPage>
             child: new Card(
               color: Color(CLS.BACKGROUND),
               margin: const EdgeInsets.all(10.0),
-              child: new MicropostPage(item, this, 1),
+              child: new MicropostPage(item, this, 3),
             ),
             onTap: () {
               jumpToDetail(item);
@@ -514,44 +543,6 @@ class _UserDetailPageState extends State<UserDetailPage>
     datas.sort((a, b) => b.id.compareTo(a.id));
   }
 
-  @override
-  jumpToUser(int item) {}
-
-  @override
-  goPhotoView(int type, List<String> list) {
-    Navigator.of(context).push(new PageRouteBuilder(
-        opaque: false,
-        pageBuilder: (BuildContext context, _, __) {
-          return new MultiTouchAppPage(list, type);
-        },
-        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-          return new FadeTransition(
-            opacity: animation,
-            child: new RotationTransition(
-              turns: new Tween<double>(begin: 0.5, end: 1.0).animate(animation),
-              child: child,
-            ),
-          );
-        }));
-  }
-
-  @override
-  goVideoView(String video_url, String img_url) {
-    Navigator.of(context).push(new PageRouteBuilder(
-        opaque: false,
-        pageBuilder: (BuildContext context, _, __) {
-          return new VideoPage(video_url, img_url);
-        },
-        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-          return new FadeTransition(
-            opacity: animation,
-            child: new RotationTransition(
-              turns: new Tween<double>(begin: 0.5, end: 1.0).animate(animation),
-              child: child,
-            ),
-          );
-        }));
-  }
 
   jumpToUserSet() {
     Navigator.of(context).push(new PageRouteBuilder(
@@ -565,20 +556,32 @@ class _UserDetailPageState extends State<UserDetailPage>
   @override
   jumpToDetail(Micropost item) {
     print('jumpToDetail');
-    Navigator.of(context)
-        .push(new PageRouteBuilder(
-      opaque: false,
-      pageBuilder: (BuildContext context, _, __) {
-        return new MicropostDetailPage(item);
-      },
-    ))
-        .then((onValue) {
-      if (onValue != null) {
-        forDetailUpdate(item);
+    checkToLogin().then((onValue) {
+      if (onValue) {
+        Navigator.of(context)
+            .push(new PageRouteBuilder(
+          opaque: false,
+          pageBuilder: (BuildContext context, _, __) {
+            return new MicropostDetailPage(item);
+          },
+        ))
+            .then((onValue) {
+          forDetailUpdate(item);
+        });
       }
     });
   }
 
+  Future<bool> checkToLogin() async {
+    Account a = await CommonSP.getAccount();
+
+    if (a == null || a.token == '0') {
+      Navigator.of(context).pushNamed('/c');
+      return false;
+    } else {
+      return true;
+    }
+  }
   void forDetailUpdate(Micropost item) async {
     Micropost m = await MicropostProvider.origin.getItem(item.id);
     print(m);

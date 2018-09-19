@@ -69,10 +69,10 @@ class _SimplePage extends StatelessWidget {
       new GestureDetector(
         child: new Container(
           child: new Center(
-            child: new CachedNetworkImage(
+              child: Hero(tag: data, child: new CachedNetworkImage(
               fit: BoxFit.fitWidth,
               imageUrl: Constant.baseUrl + data,
-            ),
+              ),)
           ),
         ),
 //        onTap: () {

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/utils/constant.dart';
 import 'dart:async';
 import 'package:flutter_app/model/feed_model.dart';
-import 'package:flutter_app/model/user_model.dart';
+import 'package:flutter_app/utils/app_state.dart';
 import 'package:flutter_app/widget/micropost_common_page.dart';
 import 'package:flutter_app/network/common_http_client.dart';
 import 'package:flutter_app/widget/user_detail_page.dart';
-import 'package:flutter_app/widget/multi_touch_page.dart';
 import 'package:flutter_app/widget/micropost_detail_page.dart';
 import 'package:flutter_app/utils/db_helper.dart';
-import 'package:flutter_app/widget/video_player_page.dart';
+import 'package:flutter_app/utils/sp_local.dart';
+import 'package:flutter_app/model/account_model.dart';
 
 class MicropostListPage extends StatefulWidget {
   int id;
@@ -29,11 +29,26 @@ class _MicropostListPageState extends State<MicropostListPage>
   int currentPage = 1;
   bool isFullLoad = false;
   ScrollController _scrollController;
+  AppState appState;
+  VoidCallback listener;
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (appState == null) {
+      appState = AppStateContainer.of(context);
+      //在这里添加监听事件
+      appState.canListenLoading.addListener(listener);
+    }
+  }
   @override
   void initState() {
     _refreshData();
     _scrollController = new ScrollController()..addListener(_scrollListener);
+    listener = () {
+      print('i can feel value is change');
+      _refreshData();
+    };
   }
 
   void _scrollListener() {
@@ -50,6 +65,10 @@ class _MicropostListPageState extends State<MicropostListPage>
   void dispose() {
     super.dispose();
     _scrollController.removeListener(_scrollListener);
+    if (appState != null) {
+      //在这里移除监听事件
+      appState.canListenLoading.removeListener(listener);
+    }
   }
 
   Future<Null> _loadData() {
@@ -212,54 +231,33 @@ class _MicropostListPageState extends State<MicropostListPage>
     ));
   }
 
-  @override
-  void goPhotoView(int type, List<String> list) {
-    Navigator.of(context).push(new PageRouteBuilder(
-        opaque: false,
-        pageBuilder: (BuildContext context, _, __) {
-          return new MultiTouchAppPage(list, type);
-        },
-        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-          return new FadeTransition(
-            opacity: animation,
-            child: new RotationTransition(
-              turns: new Tween<double>(begin: 0.5, end: 1.0).animate(animation),
-              child: child,
-            ),
-          );
-        }));
-  }
-
-  @override
-  goVideoView(String video_url, String img_url) {
-    Navigator.of(context).push(new PageRouteBuilder(
-        opaque: false,
-        pageBuilder: (BuildContext context, _, __) {
-          return new VideoPage(video_url, img_url);
-        },
-        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-          return new FadeTransition(
-            opacity: animation,
-            child: new RotationTransition(
-              turns: new Tween<double>(begin: 0.5, end: 1.0).animate(animation),
-              child: child,
-            ),
-          );
-        }));
-  }
 
   void jumpToDetail(Micropost item) {
-    Navigator
-        .of(context)
-        .push(new PageRouteBuilder(
-      opaque: false,
-      pageBuilder: (BuildContext context, _, __) {
-        return new MicropostDetailPage(item);
-      },
-    ))
-        .then((onValue) {
-      forDetailUpdate(item);
+    checkToLogin().then((onValue) {
+      if (onValue) {
+        Navigator.of(context)
+            .push(new PageRouteBuilder(
+          opaque: false,
+          pageBuilder: (BuildContext context, _, __) {
+            return new MicropostDetailPage(item);
+          },
+        ))
+            .then((onValue) {
+          forDetailUpdate(item);
+        });
+      }
     });
+  }
+
+  Future<bool> checkToLogin() async {
+    Account a = await CommonSP.getAccount();
+
+    if (a == null || a.token == '0') {
+      Navigator.of(context).pushNamed('/c');
+      return false;
+    } else {
+      return true;
+    }
   }
 
   void forDetailUpdate(Micropost item) async {
@@ -277,10 +275,14 @@ class _MicropostListPageState extends State<MicropostListPage>
   }
   @override
   tap_dot(Micropost item) {
-    FFHttpUtils.origin.dot(item).then((onValue) {
-      if (onValue != null) {
-        MicropostProvider.origin.insert(onValue);
-        updateSingleFeed(onValue);
+    checkToLogin().then((onValue) {
+      if (onValue) {
+        FFHttpUtils.origin.dot(item).then((onValue) {
+          if (onValue != null) {
+            MicropostProvider.origin.insert(onValue);
+            updateSingleFeed(onValue);
+          }
+        });
       }
     });
   }

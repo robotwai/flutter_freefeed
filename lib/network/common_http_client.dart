@@ -268,7 +268,10 @@ class FFHttpUtils {
     op['id'] = '$id';
     op['page'] = '$pageNum';
     Account account = await CommonSP.getAccount();
-    op['token'] = account.token;
+
+    if (account != null) {
+      op['token'] = account.token;
+    }
     try {
       var request = new http.Request("GET", uri);
       request.bodyFields = op;
@@ -330,7 +333,10 @@ class FFHttpUtils {
       Account account = await CommonSP.getAccount();
       Map<String, String> op = new Map();
       op['user_id'] = '$id';
-      op['token'] = account.token;
+      if (account != null) {
+        op['token'] = account.token;
+      }
+
 
       request.bodyFields = op;
       print(uri.toString());
@@ -364,7 +370,9 @@ class FFHttpUtils {
       Map<String, String> op = new Map();
       op['user_id'] = '$id';
       op['page'] = '$pageNum';
-      op['token'] = account.token;
+      if (account != null) {
+        op['token'] = account.token;
+      }
       var request = new http.Request("GET", uri);
       request.bodyFields = op;
       print(uri.toString());
@@ -519,7 +527,9 @@ class FFHttpUtils {
       Map<String, String> op = new Map();
       op['user_id'] = '$id';
       op['page'] = '$pageNum';
-      op['token'] = account.token;
+      if (account != null) {
+        op['token'] = account.token;
+      }
       var request = new http.Request("GET", uri);
       request.bodyFields = op;
       print(uri.toString());

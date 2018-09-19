@@ -7,7 +7,6 @@ import 'package:flutter_app/model/feed_model.dart';
 import 'package:flutter_app/mvp/f_presenter.dart';
 import 'package:flutter_app/mvp/f_presenter_impl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_app/widget/multi_touch_page.dart';
 import 'dart:async';
 import 'package:flutter_app/widget/micropost_detail_page.dart';
 import 'package:flutter_app/widget/micropost_common_page.dart';
@@ -16,7 +15,6 @@ import 'user_list_page.dart';
 import 'package:flutter_app/utils/toast_utils.dart';
 import 'package:flutter_app/widget/micropost_list_page.dart';
 import 'package:flutter_app/utils/app_state.dart';
-import 'package:flutter_app/widget/video_player_page.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -41,8 +39,7 @@ class MyHomePage extends StatefulWidget {
   }
 }
 
-class _MyHomePageState extends State<MyHomePage>
-    with FeedIView, PageCallBack{
+class _MyHomePageState extends State<MyHomePage> with FeedIView, PageCallBack {
   Account account;
   String name;
   String email;
@@ -65,8 +62,8 @@ class _MyHomePageState extends State<MyHomePage>
     // _counter without calling setState(), then the build method would not be
     // called again, and so nothing would appear to happen.
 
-    checkToLogin().then((onValue){
-      if(onValue) {
+    checkToLogin().then((onValue) {
+      if (onValue) {
         Navigator.of(context).pushNamed('/d').then((onValue) {
           if (onValue == 1) {
             getUserInfo();
@@ -74,11 +71,10 @@ class _MyHomePageState extends State<MyHomePage>
         });
       }
     });
-
   }
 
   AppState appState;
-
+  VoidCallback listener;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -89,7 +85,6 @@ class _MyHomePageState extends State<MyHomePage>
     }
   }
 
-  VoidCallback listener;
   @override
   void initState() {
     super.initState();
@@ -101,7 +96,6 @@ class _MyHomePageState extends State<MyHomePage>
       print('i can feel value is change');
       getUserInfo();
     };
-
   }
 
   void getUserInfo() async {
@@ -150,9 +144,7 @@ class _MyHomePageState extends State<MyHomePage>
       //在这里移除监听事件
       appState.canListenLoading.removeListener(listener);
     }
-    super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -206,17 +198,17 @@ class _MyHomePageState extends State<MyHomePage>
 //    if (datas.isEmpty) {
 //      content = new Center(child: new CircularProgressIndicator());
 //    } else {
-      content = new ListView.builder(
-        physics: AlwaysScrollableScrollPhysics(),
-        itemCount: datas.length == 0 ? 1 : datas.length,
-
-        primary: true,
-        itemBuilder: _buildRow,
-      );
+    content = new ListView.builder(
+      physics: AlwaysScrollableScrollPhysics(),
+      itemCount: datas.length == 0 ? 1 : datas.length,
+      primary: true,
+      itemBuilder: _buildRow,
+    );
 //    }
 
     var _refreshIndicator = new RefreshIndicator(
       onRefresh: _refreshData,
+      color: Color(CLS.BASE_COLOR),
       child: new PrimaryScrollController(
           controller: _scrollController, child: content),
     );
@@ -271,9 +263,8 @@ class _MyHomePageState extends State<MyHomePage>
                     margin: const EdgeInsets.only(right: 6.0),
                   ),
                   onTap: () {
-
-                    checkToLogin().then((onValue){
-                      if(onValue) {
+                    checkToLogin().then((onValue) {
+                      if (onValue) {
                         Navigator.of(context).push(new PageRouteBuilder(
                           opaque: false,
                           pageBuilder: (BuildContext context, _, __) {
@@ -282,7 +273,6 @@ class _MyHomePageState extends State<MyHomePage>
                         ));
                       }
                     });
-
                   },
                 ),
                 new GestureDetector(
@@ -297,8 +287,8 @@ class _MyHomePageState extends State<MyHomePage>
                     margin: const EdgeInsets.only(left: 6.0),
                   ),
                   onTap: () {
-                    checkToLogin().then((onValue){
-                      if(onValue) {
+                    checkToLogin().then((onValue) {
+                      if (onValue) {
                         Navigator.of(context).push(new PageRouteBuilder(
                           opaque: false,
                           pageBuilder: (BuildContext context, _, __) {
@@ -329,8 +319,8 @@ class _MyHomePageState extends State<MyHomePage>
                   leading: new Icon(Icons.bookmark),
                   title: new Text("收藏"),
                   onTap: () {
-                    checkToLogin().then((onValue){
-                      if(onValue) {
+                    checkToLogin().then((onValue) {
+                      if (onValue) {
                         Navigator.of(context).push(new PageRouteBuilder(
                           opaque: false,
                           pageBuilder: (BuildContext context, _, __) {
@@ -345,13 +335,12 @@ class _MyHomePageState extends State<MyHomePage>
                   leading: new Icon(Icons.find_in_page),
                   title: new Text("发现"),
                   onTap: () {
-
-                        Navigator.of(context).push(new PageRouteBuilder(
-                          opaque: false,
-                          pageBuilder: (BuildContext context, _, __) {
-                            return new MicropostListPage(0, 1);
-                          },
-                        ));
+                    Navigator.of(context).push(new PageRouteBuilder(
+                      opaque: false,
+                      pageBuilder: (BuildContext context, _, __) {
+                        return new MicropostListPage(0, 1);
+                      },
+                    ));
                   },
                 ),
                 new ListTile(
@@ -419,8 +408,7 @@ class _MyHomePageState extends State<MyHomePage>
   void jumpToDetail(Micropost item) {
     checkToLogin().then((onValue) {
       if (onValue) {
-        Navigator
-            .of(context)
+        Navigator.of(context)
             .push(new PageRouteBuilder(
           opaque: false,
           pageBuilder: (BuildContext context, _, __) {
@@ -433,13 +421,12 @@ class _MyHomePageState extends State<MyHomePage>
         });
       }
     });
-
   }
 
   @override
   jumpToUser(int id) {
-    checkToLogin().then((onValue){
-      if(onValue){
+    checkToLogin().then((onValue) {
+      if (onValue) {
         Navigator.of(context).push(new PageRouteBuilder(
           opaque: false,
           pageBuilder: (BuildContext context, _, __) {
@@ -448,7 +435,6 @@ class _MyHomePageState extends State<MyHomePage>
         ));
       }
     });
-
   }
 
   void forDetailUpdate(Micropost item) async {
@@ -484,7 +470,6 @@ class _MyHomePageState extends State<MyHomePage>
       );
     } else {
       return new CachedNetworkImage(
-
         fit: BoxFit.fitWidth,
         imageUrl: Constant.baseUrl + icon,
         width: 80.0,
@@ -493,44 +478,7 @@ class _MyHomePageState extends State<MyHomePage>
     }
   }
 
-  @override
-  goPhotoView(int type, List<String> list) {
-    Navigator.of(context).push(new PageRouteBuilder(
-        opaque: false,
-        pageBuilder: (BuildContext context, _, __) {
-          return new MultiTouchAppPage(list, type);
-        },
-        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-          return new FadeTransition(
-            opacity: animation,
-            child: new RotationTransition(
-              turns: new Tween<double>(begin: 0.5, end: 1.0).animate(animation),
-              child: child,
-            ),
-          );
-        }));
-  }
-
-
-  @override
-  goVideoView(String video_url, String img_url) {
-    Navigator.of(context).push(new PageRouteBuilder(
-        opaque: false,
-        pageBuilder: (BuildContext context, _, __) {
-          return new VideoPage(video_url, img_url);
-        },
-        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-          return new FadeTransition(
-            opacity: animation,
-            child: new RotationTransition(
-              turns: new Tween<double>(begin: 0.5, end: 1.0).animate(animation),
-              child: child,
-            ),
-          );
-        }));
-  }
-
-  Future<bool> checkToLogin() async{
+  Future<bool> checkToLogin() async {
     Account a = await CommonSP.getAccount();
     setState(() {
       account = a;
@@ -538,24 +486,23 @@ class _MyHomePageState extends State<MyHomePage>
     if (account == null || account.token == '0') {
       Navigator.of(context).pushNamed('/c');
       return false;
-    }else{
+    } else {
       return true;
     }
   }
 
   @override
-  void _tap_icon() async{
-    checkToLogin().then((onValue){
-      if(onValue) jumpToUser(account.id);
+  void _tap_icon() async {
+    checkToLogin().then((onValue) {
+      if (onValue) jumpToUser(account.id);
     });
   }
 
   @override
   tap_dot(Micropost item) {
-    checkToLogin().then((onValue){
-      if(onValue) _presenter.dot(token, item);
+    checkToLogin().then((onValue) {
+      if (onValue) _presenter.dot(token, item);
     });
-
   }
 
   Future<Null> _refreshData() {
@@ -649,5 +596,4 @@ class _MyHomePageState extends State<MyHomePage>
       return new Future.value(false);
     }
   }
-
 }

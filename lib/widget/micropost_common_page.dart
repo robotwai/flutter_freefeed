@@ -4,8 +4,10 @@ import 'package:flutter_app/utils/time_utils.dart';
 import 'package:flutter_app/utils/constant.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:video_player/video_player.dart';
-import 'package:flutter_app/widget/test.page.dart';
+import 'package:flutter_app/widget/video_player_page.dart';
+import 'package:flutter/scheduler.dart' show timeDilation;
+import 'package:flutter_app/widget/multi_touch_page.dart';
+import 'package:flutter_app/widget/user_detail_page.dart';
 
 class MicropostPage extends StatelessWidget {
   Micropost item;
@@ -13,6 +15,7 @@ class MicropostPage extends StatelessWidget {
   double system_width;
   int type;
   bool isHaveVideo = false;
+
   MicropostPage(this.item, this.callBack, this.type);
 
   @override
@@ -22,6 +25,7 @@ class MicropostPage extends StatelessWidget {
         .size
         .width;
     isHaveVideo = item.video != null && item.video != "null";
+    timeDilation = 1.0; // 1.0 means normal animation speed.
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -35,7 +39,7 @@ class MicropostPage extends StatelessWidget {
                 margin: const EdgeInsets.all(12.0),
               ),
               onTap: () {
-                callBack.jumpToUser(item.user_id);
+                jumpToUser(item.user_id, context);
               },
             ),
             new Column(
@@ -73,8 +77,8 @@ class MicropostPage extends StatelessWidget {
         new Center(
           child: new Card(
             child: isHaveVideo
-                ? _getVideo(item.video_pre, item.video)
-                : _getImageChild(item.picture),
+                ? _getVideo(item.video_pre, item.video, context)
+                : _getImageChild(item.picture, context),
           ),
         ),
         new Container(
@@ -90,19 +94,25 @@ class MicropostPage extends StatelessWidget {
     );
   }
 
-  _getVideo(String pic_url, String video_url) {
+  _getVideo(String pic_url, String video_url, BuildContext c) {
     return new GestureDetector(
       onTap: () {
-        callBack.goVideoView(video_url, pic_url);
+//        callBack.goVideoView(video_url, pic_url);
+
+        Navigator.of(c).push(MaterialPageRoute<Null>(
+            builder: (BuildContext context) {
+              return new VideoPage(video_url, pic_url);
+            }
+        ));
       },
       child: new ConstrainedBox(
         child: new Stack(
           children: <Widget>[
             new Center(
-              child: new CachedNetworkImage(
+              child: new Hero(tag: pic_url, child: new CachedNetworkImage(
                 placeholder: new CircularProgressIndicator(),
                 imageUrl: Constant.baseUrl + pic_url,
-              ),
+              )),
             ),
             new Align(
               alignment: Alignment.center,
@@ -131,7 +141,7 @@ class MicropostPage extends StatelessWidget {
     );
   }
 
-  _getImageChild(String url) {
+  _getImageChild(String url, BuildContext c) {
     if (url != null && url.length > 0) {
       url = url.substring(0, url.length - 1);
     }
@@ -142,16 +152,22 @@ class MicropostPage extends StatelessWidget {
       if (list.length == 1) {
         return new GestureDetector(
             onTap: () {
-              callBack.goPhotoView(0, list);
+//              callBack.goPhotoView(0, list);
+
+              Navigator.of(c).push(MaterialPageRoute<Null>(
+                  builder: (BuildContext context) {
+                    return new MultiTouchAppPage(list, 0);
+                  }
+              ));
             },
-            child: new ConstrainedBox(
+            child: Hero(tag: list[0], child: new ConstrainedBox(
               child: new CachedNetworkImage(
                 placeholder: new CircularProgressIndicator(),
                 imageUrl: Constant.baseUrl + list[0],
               ),
               constraints:
               new BoxConstraints(maxHeight: (system_width - 20) / 2),
-            ));
+            )));
       } else {
         return new Container(
           child: GridView.builder(
@@ -160,7 +176,7 @@ class MicropostPage extends StatelessWidget {
                 mainAxisSpacing: 6.0,
                 crossAxisSpacing: 6.0),
             itemBuilder: (context, i) {
-              return _buildImageRow(i, list);
+              return _buildImageRow(i, list, context);
             },
             physics: new NeverScrollableScrollPhysics(),
             itemCount: list.length,
@@ -172,15 +188,20 @@ class MicropostPage extends StatelessWidget {
     }
   }
 
-  _buildImageRow(int position, List<String> l) {
+  _buildImageRow(int position, List<String> l, BuildContext c) {
     return new GestureDetector(
       onTap: () {
-        callBack.goPhotoView(position, l);
+//        callBack.goPhotoView(position, l);
+        Navigator.of(c).push(MaterialPageRoute<Null>(
+            builder: (BuildContext context) {
+              return new MultiTouchAppPage(l, position);
+            }
+        ));
       },
-      child: new CachedNetworkImage(
+      child: Hero(tag: l[position], child: new CachedNetworkImage(
         placeholder: new CircularProgressIndicator(),
         imageUrl: Constant.baseUrl + l[position],
-      ),
+      )),
     );
   }
 
@@ -311,6 +332,18 @@ class MicropostPage extends StatelessWidget {
       ),
     );
   }
+
+
+  jumpToUser(int id, BuildContext context) {
+    if (type != 3) {
+      Navigator.of(context).push(new PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (BuildContext context, _, __) {
+          return new UserDetailPage(id);
+        },
+      ));
+    }
+  }
 }
 
 abstract class PageCallBack {
@@ -318,9 +351,4 @@ abstract class PageCallBack {
 
   jumpToDetail(Micropost item);
 
-  goPhotoView(int position, List<String> list);
-
-  jumpToUser(int id);
-
-  goVideoView(String video_url, String img_url);
 }

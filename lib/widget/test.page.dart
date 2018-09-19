@@ -21,7 +21,7 @@ class VideoPlayPause extends StatefulWidget {
 
 class _VideoPlayPauseState extends State<VideoPlayPause> {
   FadeAnimation imageFadeAnim =
-  FadeAnimation(child: const Icon(Icons.play_arrow, size: 100.0));
+  FadeAnimation(child: const Icon(Icons.play_arrow, size: 40.0));
   VoidCallback listener;
 
   _VideoPlayPauseState() {
@@ -231,11 +231,17 @@ abstract class _PlayerLifeCycleState extends State<PlayerLifeCycle> {
         children: <Widget>[
           widget.childBuilder(context, controller),
           new Offstage(
-            child: new Center(
-              child: new CachedNetworkImage(
-                placeholder: new CircularProgressIndicator(),
-                imageUrl: widget.preImageSource,
-              ),
+            child: Stack(
+              children: <Widget>[
+                new Center(
+                    child: Hero(
+                      tag: widget.preImageSource, child: new CachedNetworkImage(
+                      placeholder: new CircularProgressIndicator(),
+                      imageUrl: widget.preImageSource,
+                    ),)
+                ),
+                Center(child: new CupertinoActivityIndicator(radius: 24.0),)
+              ],
             ),
             offstage: isinit,
           ),

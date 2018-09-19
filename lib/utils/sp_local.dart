@@ -20,7 +20,7 @@ class CommonSP{
   static Future<Account> getAccount() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var json =prefs.getString('account');
-    if(json==null||json.isEmpty){
+    if (json == null || json.isEmpty || json == '') {
       return null;
     }
     print("getAccount" + json);

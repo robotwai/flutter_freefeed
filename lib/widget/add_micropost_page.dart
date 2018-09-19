@@ -306,7 +306,53 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
                   new GestureDetector(
                     child: new Container(
                       child: new Text(
-                        '从相册中选取',
+                        '从相册中选取照片',
+                        style: new TextStyle(
+                            color: Color(CLS.TEXT_3), fontSize: 14.0),
+                      ),
+                      height: 60.0,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
+                      alignment: Alignment.center,
+                      color: Color(0xffffffff),
+                    ),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      getImage(2, index);
+                    },
+                  ),
+                  new GestureDetector(
+                    child: new Container(
+                      child: new Text(
+                        '录像',
+                        style: new TextStyle(
+                            color: Color(CLS.TEXT_3), fontSize: 14.0),
+                      ),
+                      height: 60.0,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
+                      alignment: Alignment.center,
+                      color: Color(0xffffffff),
+                    ),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      getImage(1, index);
+                    },
+                  ),
+                  new Padding(
+                    padding: const EdgeInsets.only(left: 14.0, right: 14.0),
+                    child: new Divider(
+                      height: 1.0,
+                    ),
+                  ),
+                  new GestureDetector(
+                    child: new Container(
+                      child: new Text(
+                        '从相册中选取录像',
                         style: new TextStyle(
                             color: Color(CLS.TEXT_3), fontSize: 14.0),
                       ),
@@ -352,12 +398,6 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
         File compressedFile = await FlutterNativeImage.compressImage(image.path,
             quality: 70, targetWidth: width, targetHeight: height);
         newfileName = compressedFile.path;
-//        Im.Image im = Im.decodeImage(image.readAsBytesSync());
-//        Im.Image thumbnail = Im.copyResize(im, 720);
-//        var  a =new File('thumbnail.png')
-//          ..writeAsBytesSync(Im.encodePng(thumbnail));
-//        print('aaa'+a.path);
-//        print(newfileName);
         print(compressedFile.path);
       } catch (exception) {
         print(exception.toString());
@@ -375,6 +415,20 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
 
   }
 
+  Future getVideo(int type, int index) async {
+    var video = await ImagePicker.pickVideo(
+        source: type == 1 ? ImageSource.camera : ImageSource.gallery);
+
+    if (video != null) {
+      setState(() {
+        print(video.path);
+        images[index] = (video.path);
+        if (images.length < 9 && index == images.length - 1) {
+          images.add('0');
+        }
+      });
+    }
+  }
   void _onTextChange(String s) {
     if (s != null && s.length > 0) {
       content = s;
