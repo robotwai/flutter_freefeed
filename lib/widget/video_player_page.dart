@@ -32,7 +32,7 @@ class _VideoPageState extends State<VideoPage> {
               Constant.baseUrl + widget.img_url,
                   (BuildContext context, VideoPlayerController controller) =>
                   AspectRatioVideo(controller),
-            ),
+                null),
           ),
         ),
 //        onTap: () {

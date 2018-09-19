@@ -12,6 +12,8 @@ import 'package:flutter_app/network/common_http_client.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:flutter_app/utils/toast_utils.dart';
+import 'package:flutter_app/widget/test.page.dart';
+import 'package:video_player/video_player.dart';
 
 class AddMicropostPage extends StatefulWidget {
   @override
@@ -24,6 +26,7 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
   Account account;
   int sendColor = 0xFF9c9c9c;
   List<String> images = ['0'];
+  File videoFile;
   String content;
   bool isLoading = false;
   @override
@@ -87,7 +90,7 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
                             .of(context)
                             .size
                             .width,
-                        child: _buildGrid(),
+                        child: videoFile != null ? _getVideo() : _buildGrid(),
                       ),
                     ],
                   )),
@@ -121,6 +124,26 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
         height: 36.0,
       );
     }
+  }
+
+  Widget _getVideo() {
+    return new Container(
+      width: MediaQuery
+          .of(context)
+          .size
+          .width / 3,
+      height: MediaQuery
+          .of(context)
+          .size
+          .width / 3,
+      child: FilePlayerLifeCycle(
+        "",
+        "",
+            (BuildContext context, VideoPlayerController controller) =>
+            AspectRatioVideo(controller),
+        videoFile,
+      ),
+    );
   }
 
   double position_y;
@@ -181,7 +204,14 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
       });
       List<http.MultipartFile> f = await getFiles();
       int picNum = f.length;
-      FFHttpUtils.origin.sendMicropost(content, '$picNum', f)
+      http.MultipartFile video = null;
+      if (videoFile != null) {
+        video = await http.MultipartFile.fromPath(
+            'video',
+            videoFile.path,
+            contentType: MediaType.parse("multipart/form-data"));
+      }
+      FFHttpUtils.origin.sendMicropost(content, '$picNum', f, video)
           .then((onValue) {
         if (onValue != null) {
           if (onValue == '0') {
@@ -254,7 +284,7 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
         context: context,
         builder: (BuildContext context) {
           return new Container(
-              height: 162.0,
+              height: 284.0,
               child: new Column(
                 children: <Widget>[
                   new Container(
@@ -323,6 +353,12 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
                       getImage(2, index);
                     },
                   ),
+                  new Padding(
+                    padding: const EdgeInsets.only(left: 14.0, right: 14.0),
+                    child: new Divider(
+                      height: 1.0,
+                    ),
+                  ),
                   new GestureDetector(
                     child: new Container(
                       child: new Text(
@@ -340,7 +376,7 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
                     ),
                     onTap: () {
                       Navigator.of(context).pop();
-                      getImage(1, index);
+                      getVideo(1, index);
                     },
                   ),
                   new Padding(
@@ -366,7 +402,7 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
                     ),
                     onTap: () {
                       Navigator.of(context).pop();
-                      getImage(2, index);
+                      getVideo(2, index);
                     },
                   ),
                 ],
@@ -422,10 +458,7 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
     if (video != null) {
       setState(() {
         print(video.path);
-        images[index] = (video.path);
-        if (images.length < 9 && index == images.length - 1) {
-          images.add('0');
-        }
+        videoFile = video;
       });
     }
   }

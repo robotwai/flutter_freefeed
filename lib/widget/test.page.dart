@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:io';
 
 /// Controls play and pause of [controller].
 ///
@@ -26,7 +27,7 @@ class _VideoPlayPauseState extends State<VideoPlayPause> {
 
   _VideoPlayPauseState() {
     listener = () {
-      setState(() {});
+//      setState(() {});
     };
   }
 
@@ -43,8 +44,11 @@ class _VideoPlayPauseState extends State<VideoPlayPause> {
 
   @override
   void deactivate() {
-    controller.setVolume(0.0);
-    controller.removeListener(listener);
+    if (controller != null) {
+      controller.setVolume(0.0);
+      controller.removeListener(listener);
+    }
+
     super.deactivate();
   }
 
@@ -152,11 +156,13 @@ typedef Widget VideoWidgetBuilder(BuildContext context,
     VideoPlayerController controller);
 
 abstract class PlayerLifeCycle extends StatefulWidget {
-  final VideoWidgetBuilder childBuilder;
-  final String dataSource;
-  final String preImageSource;
+  VideoWidgetBuilder childBuilder;
+  String dataSource;
+  String preImageSource;
+  File file;
 
-  PlayerLifeCycle(this.childBuilder, this.dataSource, this.preImageSource);
+  PlayerLifeCycle(this.childBuilder, this.dataSource, this.preImageSource,
+      this.file);
 
 
 }
@@ -165,8 +171,8 @@ abstract class PlayerLifeCycle extends StatefulWidget {
 /// a data source from the network.
 class NetworkPlayerLifeCycle extends PlayerLifeCycle {
   NetworkPlayerLifeCycle(String dataSource, String preImageSource,
-      VideoWidgetBuilder childBuilder)
-      : super(childBuilder, dataSource, preImageSource);
+      VideoWidgetBuilder childBuilder, File file)
+      : super(childBuilder, dataSource, preImageSource, file);
 
   @override
   _NetworkPlayerLifeCycleState createState() => _NetworkPlayerLifeCycleState();
@@ -176,11 +182,22 @@ class NetworkPlayerLifeCycle extends PlayerLifeCycle {
 /// an asset as data source
 class AssetPlayerLifeCycle extends PlayerLifeCycle {
   AssetPlayerLifeCycle(String dataSource, String preImageSource,
-      VideoWidgetBuilder childBuilder)
-      : super(childBuilder, dataSource, preImageSource);
+      VideoWidgetBuilder childBuilder, File file)
+      : super(childBuilder, dataSource, preImageSource, file);
 
   @override
   _AssetPlayerLifeCycleState createState() => _AssetPlayerLifeCycleState();
+}
+
+class FilePlayerLifeCycle extends PlayerLifeCycle {
+
+  FilePlayerLifeCycle(String dataSource, String preImageSource,
+      VideoWidgetBuilder childBuilder, File file)
+      : super(childBuilder, dataSource, preImageSource, file);
+
+
+  @override
+  _FilePlayerLifeCycleState createState() => _FilePlayerLifeCycleState();
 }
 
 abstract class _PlayerLifeCycleState extends State<PlayerLifeCycle> {
@@ -267,6 +284,14 @@ class _AssetPlayerLifeCycleState extends _PlayerLifeCycleState {
   }
 }
 
+class _FilePlayerLifeCycleState extends _PlayerLifeCycleState {
+  _FilePlayerLifeCycleState();
+
+  @override
+  VideoPlayerController createVideoPlayerController() {
+    return VideoPlayerController.file(widget.file);
+  }
+}
 /// A filler card to show the video in a list of scrolling contents.
 Widget buildCard(String title) {
   return Card(

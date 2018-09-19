@@ -197,7 +197,7 @@ class FFHttpUtils {
 
   //发送微博
   Future<String> sendMicropost(String content, String picNum,
-      List<http.MultipartFile> f) async {
+      List<http.MultipartFile> f, http.MultipartFile video) async {
     String res = '';
     var uri = Uri.parse(Constant.baseUrl + '/app/seedmicropost');
     var request = new http.MultipartRequest("POST", uri);
@@ -209,6 +209,9 @@ class FFHttpUtils {
     request.fields['picNum'] = '$picNum';
     if (f != null) {
       request.files.addAll(f);
+    }
+    if (video != null) {
+      request.files.add(video);
     }
     http.StreamedResponse response = await request.send();
     String json = await response.stream.bytesToString();
