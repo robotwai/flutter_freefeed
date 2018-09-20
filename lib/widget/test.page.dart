@@ -213,7 +213,7 @@ abstract class _PlayerLifeCycleState extends State<PlayerLifeCycle> {
     controller = createVideoPlayerController();
     controller.addListener(() {
       if (controller.value.hasError) {
-        print(controller.value.errorDescription);
+//        print(controller.value.errorDescription);
       }
     });
     try {
@@ -226,7 +226,7 @@ abstract class _PlayerLifeCycleState extends State<PlayerLifeCycle> {
       print(exception.toString());
     }
 
-    controller.setLooping(true);
+//    controller.setLooping(true);
     controller.play();
   }
 

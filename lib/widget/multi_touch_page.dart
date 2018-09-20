@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/utils/constant.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_app/utils/file_utils.dart';
+import 'package:flutter_app/utils/toast_utils.dart';
 
 class MultiTouchAppPage extends StatefulWidget {
   List<String> imgUrls;
@@ -75,9 +77,6 @@ class _SimplePage extends StatelessWidget {
               ),)
           ),
         ),
-//        onTap: () {
-//          Navigator.of(context).pop();
-//        },
         onVerticalDragDown: (de) {
           position_y = de.globalPosition.dy;
           print(position_y.toString());
@@ -87,5 +86,76 @@ class _SimplePage extends StatelessWidget {
             Navigator.of(context).pop();
           }
         },
+        onLongPress: () {
+          _showBottomItem(context, Constant.baseUrl + data);
+        },
       );
+
+
+  _showBottomItem(BuildContext context, String url) {
+    showModalBottomSheet<Null>(
+        context: context,
+        builder: (BuildContext context) {
+          return new Container(
+              height: 121.0,
+              child: new Column(
+                children: <Widget>[
+
+                  new GestureDetector(
+                    child: new Container(
+                      child: new Text(
+                        '保存到本地',
+                        style: new TextStyle(
+                            color: Color(CLS.TEXT_3), fontSize: 14.0),
+                      ),
+                      height: 60.0,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
+                      alignment: Alignment.center,
+                      color: Color(0xffffffff),
+                    ),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      SaveFile().saveImage(url).then((onValue) {
+                        if (onValue != null) {
+                          ToastUtils.showSuccessToast("保存成功");
+                        } else {
+                          ToastUtils.showWarnToast("保存失败");
+                        }
+                      });
+                    },
+                  ),
+                  new Padding(
+                    padding: const EdgeInsets.only(left: 14.0, right: 14.0),
+                    child: new Divider(
+                      height: 1.0,
+                    ),
+                  ),
+                  new GestureDetector(
+                    child: new Container(
+                      child: new Text(
+                        '取消',
+                        style: new TextStyle(
+                            color: Color(CLS.TEXT_3), fontSize: 14.0),
+                      ),
+                      height: 60.0,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
+                      alignment: Alignment.center,
+                      color: Color(0xffffffff),
+                    ),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+
+                ],
+              ));
+        });
+  }
+
 }

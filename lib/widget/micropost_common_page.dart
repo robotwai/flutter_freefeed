@@ -336,11 +336,10 @@ class MicropostPage extends StatelessWidget {
 
   jumpToUser(int id, BuildContext context) {
     if (type != 3) {
-      Navigator.of(context).push(new PageRouteBuilder(
-        opaque: false,
-        pageBuilder: (BuildContext context, _, __) {
-          return new UserDetailPage(id);
-        },
+      Navigator.of(context).push(MaterialPageRoute<Null>(
+          builder: (BuildContext context) {
+            return new UserDetailPage(id);
+          }
       ));
     }
   }
