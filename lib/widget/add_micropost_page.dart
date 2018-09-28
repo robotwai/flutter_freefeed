@@ -201,6 +201,7 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
     try {
       setState(() {
         isLoading = true;
+        FocusScope.of(context).requestFocus(new FocusNode());
       });
       List<http.MultipartFile> f = await getFiles();
       int picNum = f.length;
@@ -423,11 +424,11 @@ class _AddMicropostPageState extends State<AddMicropostPage> {
             properties.height.toString());
         int width = properties.width;
         int height = 0;
-        if (width < 720) {
+        if (width < 1080) {
           height = properties.height;
         } else {
-          height = (720 * (properties.height / width)).toInt();
-          width = 720;
+          height = (1080 * (properties.height / width)).toInt();
+          width = 1080;
         }
         print('compressedFile== width' + width.toString() + '+++++height' +
             height.toString());

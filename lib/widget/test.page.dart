@@ -211,18 +211,23 @@ abstract class _PlayerLifeCycleState extends State<PlayerLifeCycle> {
   void initState() {
     super.initState();
     controller = createVideoPlayerController();
-    controller.addListener(() {
-      if (controller.value.hasError) {
-//        print(controller.value.errorDescription);
-      }
-    });
+//    controller.addListener(() {
+//      if (controller.value.hasError) {
+////        print(controller.value.errorDescription);
+//      }
+//    });
     try {
+      print("video player init start " +
+          new DateTime.now().millisecondsSinceEpoch.toString());
       controller.initialize().then((onValue) {
+        print("video player init success " +
+            new DateTime.now().millisecondsSinceEpoch.toString());
         setState(() {
           isinit = true;
         });
       });
     } catch (exception) {
+      print("error");
       print(exception.toString());
     }
 
@@ -273,6 +278,7 @@ abstract class _PlayerLifeCycleState extends State<PlayerLifeCycle> {
 class _NetworkPlayerLifeCycleState extends _PlayerLifeCycleState {
   @override
   VideoPlayerController createVideoPlayerController() {
+    print(widget.dataSource);
     return VideoPlayerController.network(widget.dataSource);
   }
 }

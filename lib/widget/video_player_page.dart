@@ -30,8 +30,8 @@ class _VideoPageState extends State<VideoPage> {
         child: new Container(
           child: new Center(
             child: NetworkPlayerLifeCycle(
-              Constant.baseUrl + widget.video_url,
-              Constant.baseUrl + widget.img_url,
+                widget.video_url,
+                widget.img_url,
                   (BuildContext context, VideoPlayerController controller) =>
                   AspectRatioVideo(controller),
                 null),
@@ -47,7 +47,7 @@ class _VideoPageState extends State<VideoPage> {
           }
         },
         onLongPress: () {
-          _showBottomItem(Constant.baseUrl + widget.video_url);
+          _showBottomItem(widget.video_url);
         },
       ),
     );

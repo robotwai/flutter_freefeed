@@ -15,6 +15,8 @@ import 'user_list_page.dart';
 import 'package:flutter_app/utils/toast_utils.dart';
 import 'package:flutter_app/widget/micropost_list_page.dart';
 import 'package:flutter_app/utils/app_state.dart';
+import 'package:flutter/services.dart';
+import 'dart:io';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -71,6 +73,20 @@ class _MyHomePageState extends State<MyHomePage> with FeedIView, PageCallBack {
         });
       }
     });
+//  _getProfileJson();
+
+  }
+
+  static const methodChannel = const MethodChannel(
+      'com.shanbay.shared.data/method');
+
+  Future _getProfileJson() async {
+    String s = await methodChannel.invokeMethod("getProfileJson");
+    if (s != null) {
+      setState(() {
+        print(s);
+      });
+    }
   }
 
   AppState appState;

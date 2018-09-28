@@ -101,7 +101,8 @@ class MicropostPage extends StatelessWidget {
 
         Navigator.of(c).push(MaterialPageRoute<Null>(
             builder: (BuildContext context) {
-              return new VideoPage(video_url, pic_url);
+              return new VideoPage(
+                  Constant.baseUrl + video_url, Constant.baseUrl + pic_url);
             }
         ));
       },
