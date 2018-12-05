@@ -1,6 +1,6 @@
 class Constant {
   static const String baseUrlNoHttp = 'www.zshot.xyz';
-  static const String baseUrl = 'http://' + baseUrlNoHttp;
+  static const String baseUrl = 'https://' + baseUrlNoHttp;
 
   static const int HTTP_OK = 0;
   static const int HTTP_FAILED = 1;

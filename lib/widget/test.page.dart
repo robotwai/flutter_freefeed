@@ -45,7 +45,7 @@ class _VideoPlayPauseState extends State<VideoPlayPause> {
   @override
   void deactivate() {
     if (controller != null) {
-      controller.setVolume(0.0);
+//      controller.setVolume(0.0);
       controller.removeListener(listener);
     }
 
@@ -299,71 +299,7 @@ class _FilePlayerLifeCycleState extends _PlayerLifeCycleState {
   }
 }
 /// A filler card to show the video in a list of scrolling contents.
-Widget buildCard(String title) {
-  return Card(
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        ListTile(
-          leading: const Icon(Icons.airline_seat_flat_angled),
-          title: Text(title),
-        ),
-        ButtonTheme.bar(
-          child: ButtonBar(
-            children: <Widget>[
-              FlatButton(
-                child: const Text('BUY TICKETS'),
-                onPressed: () {
-                  /* ... */
-                },
-              ),
-              FlatButton(
-                child: const Text('SELL TICKETS'),
-                onPressed: () {
-                  /* ... */
-                },
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-}
 
-class VideoInListOfCards extends StatelessWidget {
-  final VideoPlayerController controller;
-
-  VideoInListOfCards(this.controller);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      children: <Widget>[
-
-        Card(
-            child: Column(children: <Widget>[
-              Column(
-                children: <Widget>[
-                  const ListTile(
-                    leading: Icon(Icons.cake),
-                    title: Text("Video video"),
-                  ),
-                  Stack(
-                      alignment: FractionalOffset.bottomRight +
-                          const FractionalOffset(-0.1, -0.1),
-                      children: <Widget>[
-                        AspectRatioVideo(controller),
-//                        Image.asset('assets/flutter-mark-square-64.png'),
-                      ]),
-                ],
-              ),
-            ])),
-
-      ],
-    );
-  }
-}
 
 class AspectRatioVideo extends StatefulWidget {
   final VideoPlayerController controller;
@@ -406,6 +342,7 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
         ),
       );
     } else {
+      print("black");
       return Container();
     }
   }

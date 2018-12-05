@@ -1,12 +1,14 @@
 <component name="libraryTable">
-  <library name="Flutter Plugins" type="FlutterPluginsLibraryType">
+  <library name="Flutter Plugins">
     <CLASSES>
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences-0.4.2" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/path_provider-0.4.1" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/image_picker-0.4.6" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/sqflite-0.11.1" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/fluttertoast-2.0.7" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_webview_plugin-0.2.1+2" />
+      <root url="file://$USER_HOME$/.pub-cache/git/flutter_native_image-570cafee663b360c27be9a002d15bda020332f5b" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/video_player-0.6.5" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/sqflite-0.12.0" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/image_picker-0.4.10" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
